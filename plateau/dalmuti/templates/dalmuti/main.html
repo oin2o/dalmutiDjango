@@ -1,0 +1,61 @@
+{# login.html #}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>달무티 온라인</title>
+    <style>
+        .game{
+            width: 83px;
+            height: 125px;
+            border-color: #9d9d00;
+            background-color: #9d9d9d;
+            vertical-align: middle;
+            line-height: 100px;
+            margin: 5px auto 5px auto;
+        }
+        .tdh6{
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+    </style>
+
+    <script type="text/javascript">
+    </script>
+
+</head>
+<body>
+{% include "./menu.html" %}
+<form method="post">
+    {% csrf_token %}
+    <a href="{% url 'dalmuti:main' user.username %}"><input value="새로고침" type="button" width="100%"/></a>
+    <a href="{% url 'dalmuti:newgame' user.username %}"><input value="새게임" type="button" width="100%"/></a>
+    {% load static %}
+    {% if message %}
+    <script type="text/javascript">
+        alert("{{ message }}")
+    </script>
+    {% endif %}
+    <table class="table">
+        <tbody>
+            <tr>
+            {% for game in game_list %}
+                <td class="tdh6" scope="row" style="text-align:center;">
+                    {{ game.gamename }}
+                    <br>
+                    <a href="{% url 'dalmuti:ingame' game.gamename user.username %}">
+                        <img class="game" src="{% static  'dalmuti/images/' %}{{ game.round }}.JPG"  name="gameImg{{ game.round }}" border="0">
+                    </a>
+                </td>
+                {% if forloop.counter|divisibleby:4 != 0 %}
+             <tr></tr>
+                {% endif %}
+            {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</form>
+</body>
+</html>
