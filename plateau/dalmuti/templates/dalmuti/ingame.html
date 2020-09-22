@@ -311,7 +311,7 @@
             {% for ready_gamer in ready_gamer_list %}
             <tr>
                 <td class="tdh6w35">
-                    <a href="{% url 'dalmuti:main' username=ready_gamer.user.username %}">{{ ready_gamer.user.username }}</a>
+                {{ ready_gamer.user.username }}
                 {% if ready_gamer.game.revYn == True and ready_gamer.game.revusername == ready_gamer.user.username %}
                 R
                 {% endif %}
