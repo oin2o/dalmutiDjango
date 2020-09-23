@@ -70,32 +70,35 @@
 
         if (message == 'pick') {
             setTimeout(function(){
-               document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
+                document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
             }, 500);
         } else if (message == 'shuffle') {
             setTimeout(function(){
-               document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
+                document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
             }, 500);
         } else if (message == 'cardok') {
             setTimeout(function(){
-               document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
+                document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
             }, 500);
         } else if (message == 'submitReceipt') {
             setTimeout(function(){
-               document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
+                document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
             }, 500);
         } else if (message == 'submitTaxPass') {
             setTimeout(function(){
-               document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
+                document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
             }, 500);
         } else if (message == 'submitCard') {
             setTimeout(function(){
-               document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
+                document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
             }, 500);
         } else if (message == 'submitPass') {
             setTimeout(function(){
-               document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
+                document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
             }, 500);
+        } else if (message == 'revolution') {
+            alert('동학혁명이 발생하였습니다.');
+            document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
         }
     };
 
@@ -414,7 +417,7 @@
                             document.location.href = "{% url 'dalmuti:revolution' gamer.game.gamename user.username %}";
 
                             web_socket.send(JSON.stringify({
-                                'message': 'cardok'
+                                'message': 'revolution'
                             }));
                         };
                         </script>
