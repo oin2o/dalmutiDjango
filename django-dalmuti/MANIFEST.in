@@ -1,0 +1,6 @@
+include LICENSE
+include README.rst
+recursive-include dalmuti/static *
+recursive-include dalmuti/templates *
+recursive-include dalmuti/templatetags *
+recursive-include docs *
