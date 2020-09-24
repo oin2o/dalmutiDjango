@@ -45,9 +45,13 @@
                 <td class="tdh6" scope="row" style="text-align:center;">
                     {{ game.gamename }}
                     <br>
+                    {% if game.round == 13 and game.ingameCd == 4 %}
+                    <img class="game" src="{% static  'dalmuti/images/' %}14.jpg"  name="gameImg{{ game.round }}" border="0">
+                    {% else %}
                     <a href="{% url 'dalmuti:ingame' game.gamename user.username %}">
                         <img class="game" src="{% static  'dalmuti/images/' %}{{ game.round }}.jpg"  name="gameImg{{ game.round }}" border="0">
                     </a>
+                    {% endif %}
                 </td>
                 {% if forloop.counter|divisibleby:4 != 0 %}
              <tr></tr>
