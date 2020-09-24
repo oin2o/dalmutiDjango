@@ -7,7 +7,7 @@ from django.views import generic
 from django.urls import reverse
 
 
-from .models import User, Game, Gamer, Card
+from .models import User, Game, Gamer, Card, Honor
 
 
 class LoginView(generic.ListView):
@@ -182,6 +182,15 @@ class InGameView(generic.DetailView):
                     gamer.save()
 
                 if not gamers.filter(nextPosition=0):
+
+                    for gamer in gamers:
+                        if gamer.user.username == game.revusername:
+                            honor = Honor.objects.create(game=game, user=gamer.user, prePosition=gamer.position,
+                                                         position=gamer.nextPosition, revYn='Y')
+                        else:
+                            honor = Honor.objects.create(game=game, user=gamer.user, prePosition=gamer.position,
+                                                         position=gamer.nextPosition)
+
                     nextgamers = gamers.order_by('nextPosition')
 
                     game.ingameCd = 4
@@ -285,6 +294,14 @@ class ShuffleView(generic.DetailView):
         game = Game.objects.filter(gamename=gamename).first()
 
         gamers = Gamer.objects.filter(game=game).order_by('position')
+
+        if game.round == 0:
+            position = 1
+            for gamer in gamers:
+                honor = Honor.objects.create(game=game, user=gamer.user, position=position)
+                gamer.position = position
+                gamer.save()
+                position += 1
 
         while card_deck:
             for gamer in gamers:

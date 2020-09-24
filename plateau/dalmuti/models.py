@@ -51,3 +51,15 @@ class Card(models.Model):
 
     def __str__(self):
         return str(self.game) + ':' + str(self.user) + ':' + str(self.card)
+
+
+class Honor(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    prePosition = models.IntegerField(default=0, help_text="이전계급")
+    position = models.IntegerField(default=0, help_text="계급")
+    revYn = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.game) + ':' + str(self.user) + ':' + str(self.prePosition) \
+               + ':' + str(self.position) + ':' + str(self.revYn)

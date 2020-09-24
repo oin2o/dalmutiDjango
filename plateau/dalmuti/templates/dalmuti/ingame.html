@@ -439,7 +439,7 @@
                         {{ tax_list.2.user.username }}님과 교환할 카드 1장을 선택해 주세요.
                         {% elif gamer.user.username == tax_list.0.user.username %}
                         <input onclick="submitReceipt( '{{ tax_list.3.user.username }}' )" value="세금수령" type="button" width="100%"/>
-                        <input onclick="submitTaxPass( '{{ tax_list.2.user.username }}' )" value="세금면제" type="button" width="100%"/>
+                        <input onclick="submitTaxPass( '{{ tax_list.3.user.username }}' )" value="세금면제" type="button" width="100%"/>
                         {{ tax_list.3.user.username }}님과 교환할 카드 2장을 선택해 주세요.
                         {% endif %}
                     {% else %}
