@@ -46,7 +46,7 @@
                     {{ game.gamename }}
                     <br>
                     <a href="{% url 'dalmuti:ingame' game.gamename user.username %}">
-                        <img class="game" src="{% static  'dalmuti/images/' %}{{ game.round }}.JPG"  name="gameImg{{ game.round }}" border="0">
+                        <img class="game" src="{% static  'dalmuti/images/' %}{{ game.round }}.jpg"  name="gameImg{{ game.round }}" border="0">
                     </a>
                 </td>
                 {% if forloop.counter|divisibleby:4 != 0 %}

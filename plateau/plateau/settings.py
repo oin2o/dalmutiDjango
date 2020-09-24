@@ -126,12 +126,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'dalmuti', 'static'),
-]
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 # ASGI 통신을 위한 In Memory Layers 설정
 CHANNEL_LAYERS = {
     'default': {
