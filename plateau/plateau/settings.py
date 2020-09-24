@@ -11,10 +11,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve(strict=True).parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -24,7 +23,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent
 SECRET_KEY = 'w=1f1qg0tqpn+&=yq5)a8^bp37*=4zt%uf&a%4r@cgwt6q&xva'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -32,14 +31,15 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'dalmuti.apps.DalmutiConfig',   # Dalmuti 추가
+    'channels', # Websocket 추가
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'dalmuti.apps.DalmutiConfig',   # Dalmuti 추가
-    'channels', # Websocket 추가
 
     'rest_framework.authtoken',
 ]
