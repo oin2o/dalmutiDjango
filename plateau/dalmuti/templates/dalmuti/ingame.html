@@ -112,7 +112,7 @@
                 alert("카드는 " + maxTaxCardCnt + "장만 선택할 수 있습니다.");
                 return false;
             }
-            card.border = 1;
+            card.border = 3;
             selectTaxCardCnt++;
         }
         else{
@@ -135,7 +135,7 @@
         var cardliststr = "";
         var cardlist = document.getElementsByClassName("card");
         for( var i = 0; i < cardlist.length ; i ++ ){
-            if ( cardlist[i].border == 1 ){
+            if ( cardlist[i].border == 3 ){
                 cardliststr = cardliststr + cardlist[i].name + ";";
             }
         }
@@ -172,7 +172,7 @@
         }
 
         if ( cardimg.border == 0 ){
-            cardimg.border = 1;
+            cardimg.border = 3;
             selectedCardCnt++;
         }
         else{
@@ -201,7 +201,7 @@
         var cardliststr = "";
         var cardlist = document.getElementsByClassName("card");
         for( var i = 0; i < cardlist.length ; i ++ ){
-            if ( cardlist[i].border == 1 ){
+            if ( cardlist[i].border == 3 ){
                 cardliststr = cardliststr + cardlist[i].name + ";";
             }
         }
@@ -476,9 +476,9 @@
                     <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0" onclick="selectTaxCard( dalmutiImg{{ my_card.card }}_{{ forloop.counter }}, 1 )">
                         {% elif gamer.user.username == tax_list.2.user.username or gamer.user.username == tax_list.3.user.username %}
                             {% if gamer.status == 1 and gamer.game.ingameCd == 2 and forloop.counter == 1 %}
-                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="1">
+                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="3">
                             {% elif gamer.status == 1 and gamer.game.ingameCd == 2 and forloop.counter == 2 and gamer.user.username == tax_list.3.user.username %}
-                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="1">
+                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="3">
                             {% else %}
                     <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
                             {% endif %}
