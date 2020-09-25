@@ -336,7 +336,11 @@
                 {% endif %}
                 </td>
                 <td class="tdh6w35">
-                {{ ready_gamer.cardTotCnt }}
+                {% if ready_gamer.cardTotCnt == 0 or ready_gamer.cardTotCnt > gamer.game.hideCardCnt %}
+                    {{ ready_gamer.cardTotCnt }}
+                {% else %}
+                    ?
+                {% endif %}
                 </td>
                 {% if forloop.counter == 1 %}
                 <td class="readycard" rowspan="{{ ready_gamer_list|length }}">

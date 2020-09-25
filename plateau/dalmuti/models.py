@@ -16,6 +16,7 @@ class Game(models.Model):
     revYn = models.BooleanField(default=False)
     revusername = models.CharField(default="", max_length=10)
     drawusername = models.CharField(default="", max_length=10)
+    hideCardCnt = models.IntegerField(default=5, help_text="카드 개수 숨김 구간")
     turnUser = models.ForeignKey(User, on_delete=models.CASCADE)
     lastCard = models.IntegerField(default=0, help_text="오픈 카드")
     lastCardCnt = models.IntegerField(default=0, help_text="오픈 카드 개수")
@@ -24,7 +25,7 @@ class Game(models.Model):
     def __str__(self):
         return self.gamename + ':' + str(self.round) + ':' + str(self.ingameCd) \
                + str(self.revYn) + ':' + self.revusername + ':' + self.drawusername \
-               + str(self.turnUser) \
+               + str(self.hideCardCnt) + str(self.turnUser) \
                + ':' + str(self.lastCard) + ':' + str(self.lastCardCnt) + ':' + str(self.lastJokerCnt)
 
 
