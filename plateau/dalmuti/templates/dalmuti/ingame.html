@@ -102,6 +102,8 @@
             document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
         } else if (message == 'gameend') {
             document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
+        } else if (message == 'gamequit') {
+            document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
         }
     };
 
@@ -235,6 +237,11 @@
         <tr>
             <td>
                 <a href="{% url 'dalmuti:ingame' gamer.game.gamename user.username %}"><input value="새로고침" type="button" width="100%"/></a>
+            {% with gamer|checkquit:total_gamer as quitavail %}
+                {% if quitavail %}
+                <a href="{% url 'dalmuti:gamequit' gamer.game.gamename user.username %}"><input value="나가기" type="button" width="100%"/></a>
+                {% endif %}
+            {% endwith %}
             {% with user|checkshuffle:total_gamer as shuffleavail %}
                 {% if shuffleavail %}
                 <input id="card_shuffle" value="카드분배" type="button" width="100%"/>

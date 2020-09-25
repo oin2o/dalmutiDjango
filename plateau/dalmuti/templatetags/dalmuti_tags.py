@@ -8,6 +8,17 @@ def subtract(value, arg):
     return value - arg
 
 
+@register.filter(name='checkquit')
+def checkquit(gamer, total_gamer):
+    if gamer.game.ingameCd == 0:
+        if gamer not in total_gamer.exclude(position=0).order_by('position'):
+            return True
+        elif len(total_gamer) == 1:
+            return True
+
+    return False
+
+
 @register.filter(name='checkshuffle')
 def checkshuffle(user, total_gamer):
     gamer = total_gamer.filter(user=user).first()

@@ -29,7 +29,7 @@ class MainView(generic.ListView):
 
         context = {
             'user': user,
-            'game_list': game_list
+            'game_list': game_list,
         }
 
         return render(request, self.template_name, context)
@@ -43,7 +43,7 @@ class RuleView(generic.DetailView):
         user = User.objects.filter(username=username).first()
 
         context = {
-            'user': user
+            'user': user,
         }
 
         return render(request, self.template_name, context)
@@ -79,12 +79,12 @@ class InGameView(generic.DetailView):
         if not total_gamer.filter(user=user) and (len(total_gamer) >= 8 or game.ingameCd!=0):
             template_name = "dalmuti/main.html"
 
-            game_list = Game.objects.filter(round__lte=14)
+            game_list = Game.objects.filter(round__lte=14).order_by('-gamename')
 
             context = {
                 'user': user,
                 'game_list': game_list,
-                'message': '해당 게임에 더이상 참가할 수 없습니다.'
+                'message': '해당 게임에 더이상 참가할 수 없습니다.',
             }
 
             return render(request, template_name, context)
@@ -96,7 +96,6 @@ class InGameView(generic.DetailView):
 
             gamer_list = total_gamer.filter(position=0)
             ready_gamer_list = total_gamer.exclude(position=0).order_by('position')
-            notin_gamer_list = total_gamer.filter(status=0)
             my_cards = Card.objects.filter(game=game, user=user).order_by('card')
 
             num_list = [x + 1 for x in range(12)]
@@ -114,10 +113,9 @@ class InGameView(generic.DetailView):
                 'total_gamer': total_gamer,
                 'gamer_list': gamer_list,
                 'ready_gamer_list': ready_gamer_list,
-                'notin_gamer_list': notin_gamer_list,
                 'card_list': card_list,
                 'tax_list': tax_list,
-                'my_cards': my_cards
+                'my_cards': my_cards,
             }
             return render(request, self.template_name, context)
 
@@ -392,9 +390,26 @@ class GameEndView(generic.DetailView):
     # 현재 진행중인 게임 종료
     def get(self, request, gamename, username):
         game = Game.objects.filter(gamename=gamename).first()
-        user = User.objects.filter(username=username).first()
 
         game.round = 13
         game.save()
 
         return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
+
+
+class GameQuitView(generic.DetailView):
+
+    # 현재 진행중인 게임 종료
+    def get(self, request, gamename, username):
+        game = Game.objects.filter(gamename=gamename).first()
+        user = User.objects.filter(username=username).first()
+
+        gamers = Gamer.objects.filter(game=game).order_by('position')
+        gamer = gamers.filter(user=user).first()
+
+        gamer.delete()
+
+        if not gamers:
+            game.delete()
+
+        return HttpResponseRedirect(reverse('dalmuti:main', args=(username,)))

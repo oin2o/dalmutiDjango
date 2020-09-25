@@ -15,4 +15,5 @@ urlpatterns = [
     path('cardok/<str:gamename>/<str:username>', views.CardOKView.as_view(), name='cardok'),
     path('revolution/<str:gamename>/<str:username>', views.RevolutionView.as_view(), name='revolution'),
     path('gameend/<str:gamename>/<str:username>', views.GameEndView.as_view(), name='gameend'),
+    path('gamequit/<str:gamename>/<str:username>', views.GameQuitView.as_view(), name='gamequit'),
 ]
