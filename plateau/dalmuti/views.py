@@ -185,7 +185,7 @@ class InGameView(generic.DetailView):
                         if gamer.user.username == game.revusername:
                             honor = Honor.objects.create(game=game, user=gamer.user, round=game.round,
                                                          prePosition=gamer.position, position=gamer.nextPosition,
-                                                         revYn='Y')
+                                                         revYn=True)
                         else:
                             honor = Honor.objects.create(game=game, user=gamer.user, round=game.round,
                                                          prePosition=gamer.position, position=gamer.nextPosition)
