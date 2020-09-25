@@ -100,6 +100,8 @@
         } else if (message == 'revolution') {
             alert('동학혁명이 발생하였습니다.');
             document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
+        } else if (message == 'gameend') {
+            document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
         }
     };
 
@@ -246,6 +248,19 @@
                     }));
                 };
                 </script>
+                    {% if gamer.game.round != 0 %}
+                <input id="game_end" value="게임종료" type="button" width="100%"/>
+                <script type="text/javascript">
+                // 게임종료 버튼 클릭 시, 게임종료 후, 새로고침
+                document.querySelector('#game_end').onclick = function(e) {
+                    document.location.href = "{% url 'dalmuti:gameend' gamer.game.gamename user.username %}";
+
+                    web_socket.send(JSON.stringify({
+                        'message': 'gameend'
+                    }));
+                };
+                </script>
+                    {% endif %}
                 {% endif %}
             {% endwith %}
             </td>

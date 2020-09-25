@@ -385,3 +385,16 @@ class RevolutionView(generic.DetailView):
             game.save()
 
         return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
+
+
+class GameEndView(generic.DetailView):
+
+    # 현재 진행중인 게임 종료
+    def get(self, request, gamename, username):
+        game = Game.objects.filter(gamename=gamename).first()
+        user = User.objects.filter(username=username).first()
+
+        game.round = 13
+        game.save()
+
+        return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
