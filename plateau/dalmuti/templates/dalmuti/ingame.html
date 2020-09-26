@@ -444,14 +444,24 @@
                         {% with ready_gamer_list|length|subtract:1 as range %}
                             {% if gamer.position == 1 %}
                     <img class="drawgif" src="{% static  'dalmuti/gifs/' %}1.gif"  name="dalmutiGif1" border="0">
-                            {% elif ready_gamer_list|length != 12 and gamer.position == 2 %}
-                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}3.gif"  name="dalmutiGif3" border="0">
-                            {% elif ready_gamer_list|length == 12 and gamer.position == 3 %}
-                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}3.gif"  name="dalmutiGif3" border="0">
                             {% elif gamer.position == range %}
                     <img class="drawgif" src="{% static  'dalmuti/gifs/' %}11.gif"  name="dalmutiGif11" border="0">
                             {% elif gamer.position == ready_gamer_list|length %}
                     <img class="drawgif" src="{% static  'dalmuti/gifs/' %}12.gif"  name="dalmutiGif12" border="0">
+                            {% elif ready_gamer_list|length != 12 and gamer.position == 2 %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}3.gif"  name="dalmutiGif3" border="0">
+                            {% elif ready_gamer_list|length == 9 and gamer.position == 4 %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}6.gif"  name="dalmutiGif6" border="0">
+                            {% elif ready_gamer_list|length == 10 and gamer.position == 5 %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}6.gif"  name="dalmutiGif6" border="0">
+                            {% elif ready_gamer_list|length == 11 and gamer.position == 5 %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}6.gif"  name="dalmutiGif6" border="0">
+                            {% elif ready_gamer_list|length == 12 %}
+                                {% if gamer.position == 3 %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}3.gif"  name="dalmutiGif3" border="0">
+                                {% elif gamer.position == 6 %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}6.gif"  name="dalmutiGif6" border="0">
+                                {% endif %}
                             {% endif %}
                         {% endwith %}
                     {% endif %}
