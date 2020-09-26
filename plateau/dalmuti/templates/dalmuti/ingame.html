@@ -442,14 +442,16 @@
                         {% endwith %}
                     {% elif gamer.game.ingameCd == 4 %}
                         {% with ready_gamer_list|length|subtract:1 as range %}
-                            {% if ready_gamer_list|length != 12 %}
-                                {% if gamer.position <= 2 or gamer.position >= range %}
-                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}{{ gamer.position }}_{{ ready_gamer_list|length }}.gif"  name="dalmutiGif{{ gamer.position }}_{{ ready_gamer_list|length }}" border="0">
-                                {% endif %}
-                            {% else %}
-                                {% if gamer.position == 1 or gamer.position == 3 or gamer.position >= range %}
-                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}{{ gamer.position }}_{{ ready_gamer_list|length }}.gif"  name="dalmutiGif{{ gamer.position }}_{{ ready_gamer_list|length }}" border="0">
-                                {% endif %}
+                            {% if gamer.position == 1 %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}1.gif"  name="dalmutiGif1" border="0">
+                            {% elif ready_gamer_list|length != 12 and gamer.position == 2 %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}3.gif"  name="dalmutiGif3" border="0">
+                            {% elif ready_gamer_list|length == 12 and gamer.position == 3 %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}3.gif"  name="dalmutiGif3" border="0">
+                            {% elif gamer.position == range %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}11.gif"  name="dalmutiGif11" border="0">
+                            {% elif gamer.position == ready_gamer_list|length %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}12.gif"  name="dalmutiGif12" border="0">
                             {% endif %}
                         {% endwith %}
                     {% endif %}
