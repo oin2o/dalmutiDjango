@@ -15,6 +15,9 @@
         .drawcard{
             width: 30%;
         }
+        .drawgif{
+            width: 90%;
+        }
         .pickcard{
             width: 22%;
             border-color: #FF0000;
@@ -437,6 +440,18 @@
                     <img class="drawcard" src="{% static  'dalmuti/images/' %}13.jpg"  name="dalmutiImg{{ gamer.game.lastCard }}" border="0">
                             {% endfor %}
                         {% endwith %}
+                    {% elif gamer.game.ingameCd == 4 %}
+                        {% with ready_gamer_list|length|subtract:1 as range %}
+                            {% if ready_gamer_list|length != 12 %}
+                                {% if gamer.position <= 2 or gamer.position >= range %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}{{ gamer.position }}_{{ ready_gamer_list|length }}.gif"  name="dalmutiGif{{ gamer.position }}_{{ ready_gamer_list|length }}" border="0">
+                                {% endif %}
+                            {% else %}
+                                {% if gamer.position == 1 or gamer.position == 3 or gamer.position >= range %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}{{ gamer.position }}_{{ ready_gamer_list|length }}.gif"  name="dalmutiGif{{ gamer.position }}_{{ ready_gamer_list|length }}" border="0">
+                                {% endif %}
+                            {% endif %}
+                        {% endwith %}
                     {% endif %}
                 </td>
                 {% endif %}
@@ -587,10 +602,10 @@
         <tr>
             <td class="tdh6w35pb"></td>
             <td class="tdh6w35pb">왕</td>
-            <td class="tdh6w35pb">대군</td>
             {% if ready_gamer_list|length == 12 %}
-            <td class="tdh6w35pb">정승</td>
+            <td class="tdh6w35pb">대군</td>
             {% endif %}
+            <td class="tdh6w35pb">정승</td>
             {% if ready_gamer_list|length >= 10 %}
             <td class="tdh6w35pb">장군</td>
             {% endif %}
