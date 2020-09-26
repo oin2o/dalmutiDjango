@@ -27,6 +27,13 @@ class MainView(generic.ListView):
         game_list = Game.objects.filter(round__lte=13).order_by('-gamename')
         user = User.objects.filter(username=username).first()
 
+        for game in game_list:
+            gamer = Gamer.objects.filter(game=game, user=user)
+            if not gamer:
+                if game.round != 0:
+                    notingamename = game.gamename
+                    game_list = game_list.exclude(gamename=notingamename)
+
         context = {
             'user': user,
             'game_list': game_list,
@@ -76,7 +83,7 @@ class InGameView(generic.DetailView):
         total_gamer = Gamer.objects.filter(game=game)
 
 
-        if not total_gamer.filter(user=user) and (len(total_gamer) >= 8 or game.ingameCd!=0):
+        if not total_gamer.filter(user=user) and (len(total_gamer) >= 12 or game.ingameCd!=0):
             template_name = "dalmuti/main.html"
 
             game_list = Game.objects.filter(round__lte=14).order_by('-gamename')
@@ -107,6 +114,13 @@ class InGameView(generic.DetailView):
 
             tax_list = ready_gamer_list.filter(taxYn=True).order_by('position')
 
+            honor_list = []
+
+            for i in range(game.round + 1):
+                game_honor = Honor.objects.filter(game=game, round=i).order_by('position')
+                if game_honor:
+                    honor_list.append(game_honor)
+
             context = {
                 'user': user,
                 'gamer': gamer,
@@ -116,6 +130,7 @@ class InGameView(generic.DetailView):
                 'card_list': card_list,
                 'tax_list': tax_list,
                 'my_cards': my_cards,
+                'honor_list': honor_list,
             }
             return render(request, self.template_name, context)
 
@@ -179,30 +194,6 @@ class InGameView(generic.DetailView):
                     gamer.nextPosition = len(gamers.exclude(nextPosition=0)) + 1
                     gamer.save()
 
-                if not gamers.filter(nextPosition=0):
-
-                    for gamer in gamers:
-                        if gamer.user.username == game.revusername:
-                            honor = Honor.objects.create(game=game, user=gamer.user, round=game.round,
-                                                         prePosition=gamer.position, position=gamer.nextPosition,
-                                                         revYn=True)
-                        else:
-                            honor = Honor.objects.create(game=game, user=gamer.user, round=game.round,
-                                                         prePosition=gamer.position, position=gamer.nextPosition)
-
-                    nextgamers = gamers.order_by('nextPosition')
-
-                    game.ingameCd = 4
-                    game.turnUser = nextgamers[0].user
-                    game.save()
-
-                    for nextgamer in nextgamers:
-                        nextgamer.position = nextgamer.nextPosition
-                        nextgamer.jokerCnt = 0
-                        nextgamer.status = 0
-                        nextgamer.taxYn = False
-                        nextgamer.nextPosition = 0
-                        nextgamer.save()
             elif action == "turnpass":
                 drawgamer = gamers.filter(user=User.objects.filter(username=game.drawusername).first()).first()
 
@@ -297,7 +288,7 @@ class ShuffleView(generic.DetailView):
         if game.round == 0:
             position = 1
             for gamer in gamers:
-                honor = Honor.objects.create(game=game, user=gamer.user, position=position)
+                honor = Honor.objects.create(game=game, user=gamer.user, gamerTotCnt=len(gamers), position=position)
                 gamer.position = position
                 gamer.save()
                 position += 1
@@ -341,13 +332,16 @@ class CardOKView(generic.DetailView):
         taxuser = [gamers[i].user.username for i in [0, 1,len(gamers) - 1, len(gamers) - 2]]
 
         gamer.status = 2
-        if username in taxuser:
+        if game.round != 1 and username in taxuser:
             gamer.status = 1
             gamer.taxYn = True
         gamer.save()
 
         if not gamers.filter(status=0):
-            game.ingameCd = 2
+            if not gamers.filter(status=1):
+                game.ingameCd = 3
+            else:
+                game.ingameCd = 2
             game.save()
 
         return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
@@ -379,6 +373,7 @@ class RevolutionView(generic.DetailView):
                 ingamer.position = position
                 ingamer.save()
                 position -= 1
+            game.drawusername = user.username
             game.turnUser = user
             game.save()
 
@@ -399,7 +394,7 @@ class GameEndView(generic.DetailView):
 
 class GameQuitView(generic.DetailView):
 
-    # 현재 진행중인 게임 종료
+    # 진행전인 게임 나가기
     def get(self, request, gamename, username):
         game = Game.objects.filter(gamename=gamename).first()
         user = User.objects.filter(username=username).first()
@@ -413,3 +408,46 @@ class GameQuitView(generic.DetailView):
             game.delete()
 
         return HttpResponseRedirect(reverse('dalmuti:main', args=(username,)))
+
+
+class CardAllInView(generic.DetailView):
+
+    # 꼴지 카드 전체 제출 및 게임 종료
+    def get(self, request, gamename, username):
+        game = Game.objects.filter(gamename=gamename).first()
+        user = User.objects.filter(username=username).first()
+        gamer = Gamer.objects.filter(game=game, user=user).first()
+        gamers = Gamer.objects.filter(game=game).order_by('position')
+
+        my_cards = Card.objects.filter(game=game, user=user).order_by('card')
+        my_cards.delete()
+
+        gamer.cardTotCnt = 0
+        gamer.jokerCnt = 0
+        gamer.nextPosition = len(gamers.exclude(nextPosition=0)) + 1
+        gamer.save()
+
+        nextgamers = gamers.order_by('nextPosition')
+
+        game.ingameCd = 4
+        game.turnUser = nextgamers[0].user
+        game.save()
+
+        for nextgamer in nextgamers:
+            if nextgamer.user.username == game.revusername:
+                honor = Honor.objects.create(game=game, user=nextgamer.user, round=game.round,
+                                             gamerTotCnt=len(nextgamers), prePosition=nextgamer.position,
+                                             position=nextgamer.nextPosition, revYn=True)
+            else:
+                honor = Honor.objects.create(game=game, user=nextgamer.user, round=game.round,
+                                             gamerTotCnt=len(nextgamers), prePosition=nextgamer.position,
+                                             position=nextgamer.nextPosition)
+
+            nextgamer.position = nextgamer.nextPosition
+            nextgamer.jokerCnt = 0
+            nextgamer.status = 0
+            nextgamer.taxYn = False
+            nextgamer.nextPosition = 0
+            nextgamer.save()
+
+        return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))

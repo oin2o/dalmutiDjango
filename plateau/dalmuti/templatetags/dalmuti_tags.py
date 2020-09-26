@@ -3,6 +3,11 @@ from django import template
 register = template.Library()
 
 
+@register.filter(name='addtion')
+def addtion(value, arg):
+    return value + arg
+
+
 @register.filter(name='subtract')
 def subtract(value, arg):
     return value - arg
@@ -47,5 +52,16 @@ def carddrawavailable(gamer, cards):
                 break
         if isdrawavailable and gamer.game.lastCard > cards[0].card and len(cards) >= gamer.game.lastCardCnt:
             return True
+
+    return False
+
+
+@register.filter(name='islastgamer')
+def islastgamer(total_gamer):
+
+    incomplete_gamers = total_gamer.exclude(cardTotCnt=0)
+
+    if len(incomplete_gamers) == 1:
+        return True
 
     return False

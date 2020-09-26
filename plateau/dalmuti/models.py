@@ -58,10 +58,12 @@ class Honor(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     round = models.IntegerField(default=0, help_text="게임 진행 라운드")
+    gamerTotCnt = models.IntegerField(default=0, help_text="게임 참가자 인원수")
     prePosition = models.IntegerField(default=0, help_text="이전계급")
     position = models.IntegerField(default=0, help_text="계급")
     revYn = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.game) + ':' + str(self.user) + ':' + str(self.round) \
-               + ':' + str(self.prePosition) + ':' + str(self.position) + ':' + str(self.revYn)
+               + ':' + str(self.gamerTotCnt) + ':' + str(self.prePosition) \
+               + ':' + str(self.position) + ':' + str(self.revYn)
