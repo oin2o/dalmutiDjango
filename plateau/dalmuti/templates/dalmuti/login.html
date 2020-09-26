@@ -2,11 +2,16 @@
 
 {% block body %}
 <h2>Das Leben ist ungerecht.</h2>
+<a href="{% url 'dalmuti:main' username='손님1' %}"><input value="손님1" type="button" width="100%"/></a>
+<a href="{% url 'dalmuti:main' username='손님2' %}"><input value="손님2" type="button" width="100%"/></a>
+<a href="{% url 'dalmuti:main' username='손님3' %}"><input value="손님3" type="button" width="100%"/></a>
+<a href="{% url 'dalmuti:main' username='손님4' %}"><input value="손님4" type="button" width="100%"/></a>
 {% if user_list %}
+        <br>
     {% for user in user_list %}
     <a href="{% url 'dalmuti:main' username=user.username %}"><input value="{{ user.username }}" type="button" width="100%"/></a>
         {% if forloop.counter|divisibleby:4 != 0 %}
-        <br>
+    <br>
         {% endif %}
     {% endfor %}
 {% endif %}

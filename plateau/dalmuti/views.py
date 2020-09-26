@@ -16,7 +16,7 @@ class LoginView(generic.ListView):
 
     # 현재 활성화된 사용자 리스트를 로그인 화면에 표시
     def get_queryset(self):
-        return User.objects.filter(delYn=False).order_by('username')
+        return User.objects.filter(delYn=False).exclude(username__startswith='손님').order_by('username')
 
 
 class MainView(generic.ListView):
