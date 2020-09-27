@@ -450,7 +450,9 @@
                     <img class="drawgif" src="{% static  'dalmuti/gifs/' %}12.gif"  name="dalmutiGif12" border="0">
                             {% elif ready_gamer_list|length != 12 and gamer.position == 2 %}
                     <img class="drawgif" src="{% static  'dalmuti/gifs/' %}3.gif"  name="dalmutiGif3" border="0">
-                            {% elif ready_gamer_list|length == 9 and gamer.position == 4 %}
+                            {% elif ready_gamer_list|length >= 5 and ready_gamer_list|length <= 6 and gamer.position == 3 %}
+                    <img class="drawgif" src="{% static  'dalmuti/gifs/' %}6.gif"  name="dalmutiGif6" border="0">
+                            {% elif ready_gamer_list|length >= 7 and ready_gamer_list|length <= 9 and gamer.position == 4 %}
                     <img class="drawgif" src="{% static  'dalmuti/gifs/' %}6.gif"  name="dalmutiGif6" border="0">
                             {% elif ready_gamer_list|length == 10 and gamer.position == 5 %}
                     <img class="drawgif" src="{% static  'dalmuti/gifs/' %}6.gif"  name="dalmutiGif6" border="0">
@@ -624,10 +626,10 @@
             {% if ready_gamer_list|length >= 7 %}
             <td class="tdh6w35pb">양반</td>
             {% endif %}
-            {% if ready_gamer_list|length >= 9 %}
             <td class="tdh6w35pb">승려</td>
-            {% endif %}
+            {% if ready_gamer_list|length >= 9 %}
             <td class="tdh6w35pb">중인</td>
+            {% endif %}
             {% if ready_gamer_list|length >= 6 %}
             <td class="tdh6w35pb">농민</td>
             {% endif %}
