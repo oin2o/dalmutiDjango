@@ -30,7 +30,7 @@ def checkshuffle(user, total_gamer):
     gamer_list = total_gamer.filter(position=0)
     ready_gamer_list = total_gamer.exclude(position=0)
 
-    if gamer.game.ingameCd == 0 and len(ready_gamer_list) >= 5 and len(gamer_list) == 0 and gamer.game.turnUser.username == gamer.user.username:
+    if gamer.game.ingameCd == 0 and len(ready_gamer_list) >= 4 and len(gamer_list) == 0 and gamer.game.turnUser.username == gamer.user.username:
         return True
     elif gamer.game.ingameCd == 4 and gamer.game.round != 13 and gamer.game.turnUser.username == gamer.user.username:
         return True
@@ -63,5 +63,13 @@ def islastgamer(total_gamer):
 
     if len(incomplete_gamers) == 1:
         return True
+
+    return False
+
+
+@register.filter(name='isingame')
+def isingame(gamer):
+    if gamer.game.ingameCd == 3:
+            return True
 
     return False

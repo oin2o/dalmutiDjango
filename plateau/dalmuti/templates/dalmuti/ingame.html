@@ -268,6 +268,13 @@
         <tr>
             <td>
                 <a href="{% url 'dalmuti:ingame' gamer.game.gamename user.username %}"><input value="새로고침" type="button" width="100%"/></a>
+            {% if gamer|isingame %}
+                {% if gamer.autopassYn %}
+                <a href="{% url 'dalmuti:autopass' gamer.game.gamename user.username %}"><input value="Pass:끄기" type="button" width="100%"/></a>
+                {% else %}
+                <a href="{% url 'dalmuti:autopass' gamer.game.gamename user.username %}"><input value="Pass:켜기" type="button" width="100%"/></a>
+                {% endif %}
+            {% endif %}
             {% with gamer|checkquit:total_gamer as quitavail %}
                 {% if quitavail %}
                 <a href="{% url 'dalmuti:gamequit' gamer.game.gamename user.username %}"><input value="나가기" type="button" width="100%"/></a>
@@ -313,7 +320,7 @@
                 <td class="tdh6">
                 {% if gamer.game.ingameCd == 0 %}
                     {% if gamer_list|length == 0 %}
-                        {% if ready_gamer_list|length >= 5 %}
+                        {% if ready_gamer_list|length >= 4 %}
                     {{ ready_gamer_list.0.user.username }}님, 카드분배 버튼을 클릭하여 게임을 시작할 수 있습니다.
                         {% else %}
                     게임 인원이 충분하지 않습니다.
@@ -537,8 +544,7 @@
                     {% endif %}
                 {% elif gamer.game.ingameCd == 3 %}
                     {% if gamer.game.turnUser.username == gamer.user.username %}
-                        {% with total_gamer|islastgamer as lastgamer %}
-                            {% if lastgamer %}
+                        {% if total_gamer|islastgamer %}
                     <input id="card_allin" value="손털기" type="button" width="100%"/>
                     <script type="text/javascript">
                     // 손털기 버튼 클릭 시, 전체카드 제출 및 게임종료 후, 새로고침
@@ -551,18 +557,29 @@
                     };
                     </script>
                     손을 털고 라운드를 종료하세요.
-                            {% else %}
-                                {% with gamer|carddrawavailable:my_cards as drawavail %}
-                                    {% if drawavail %}
+                        {% else %}
+                            {% with gamer|carddrawavailable:my_cards as drawavail %}
+                                {% if drawavail %}
                     <input onclick="submitCard()" value="카드제출" type="button" width="100%"/>
-                                    {% endif %}
-                                {% endwith %}
+                                {% endif %}
                                 {% if gamer.game.drawusername != gamer.user.username %}
                     <input onclick="submitPass()" value="Pass" type="button" width="100%"/>
+                    <script type="text/javascript">
+                    // autopass on 이고, 5초 경과 시, 자동 패스 후, 새로고침
+                    if (!{{ drawavail|yesno:"true,false" }} && {{ gamer.autopassYn|yesno:"true,false" }}) {
+                        setTimeout(function(){
+                            submitPass()
+                        }, 3000);
+                    } else {    // autopass off 이고, 1분간 미 제출이면, 자동 패스 후, 새로고침
+                        setTimeout(function(){
+                            submitPass()
+                        }, 60000);
+                    }
+                    </script>
                                 {% endif %}
+                            {% endwith %}
                     제출할 카드를 선택하세요.
-                            {% endif %}
-                        {% endwith %}
+                        {% endif %}
                     {% else %}
                     {{ gamer.game.turnUser.username }}님이 카드 선택 중 입니다.
                     {% endif %}

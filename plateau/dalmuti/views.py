@@ -452,11 +452,30 @@ class CardAllInView(generic.DetailView):
                                              gamerTotCnt=len(nextgamers), prePosition=nextgamer.position,
                                              position=nextgamer.nextPosition)
 
+            nextgamer.autopassYn = False
             nextgamer.position = nextgamer.nextPosition
             nextgamer.jokerCnt = 0
             nextgamer.status = 0
             nextgamer.taxYn = False
             nextgamer.nextPosition = 0
             nextgamer.save()
+
+        return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
+
+class AutoPassView(generic.DetailView):
+
+    # autopass 기능
+    def get(self, request, gamename, username):
+        game = Game.objects.filter(gamename=gamename).first()
+        user = User.objects.filter(username=username).first()
+
+        gamer = Gamer.objects.filter(game=game, user=user).first()
+
+        if gamer.autopassYn:
+            gamer.autopassYn = False
+        else:
+            gamer.autopassYn = True
+
+        gamer.save()
 
         return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))

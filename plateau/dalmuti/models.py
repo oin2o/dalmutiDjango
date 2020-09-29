@@ -32,6 +32,7 @@ class Game(models.Model):
 class Gamer(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    autopassYn = models.BooleanField(default=False)
     position = models.IntegerField(default=0, help_text="계급")
     cardTotCnt = models.IntegerField(default=0, help_text="보유 카드 총 개수")
     jokerCnt = models.IntegerField(default=0, help_text="조커 카드 개수")
@@ -40,9 +41,9 @@ class Gamer(models.Model):
     nextPosition = models.IntegerField(default=0, help_text="다음계급")
 
     def __str__(self):
-        return str(self.game) + ':' + str(self.user) + ':' + str(self.position) \
-               + ':' + str(self.cardTotCnt) + ':' + str(self.jokerCnt)\
-               + ':' + str(self.status) + ':' + str(self.taxYn) + ':' + str(self.nextPosition)
+        return str(self.game) + ':' + str(self.user) + str(self.autopassYn) + ':' + str(self.position) \
+               + ':' + str(self.cardTotCnt) + ':' + str(self.jokerCnt) + ':' + str(self.status) \
+               + ':' + str(self.taxYn) + ':' + str(self.nextPosition)
 
 
 class Card(models.Model):

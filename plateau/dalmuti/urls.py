@@ -17,4 +17,5 @@ urlpatterns = [
     path('gameend/<str:gamename>/<str:username>', views.GameEndView.as_view(), name='gameend'),
     path('gamequit/<str:gamename>/<str:username>', views.GameQuitView.as_view(), name='gamequit'),
     path('cardallin/<str:gamename>/<str:username>', views.CardAllInView.as_view(), name='cardallin'),
+    path('autopass/<str:gamename>/<str:username>', views.AutoPassView.as_view(), name='autopass'),
 ]
