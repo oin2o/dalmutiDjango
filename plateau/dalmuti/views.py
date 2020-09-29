@@ -12,11 +12,20 @@ from .models import User, Game, Gamer, Card, Honor
 
 class LoginView(generic.ListView):
     template_name = "dalmuti/login.html"
-    context_object_name = "user_list"
 
     # 현재 활성화된 사용자 리스트를 로그인 화면에 표시
-    def get_queryset(self):
-        return User.objects.filter(delYn=False).exclude(username__startswith='손님').order_by('username')
+    def get(self, request):
+
+        user_only_guest = User.objects.filter(delYn=False, username__startswith='손님').order_by('username')
+        user_exclude_guest = User.objects.filter(delYn=False).exclude(username__startswith='손님').order_by('username')
+
+        user_list = list(user_only_guest) + list(user_exclude_guest)
+
+        context = {
+            'user_list': user_list,
+        }
+
+        return render(request, self.template_name, context)
 
 
 class MainView(generic.ListView):
