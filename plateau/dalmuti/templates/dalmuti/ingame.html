@@ -565,7 +565,7 @@
                                 {% if gamer.game.drawusername != gamer.user.username %}
                     <input onclick="submitPass()" value="Pass" type="button" width="100%"/>
                     <script type="text/javascript">
-                    // autopass on 이고, 5초 경과 시, 자동 패스 후, 새로고침
+                    // autopass on 이고, 3초 경과 시, 자동 패스 후, 새로고침
                     if (!{{ drawavail|yesno:"true,false" }} && {{ gamer.autopassYn|yesno:"true,false" }}) {
                         setTimeout(function(){
                             submitPass()
