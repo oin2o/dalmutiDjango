@@ -9,6 +9,9 @@
         table{
             width: 100%;
         }
+        textarea:focus{
+            outline: none;
+        }
         .pick{
             width: 55%;
         }
@@ -70,6 +73,30 @@
             margin-right: 0;
             font-weight: bold;
         }
+        .divre{
+            width:100%;
+            height:25%;
+            position:relative;
+            bottom:0px;
+            right:0px;
+        }
+        .divab{
+            width:100%;
+            position:absolute;
+            bottom:0px;
+            right:0px;
+            text-align:right;
+        }
+        .ipchat{
+            width:88%;
+            background-color:transparent;
+            resize: none;
+            border: 0;
+            color: brown;
+            font-size: 0.67em;
+            font-weight: bold;
+            text-align: right;
+        }
     </style>
 
     <script type="text/javascript">
@@ -130,6 +157,8 @@
             setTimeout(function(){
                 document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
             }, 500);
+        } else {
+            document.getElementById('onelinechat').value = message
         }
     };
 
@@ -310,7 +339,11 @@
             {% endwith %}
             </td>
             <td class="tdh6" style="text-align:right;">
+            {% if gamer.game.ingameCd == 4 %}
+                by {{ gamer.game.gamename }}
+            {% else %}
                 Round : {{ gamer.game.round }} by {{ gamer.game.gamename }}
+            {% endif %}
             </td>
         </tr>
     </table>
@@ -474,15 +507,33 @@
                             {% endif %}
                         {% endwith %}
                     {% endif %}
+                    <input class="ipchat" id="onelinechat" type="text" readonly/>
                 </td>
                 {% endif %}
             </tr>
             {% endfor %}
+            {% if gamer.game.ingameCd >= 1 and gamer.game.ingameCd <= 3 %}
+            <tr>
+                <td class="tdh6" colspan="3"/>
+                <td class="tdh6" style="text-align:right;">
+                    <input id="chatmsg" type="text" maxlength="10" size="17"/>
+                    <input id="chatbtn" type="button" value="한줄"/>
+                    <script type="text/javascript">
+                    // 채팅 후, 메시지 고침
+                    document.querySelector('#chatbtn').onclick = function(e) {
+                        web_socket.send(JSON.stringify({
+                            'message': '(' + '{{ gamer.user.username }}' + ') ' + document.getElementById('chatmsg').value
+                        }));
+                    };
+                    </script>
+                </td>
+            </tr>
+            {% endif %}
         {% endif %}
         </tbody>
     </table>
-<br>
-    {% if gamer.game.ingameCd != 0 %}
+
+{% if gamer.game.ingameCd != 0 %}
 <form name="cardform" method="post">
     {% csrf_token %}
     <input type="hidden" name="action" id="id_action"/>
@@ -625,8 +676,8 @@
             {% endif %}
         </tbody>
     </table>
-    {% endif %}
 </form>
+{% endif %}
 {% if gamer.game.ingameCd == 4 %}
 <table>
     <thead>
