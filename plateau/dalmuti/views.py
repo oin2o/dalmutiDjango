@@ -89,10 +89,25 @@ class HonorView(generic.DetailView):
             slave_per=Cast(F("slave_count"), FloatField())*100/Cast(F("tot_count"), FloatField()),
         )
 
+        users_pick_honor = user_exclude_guest.annotate(
+            tot_count=Subquery(
+                honors.filter(round=0).values('user').annotate(tot_count=Count('user')).filter(user_id=OuterRef('id')).values(
+                    'tot_count')[:1]),
+            king_count=Subquery(honors.filter(round=0, position=1).values('user').annotate(king_count=Count('user')).filter(
+                user_id=OuterRef('id')).values('king_count')[:1]),
+            slave_count=Subquery(
+                honors.filter(round=0, gamerTotCnt=F("position")).values('user').annotate(slave_count=Count('user')).filter(
+                    user_id=OuterRef('id')).values('slave_count')[:1]),
+            king_per=Cast(F("king_count"), FloatField()) * 100 / Cast(F("tot_count"), FloatField()),
+            slave_per=Cast(F("slave_count"), FloatField()) * 100 / Cast(F("tot_count"), FloatField()),
+        )
+
         context = {
             'user': user,
             'honor_by_king': users_honor.order_by('-king_per'),
             'honor_by_slave': users_honor.order_by('-slave_per'),
+            'pick_by_king': users_pick_honor.order_by('-king_per'),
+            'pick_by_slave': users_pick_honor.order_by('-slave_per'),
         }
 
         return render(request, self.template_name, context)
