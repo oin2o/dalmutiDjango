@@ -157,6 +157,10 @@
             setTimeout(function(){
                 document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
             }, 500);
+        } else if (message == 'renew') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
+            }, 500);
         } else {
             document.getElementById('onelinechat').value = message
             document.getElementById('chatmsg').value = ""
@@ -304,6 +308,19 @@
                 {% else %}
                 <a href="{% url 'dalmuti:autopass' gamer.game.gamename user.username %}"><input value="Pass:켜기" type="button" width="100%"/></a>
                 {% endif %}
+            {% endif %}
+            {% if user.username == ready_gamer_list.0.user.username and gamer.game.ingameCd >= 1 and gamer.game.ingameCd <= 3 %}
+                <input id="round_renew" value="도르마무" type="button" width="100%"/>
+                <script type="text/javascript">
+                // 카드분배 버튼 클릭 시, 카드 분배 후, 새로고침
+                document.querySelector('#round_renew').onclick = function(e) {
+                    document.location.href = "{% url 'dalmuti:roundrenew' gamer.game.gamename user.username %}";
+
+                    web_socket.send(JSON.stringify({
+                        'message': 'renew'
+                    }));
+                };
+                </script>
             {% endif %}
             {% with gamer|checkquit:total_gamer as quitavail %}
                 {% if quitavail %}
@@ -695,7 +712,9 @@
             {% if ready_gamer_list|length >= 7 %}
             <td class="tdh6w35pb">양반</td>
             {% endif %}
+            {% if ready_gamer_list|length >= 5 %}
             <td class="tdh6w35pb">승려</td>
+            {% endif %}
             {% if ready_gamer_list|length >= 9 %}
             <td class="tdh6w35pb">중인</td>
             {% endif %}

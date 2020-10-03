@@ -462,6 +462,7 @@ class CardAllInView(generic.DetailView):
 
         return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
 
+
 class AutoPassView(generic.DetailView):
 
     # autopass 기능
@@ -477,5 +478,32 @@ class AutoPassView(generic.DetailView):
             gamer.autopassYn = True
 
         gamer.save()
+
+        return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
+
+
+class RoundRenewView(generic.DetailView):
+
+    # 라운드 취소 기능
+    def get(self, request, gamename, username):
+        game = Game.objects.filter(gamename=gamename).first()
+        user = User.objects.filter(username=username).first()
+
+        cards = Card.objects.filter(game=game)
+        cards.delete()
+
+        gamers = Gamer.objects.filter(game=game).order_by('position')
+
+        game.ingameCd = 4
+        game.turnUser = gamers[0].user
+        game.save()
+
+        for gamer in gamers:
+            gamer.autopassYn = False
+            gamer.cardTotCnt = 0
+            gamer.jokerCnt = 0
+            gamer.status = 0
+            gamer.taxYn = False
+            gamer.save()
 
         return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
