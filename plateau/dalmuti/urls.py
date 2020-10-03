@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.LoginView.as_view(), name='login'),
     path('<str:username>', views.MainView.as_view(), name='main'),
     path('rule/<str:username>', views.RuleView.as_view(), name='rule'),
+    path('honor/<str:username>', views.HonorView.as_view(), name='honor'),
     path('newgame/<str:username>', views.NewGameView.as_view(), name='newgame'),
     path('<str:gamename>/<str:username>', views.InGameView.as_view(), name='ingame'),
     path('pick/<str:gamename>/<str:username>/<str:card>', views.PickView.as_view(), name='pick'),

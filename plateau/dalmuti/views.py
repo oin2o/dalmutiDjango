@@ -5,7 +5,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.views import generic
 from django.urls import reverse
-
+from django.db.models import Count, F, Subquery, OuterRef, FloatField, ExpressionWrapper
+from django.db.models.functions import Cast
 
 from .models import User, Game, Gamer, Card, Honor
 
@@ -60,6 +61,41 @@ class RuleView(generic.DetailView):
 
         context = {
             'user': user,
+        }
+
+        return render(request, self.template_name, context)
+
+
+class HonorView(generic.DetailView):
+    template_name = "dalmuti/honor.html"
+
+    # 전적 화면으로 전환
+    def get(self, request, username):
+        user = User.objects.filter(username=username).first()
+
+        user_exclude_guest = User.objects.filter(delYn=False).exclude(username__startswith='손님').order_by('username')
+        honors = Honor.objects.all()
+
+        users_honor = user_exclude_guest.annotate(
+            tot_count=Subquery(
+                honors.values('user').annotate(tot_count=Count('user')).filter(user_id=OuterRef('id')).values(
+                    'tot_count')[:1]),
+            king_count=Subquery(honors.filter(position=1).values('user').annotate(king_count=Count('user')).filter(
+                user_id=OuterRef('id')).values('king_count')[:1]),
+            slave_count=Subquery(
+                honors.filter(gamerTotCnt=F("position")).values('user').annotate(slave_count=Count('user')).filter(
+                    user_id=OuterRef('id')).values('slave_count')[:1]),
+            king_per=Cast(F("king_count"), FloatField())*100/Cast(F("tot_count"), FloatField()),
+            slave_per=Cast(F("slave_count"), FloatField())*100/Cast(F("tot_count"), FloatField()),
+        )
+
+        for hon in users_honor:
+            print(hon.username, hon.tot_count, hon.king_count, hon.king_per, hon.slave_count, hon.slave_per)
+
+        context = {
+            'user': user,
+            'honor_by_king': users_honor.order_by('-king_per'),
+            'honor_by_slave': users_honor.order_by('-slave_per'),
         }
 
         return render(request, self.template_name, context)
