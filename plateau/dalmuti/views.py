@@ -89,9 +89,6 @@ class HonorView(generic.DetailView):
             slave_per=Cast(F("slave_count"), FloatField())*100/Cast(F("tot_count"), FloatField()),
         )
 
-        for hon in users_honor:
-            print(hon.username, hon.tot_count, hon.king_count, hon.king_per, hon.slave_count, hon.slave_per)
-
         context = {
             'user': user,
             'honor_by_king': users_honor.order_by('-king_per'),
