@@ -542,6 +542,7 @@ class RoundRenewView(generic.DetailView):
 
         gamers = Gamer.objects.filter(game=game).order_by('position')
 
+        game.round -= 1
         game.ingameCd = 4
         game.turnUser = gamers[0].user
         game.save()
