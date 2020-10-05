@@ -342,7 +342,7 @@ class ShuffleView(generic.DetailView):
 
         gamers = Gamer.objects.filter(game=game).order_by('position')
 
-        if game.round == 0:
+        if game.round == 0 and game.ingameCd == 0:
             position = 1
             for gamer in gamers:
                 honor = Honor.objects.create(game=game, user=gamer.user, gamerTotCnt=len(gamers), position=position)
