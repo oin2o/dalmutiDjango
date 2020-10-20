@@ -231,17 +231,12 @@ class InGameView(generic.DetailView):
 
                     lastCardCnt += 1
                     if int(deleteCard) != 13:
-                        lastCard = deleteCard
+                        lastCard = int(deleteCard)
                     else:
                         lastJokerCnt += 1
 
-                if int(lastCard) == 0:
+                if lastCard == 0:
                     lastCard = 13
-                elif int(lastCard) == 1:
-                    game.turnUser = user
-                else:
-                    if int(lastCardCnt) > int(lastCard):
-                        game.turnUser = user
 
                 game.drawusername = user.username
                 game.lastCard = lastCard
@@ -255,6 +250,15 @@ class InGameView(generic.DetailView):
                 if gamer.cardTotCnt == 0:
                     gamer.nextPosition = len(gamers.exclude(nextPosition=0)) + 1
                     gamer.save()
+
+                    if game.lastCard == 1 or game.lastCardCnt > game.lastCard:
+                        game.drawusername = game.turnUser.username
+                    game.save()
+
+                else:
+                    if game.lastCard == 1 or game.lastCardCnt > game.lastCard:
+                        game.turnUser = user
+                    game.save()
 
             elif action == "turnpass":
                 drawgamer = gamers.filter(user=User.objects.filter(username=game.drawusername).first()).first()
@@ -570,6 +574,7 @@ class RoundRenewView(generic.DetailView):
             gamer.jokerCnt = 0
             gamer.status = 0
             gamer.taxYn = False
+            gamer.nextPosition = 0
             gamer.save()
 
         return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
