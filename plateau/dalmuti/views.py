@@ -235,8 +235,13 @@ class InGameView(generic.DetailView):
                     else:
                         lastJokerCnt += 1
 
-                if lastCard == 0:
+                if int(lastCard) == 0:
                     lastCard = 13
+                elif int(lastCard) == 1:
+                    game.turnUser = user
+                else:
+                    if int(lastCardCnt) > int(lastCard):
+                        game.turnUser = user
 
                 game.drawusername = user.username
                 game.lastCard = lastCard
