@@ -545,11 +545,23 @@ class RoundRenewView(generic.DetailView):
         cards = Card.objects.filter(game=game)
         cards.delete()
 
+        bfgamers = Gamer.objects.filter(game=game).order_by('position')
+
+        if game.revusername == user.username:
+            position = len(bfgamers)
+            for ingamer in bfgamers:
+                ingamer.position = position
+                ingamer.save()
+                position -= 1
+
         gamers = Gamer.objects.filter(game=game).order_by('position')
 
+        game.drawusername = gamers[0].user.username
+        game.turnUser = gamers[0].user
         game.round -= 1
         game.ingameCd = 4
-        game.turnUser = gamers[0].user
+        game.revYn = False
+        game.revusername = ""
         game.save()
 
         for gamer in gamers:
