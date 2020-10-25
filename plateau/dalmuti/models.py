@@ -23,13 +23,14 @@ class Game(models.Model):
     lastJokerCnt = models.IntegerField(default=0, help_text="오픈 조커 개수")
     pickHonorYn = models.BooleanField(default=True, help_text="평민 미난입여부")
     nextgamename = models.CharField(default="", max_length=12, help_text="평민 난입시 게임")
+    image = models.IntegerField(default=0, help_text="0:K무티, 1:D&D, 2:달무티")
 
     def __str__(self):
         return self.gamename + ':' + str(self.round) + ':' + str(self.ingameCd) \
                + str(self.revYn) + ':' + self.revusername + ':' + self.drawusername \
                + str(self.hideCardCnt) + str(self.turnUser) \
                + ':' + str(self.lastCard) + ':' + str(self.lastCardCnt) + ':' + str(self.lastJokerCnt) \
-               + ':' + str(self.pickHonorYn) + ':' + self.nextgamename
+               + ':' + str(self.pickHonorYn) + ':' + self.nextgamename + ':' + str(self.image)
 
 
 class Gamer(models.Model):

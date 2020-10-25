@@ -165,6 +165,10 @@
             setTimeout(function(){
                 document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
             }, 500);
+        } else if (message == 'imgchange') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
+            }, 500);
         } else if (message == 'intrusion') {
             setTimeout(function(){
                 document.location.href = "{% url 'dalmuti:ingame' gamer.game.nextgamename user.username %}";
@@ -173,6 +177,7 @@
             document.getElementById('onelinechat').value = message
             document.getElementById('chatmsg').value = ""
         }
+
     };
 
     function selectTaxCard(card, max){
@@ -330,7 +335,17 @@
                 };
                 </script>
             {% elif user.username == ready_gamer_list.last.user.username and gamer.game.ingameCd >= 1 and gamer.game.ingameCd <= 3 %}
-                <input id="image_change" value="카드변경" type="button" width="100%"/>
+                <input id="img_change" value="모드변경" type="button" width="100%"/>
+                <script type="text/javascript">
+                // 모드변경 버튼 클릭 시, 카드 이미지 모드 변경 후, 새로고침
+                document.querySelector('#img_change').onclick = function(e) {
+                    document.location.href = "{% url 'dalmuti:imgchange' gamer.game.gamename user.username %}";
+
+                    web_socket.send(JSON.stringify({
+                        'message': 'imgchange'
+                    }));
+                };
+                </script>
             {% endif %}
             {% with gamer|checkquit:total_gamer as quitavail %}
                 {% if quitavail %}
@@ -443,7 +458,7 @@
                 <td class="tdh6w35"></td>
                 <td class="readycard">
                 {% for card in card_list %}
-                    <img id="card_pick{{ card }}" class="pickcard" src="{% static  'dalmuti/images/' %}0.jpg"  name="dalmutiImg{{ card }}" border="0">
+                    <img id="card_pick{{ card }}" class="pickcard" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/0.jpg"  name="dalmutiImg{{ card }}" border="0">
                     {% if forloop.counter|divisibleby:4 != 0 %}
                     <br>
                     {% endif %}
@@ -500,7 +515,7 @@
                     {% if gamer.game.ingameCd == 0 %}
                         {% if gamer.position == 0 %}
                             {% for card in card_list %}
-                    <img id="card_pick2{{ card }}" class="pickcard" src="{% static  'dalmuti/images/' %}0.jpg"  name="dalmutiImg{{ card }}" border="0">
+                    <img id="card_pick2{{ card }}" class="pickcard" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/0.jpg"  name="dalmutiImg{{ card }}" border="0">
                                 {% if forloop.counter|divisibleby:4 != 0 %}
                     <br>
                                 {% endif %}
@@ -516,7 +531,7 @@
                     </script>
                             {% endfor %}
                         {% else %}
-                    <img class="pick" src="{% static  'dalmuti/images/' %}{{ gamer.position }}.jpg"  name="dalmutiImg{{ card }}" border="0">
+                    <img class="pick" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/{{ gamer.position }}.jpg"  name="dalmutiImg{{ card }}" border="0">
                         {% endif %}
                     {% elif gamer.game.ingameCd == 3 %}
                         {% if gamer.game.lastCardCnt != 0 %}
@@ -525,13 +540,13 @@
                         {% with gamer.game.lastCardCnt|subtract:gamer.game.lastJokerCnt as cardCnt %}
                             {% with ''|center:cardCnt as range %}
                                 {% for _ in range %}
-                    <img class="drawcard" src="{% static  'dalmuti/images/' %}{{ gamer.game.lastCard }}.jpg"  name="dalmutiImg{{ gamer.game.lastCard }}" border="0">
+                    <img class="drawcard" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/{{ gamer.game.lastCard }}.jpg"  name="dalmutiImg{{ gamer.game.lastCard }}" border="0">
                                 {% endfor %}
                             {% endwith %}
                         {% endwith %}
                         {% with ''|center:gamer.game.lastJokerCnt as range %}
                             {% for _ in range %}
-                    <img class="drawcard" src="{% static  'dalmuti/images/' %}13.jpg"  name="dalmutiImg{{ gamer.game.lastCard }}" border="0">
+                    <img class="drawcard" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/13.jpg"  name="dalmutiImg{{ gamer.game.lastCard }}" border="0">
                             {% endfor %}
                         {% endwith %}
                     {% elif gamer.game.ingameCd == 4 %}
@@ -695,28 +710,28 @@
                 {% for my_card in my_cards %}
                 <td>
                     {% if gamer.game.ingameCd == 1 %}
-                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
+                    <img class="card" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
                     {% elif gamer.game.ingameCd == 2 %}
                         {% if gamer.user.username == tax_list.0.user.username %}
-                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0" onclick="selectTaxCard( dalmutiImg{{ my_card.card }}_{{ forloop.counter }}, 2 )">
+                    <img class="card" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0" onclick="selectTaxCard( dalmutiImg{{ my_card.card }}_{{ forloop.counter }}, 2 )">
                         {% elif gamer.user.username == tax_list.1.user.username %}
-                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0" onclick="selectTaxCard( dalmutiImg{{ my_card.card }}_{{ forloop.counter }}, 1 )">
+                    <img class="card" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0" onclick="selectTaxCard( dalmutiImg{{ my_card.card }}_{{ forloop.counter }}, 1 )">
                         {% elif gamer.user.username == tax_list.2.user.username or gamer.user.username == tax_list.3.user.username %}
                             {% if gamer.status == 1 and gamer.game.ingameCd == 2 and forloop.counter == 1 %}
-                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="2">
+                    <img class="card" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="2">
                             {% elif gamer.status == 1 and gamer.game.ingameCd == 2 and forloop.counter == 2 and gamer.user.username == tax_list.3.user.username %}
-                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="2">
+                    <img class="card" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="2">
                             {% else %}
-                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
+                    <img class="card" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
                             {% endif %}
                         {% else %}
-                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
+                    <img class="card" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
                         {% endif %}
                     {% elif gamer.game.ingameCd == 3 %}
                         {% if gamer.user.username == gamer.game.turnUser.username %}
-                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0" onclick="selectCard( dalmutiImg{{ my_card.card }}_{{ forloop.counter }}, {{ my_card.card }} )">
+                    <img class="card" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0" onclick="selectCard( dalmutiImg{{ my_card.card }}_{{ forloop.counter }}, {{ my_card.card }} )">
                         {% else %}
-                    <img class="card" src="{% static  'dalmuti/images/' %}{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
+                    <img class="card" src="{% static  'dalmuti/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
                         {% endif %}
                     {% else %}
                     {% endif %}

@@ -48,13 +48,13 @@
                     Game Over
                     <br>
                     <a href="{% url 'dalmuti:ingame' game.gamename user.username %}">
-                        <img class="game" src="{% static  'dalmuti/images/' %}14.jpg"  name="gameImg{{ game.round }}" border="0">
+                        <img class="game" src="{% static  'dalmuti/images/' %}gameover.jpg"  name="gameImg{{ game.round }}" border="0">
                     </a>
                     {% else %}
                     {{ game.gamename }}
                     <br>
                     <a href="{% url 'dalmuti:ingame' game.gamename user.username %}">
-                        <img class="game" src="{% static  'dalmuti/images/' %}{{ game.round }}.jpg"  name="gameImg{{ game.round }}" border="0">
+                        <img class="game" src="{% static  'dalmuti/images/' %}0/{{ game.round }}.jpg"  name="gameImg{{ game.round }}" border="0">
                     </a>
                     {% endif %}
                 </td>

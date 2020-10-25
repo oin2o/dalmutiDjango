@@ -619,3 +619,17 @@ class IntrusionView(generic.DetailView):
         game.save()
 
         return HttpResponseRedirect(reverse('dalmuti:ingame', args=(currentgamename, username,)))
+
+
+class ImageChangeView(generic.DetailView):
+
+    # 이미지 변경 기능
+    def get(self, request, gamename, username):
+
+        game = Game.objects.filter(gamename=gamename).first()
+        user = User.objects.filter(username=username).first()
+
+        game.image = int((game.image + 1)%2)
+        game.save()
+
+        return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
