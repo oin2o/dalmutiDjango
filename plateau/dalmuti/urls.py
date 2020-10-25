@@ -20,4 +20,5 @@ urlpatterns = [
     path('cardallin/<str:gamename>/<str:username>', views.CardAllInView.as_view(), name='cardallin'),
     path('autopass/<str:gamename>/<str:username>', views.AutoPassView.as_view(), name='autopass'),
     path('roundrenew/<str:gamename>/<str:username>', views.RoundRenewView.as_view(), name='roundrenew'),
+    path('intrusion/<str:gamename>/<str:username>', views.IntrusionView.as_view(), name='intrusion'),
 ]

@@ -161,6 +161,14 @@
             setTimeout(function(){
                 document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
             }, 500);
+        } else if (message == 'gamequit') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmuti:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'intrusion') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmuti:ingame' gamer.game.nextgamename user.username %}";
+            }, 500);
         } else {
             document.getElementById('onelinechat').value = message
             document.getElementById('chatmsg').value = ""
@@ -321,10 +329,22 @@
                     }));
                 };
                 </script>
+            {% elif user.username == ready_gamer_list.last.user.username and gamer.game.ingameCd >= 1 and gamer.game.ingameCd <= 3 %}
+                <input id="image_change" value="카드변경" type="button" width="100%"/>
             {% endif %}
             {% with gamer|checkquit:total_gamer as quitavail %}
                 {% if quitavail %}
-                <a href="{% url 'dalmuti:gamequit' gamer.game.gamename user.username %}"><input value="나가기" type="button" width="100%"/></a>
+                <input id="card_quit" value="나가기" type="button" width="100%"/>
+                <script type="text/javascript">
+                // 나가기 버튼 클릭 시, 게이머 제외 후, 새로고침
+                document.querySelector('#card_quit').onclick = function(e) {
+                    document.location.href = "{% url 'dalmuti:gamequit' gamer.game.gamename user.username %}";
+
+                    web_socket.send(JSON.stringify({
+                        'message': 'gamequit'
+                    }));
+                };
+                </script>
                 {% endif %}
             {% endwith %}
             {% with user|checkshuffle:total_gamer as shuffleavail %}
@@ -353,6 +373,21 @@
                 };
                 </script>
                     {% endif %}
+                {% endif %}
+            {% endwith %}
+            {% with user|checkintrusion:total_gamer as intrusionavail %}
+                {% if intrusionavail %}
+                <input id="intrusion_gamer" value="평민난입" type="button" width="100%"/>
+                <script type="text/javascript">
+                // 평민난입 버튼 클릭 시, 현재 계급구조대로 게임생성 후, 새로고침
+                document.querySelector('#intrusion_gamer').onclick = function(e) {
+                    document.location.href = "{% url 'dalmuti:intrusion' gamer.game.gamename user.username %}";
+
+                    web_socket.send(JSON.stringify({
+                        'message': 'intrusion'
+                    }));
+                };
+                </script>
                 {% endif %}
             {% endwith %}
             </td>
@@ -384,6 +419,7 @@
                     {% endif %}
                 {% elif gamer.game.round != 13 and gamer.game.ingameCd == 4 %}
                     {{ ready_gamer_list.0.user.username }}님, 다음 라운드 진행 혹은 게임종료할 수 있습니다.
+                    <br>{{ ready_gamer_list.last.user.username }}님, 평민을 난입시킬 수 있습니다.
                 {% endif %}
                 </td>
             </tr>

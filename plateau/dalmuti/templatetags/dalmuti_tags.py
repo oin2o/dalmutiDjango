@@ -73,3 +73,18 @@ def isingame(gamer):
             return True
 
     return False
+
+
+@register.filter(name='checkintrusion')
+def checkintrusion(user, total_gamer):
+
+    if len(total_gamer) >= 12:
+        return False
+
+    gamer = total_gamer.filter(user=user).first()
+    last_gamer = total_gamer.filter(position=len(total_gamer)).first()
+
+    if int(gamer.game.nextgamename[-2:]) != 99 and gamer.game.ingameCd == 4 and gamer.game.round != 13 and last_gamer.user.username == gamer.user.username:
+        return True
+
+    return False

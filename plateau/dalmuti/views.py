@@ -121,12 +121,13 @@ class NewGameView(generic.DetailView):
         user = User.objects.filter(username=username).first()
 
         gamename = datetime.today().strftime("%Y%m%d%H%M%S")[2:]
+        nextgamename = gamename[:-2] + '60'
 
-        new_game = Game.objects.create(gamename=gamename, turnUser=user)
+        new_game = Game.objects.create(gamename=gamename, turnUser=user, nextgamename=nextgamename)
 
         gamer = Gamer.objects.create(game=new_game, user=user)
 
-        return HttpResponseRedirect(reverse('dalmuti:main', args=(username,)))
+        return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
 
 
 class InGameView(generic.DetailView):
@@ -351,6 +352,11 @@ class ShuffleView(generic.DetailView):
 
         gamers = Gamer.objects.filter(game=game).order_by('position')
 
+        not_ready_gamer = gamers.filter(position=0)
+
+        if len(not_ready_gamer) > 0:
+            return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
+
         if game.round == 0 and game.ingameCd == 0:
             position = 1
             for gamer in gamers:
@@ -398,9 +404,15 @@ class CardOKView(generic.DetailView):
         taxuser = [gamers[i].user.username for i in [0, 1,len(gamers) - 1, len(gamers) - 2]]
 
         gamer.status = 2
-        if game.round != 1 and username in taxuser:
-            gamer.status = 1
-            gamer.taxYn = True
+        if username in taxuser:
+            if game.round != 1:
+                if game.pickHonorYn:
+                    gamer.status = 1
+                    gamer.taxYn = True
+            else:
+                if not game.pickHonorYn:
+                    gamer.status = 1
+                    gamer.taxYn = True
         gamer.save()
 
         if not gamers.filter(status=0):
@@ -578,3 +590,32 @@ class RoundRenewView(generic.DetailView):
             gamer.save()
 
         return HttpResponseRedirect(reverse('dalmuti:ingame', args=(gamename, username,)))
+
+
+class IntrusionView(generic.DetailView):
+
+    # 평민 난입 기능
+    def get(self, request, gamename, username):
+
+        game = Game.objects.filter(gamename=gamename).first()
+        user = User.objects.filter(username=username).first()
+
+        new_gamers = Honor.objects.filter(game=game, round=game.round).order_by('position')
+
+        currentgamename = game.nextgamename
+        nextgamename = gamename[:-2] + str(int(currentgamename[-2:]) + 1)
+
+        new_game = Game.objects.create(gamename=currentgamename, turnUser=new_gamers[0].user, pickHonorYn=False, nextgamename=nextgamename)
+
+        for gamer in new_gamers:
+            new_gamer = Gamer.objects.create(game=new_game, user=gamer.user, position=gamer.position)
+
+            if new_gamer.position > len(new_gamers) - 2:
+                new_gamer.position = 12 - (len(new_gamers) - new_gamer.position)
+                new_gamer.save()
+
+        game.round = 13
+        game.ingameCd = 4
+        game.save()
+
+        return HttpResponseRedirect(reverse('dalmuti:ingame', args=(currentgamename, username,)))
