@@ -144,7 +144,14 @@ class InGameView(generic.DetailView):
         if not total_gamer.filter(user=user) and (len(total_gamer) >= 12 or game.ingameCd!=0):
             template_name = "dalmuti/main.html"
 
-            game_list = Game.objects.filter(round__lte=14).order_by('-gamename')
+            game_list = Game.objects.filter(round__lte=13).order_by('-gamename')
+
+            for game in game_list:
+                gamer = Gamer.objects.filter(game=game, user=user)
+                if not gamer:
+                    if game.round != 0:
+                        notingamename = game.gamename
+                        game_list = game_list.exclude(gamename=notingamename)
 
             context = {
                 'user': user,
