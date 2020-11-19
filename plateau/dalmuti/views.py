@@ -413,9 +413,8 @@ class CardOKView(generic.DetailView):
         gamer.status = 2
         if username in taxuser:
             if game.round != 1:
-                if game.pickHonorYn:
-                    gamer.status = 1
-                    gamer.taxYn = True
+                gamer.status = 1
+                gamer.taxYn = True
             else:
                 if not game.pickHonorYn:
                     gamer.status = 1
