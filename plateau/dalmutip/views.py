@@ -55,7 +55,6 @@ class MainView(generic.ListView):
     def post(self, request, username):
         username = request.POST.get('username')
 
-        print(username)
         user, created = User.objects.get_or_create(
             username=username
         )
