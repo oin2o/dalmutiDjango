@@ -1,0 +1,20 @@
+{% extends 'dalmuti/base.html' %}
+
+{% block body %}
+<h2>Das Leben ist ungerecht.</h2>
+<form action="{% url 'dalmutip:main' 'main' %}" method="post">
+    {% csrf_token %}
+    <p>
+        <input type="text" name="username" maxlength="6" width="100%"/>
+        <input value="로그인" type="submit" width="100%"/>
+    </p>
+</form>
+{% if user_list %}
+    {% for user in user_list %}
+    <a href="{% url 'dalmutip:main' username=user.username %}"><input value="{{ user.username }}" type="button" width="100%" style="margin:3px;padding:5px;font-size:15px;"/></a>
+        {% if forloop.counter|divisibleby:4 != 0 %}
+    <br>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+{% endblock body %}

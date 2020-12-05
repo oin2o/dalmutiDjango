@@ -1,0 +1,809 @@
+{# login.html #}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>달무티 온라인</title>
+    <style>
+        table{
+            width: 100%;
+        }
+        textarea:focus{
+            outline: none;
+        }
+        .pick{
+            width: 55%;
+        }
+        .drawcard{
+            width: 30%;
+        }
+        .drawgif{
+            width: 90%;
+        }
+        .pickcard{
+            width: 22%;
+            border-color: #FF0000;
+        }
+        .card{
+            width: 80px;
+            border-color: #FF0000;
+        }
+        .tdh6w35b{
+            width: 11%;
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+        .tdh6w35{
+            width: 11%;
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .tdh6w35pb{
+            width: 35px;
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+        .tdh6w35p{
+            width: 35px;
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .readycard{
+            width: 67%;
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+        .tdh6{
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+        .divre{
+            width:100%;
+            height:25%;
+            position:relative;
+            bottom:0px;
+            right:0px;
+        }
+        .divab{
+            width:100%;
+            position:absolute;
+            bottom:0px;
+            right:0px;
+            text-align:right;
+        }
+        .ipchat{
+            width:88%;
+            background-color:transparent;
+            resize: none;
+            border: 0;
+            color: brown;
+            font-size: 0.67em;
+            font-weight: bold;
+            text-align: right;
+        }
+    </style>
+
+    <script type="text/javascript">
+    var selectTaxCardCnt = 0;
+    var maxTaxCardCnt = 0;
+    var selectedCard = 0;
+    var selectedCardCnt = 0;
+
+    // 클라이언트와 서버의 웹소켓 통신을 가능하도록 연결시켜주는 부분이다.
+    // router.py에서의 url과 일치하도록 해 주어야한다.
+    var web_socket = new WebSocket('ws://' + window.location.host + '/dalmutip/' + {{ gamer.game.gamename }} + '/' + '{{ user.username }}');
+
+    // onmessage는 counsumers에서 보내는 메세지를 받는 부분이다.
+    web_socket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+
+        if (message == 'pick') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'shuffle') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'cardok') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'submitReceipt') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'submitTaxPass') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'submitCard') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'submitPass') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'revolution') {
+            alert('동학혁명이 발생하였습니다.');
+            document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+        } else if (message == 'gameend') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'gamequit') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'cardallin') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'renew') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'gamequit') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'imgchange') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.gamename user.username %}";
+            }, 500);
+        } else if (message == 'intrusion') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dalmutip:ingame' gamer.game.nextgamename user.username %}";
+            }, 500);
+        } else {
+            document.getElementById('onelinechat').value = message
+            document.getElementById('chatmsg').value = ""
+        }
+
+    };
+
+    function selectTaxCard(card, max){
+        maxTaxCardCnt = max;
+
+        if (card.border == 0){
+
+            if (selectTaxCardCnt >= maxTaxCardCnt ){
+                alert("카드는 " + maxTaxCardCnt + "장만 선택할 수 있습니다.");
+                return false;
+            }
+            card.border = 2;
+            selectTaxCardCnt++;
+        }
+        else{
+            card.border = 0;
+            selectTaxCardCnt--;
+        }
+    }
+
+    function submitReceipt(username){
+        if (selectTaxCardCnt == 0){
+            alert("선택된 카드가 없는 경우, 세금을 수령할 수 없습니다.");
+            return;
+        }
+
+        if (selectTaxCardCnt != maxTaxCardCnt){
+            alert(maxCardCnt + "장의 카드를 선택해 주세요.");
+            return;
+        }
+
+        var cardliststr = "";
+        var cardlist = document.getElementsByClassName("card");
+        for( var i = 0; i < cardlist.length ; i ++ ){
+            if ( cardlist[i].border == 2 ){
+                cardliststr = cardliststr + cardlist[i].name + ";";
+            }
+        }
+        id_username.value = username;
+        id_cardlist.value = cardliststr;
+        id_action.value = "taxreceipt";
+        document.forms['cardform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'submitReceipt'
+        }));
+    }
+
+    function submitTaxPass(username){
+        id_username.value = username;
+        id_action.value = "taxpass";
+        document.forms['cardform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'submitTaxPass'
+        }));
+    }
+
+    function selectCard(cardimg, card){
+        if (card != 13) {
+            if (card >= {{ gamer.game.lastCard }} && '{{ gamer.game.drawusername }}' != '{{ gamer.user.username }}'){
+               alert("기존 카드보다 높은 카드만 제출 가능합니다.");
+                return;
+            } else if (selectedCard != 13){
+                if (selectedCardCnt != 0 && selectedCard != card){
+                    alert("동일한 카드만 제출할 수 있습니다.");
+                    return;
+                }
+            }
+        }
+
+        if (selectedCard == 0 || selectedCard == 13){
+            selectedCard = card
+        }
+
+        if ( cardimg.border == 0 ){
+            cardimg.border = 2;
+            selectedCardCnt++;
+        }
+        else{
+            cardimg.border = 0;
+            selectedCardCnt--;
+        }
+        if (selectedCardCnt == 0){
+            selectedCard = 0;
+        }
+    }
+
+    function submitCard(){
+        if (selectedCardCnt == 0){
+            alert("선택된 카드가 없는 경우, 제출할 수 없습니다.");
+            return;
+        } else if('{{ gamer.game.drawusername }}' != '{{ gamer.user.username }}'){
+            if (selectedCard >= {{ gamer.game.lastCard }}){
+                alert("기존 카드보다 높은 카드만 제출 가능합니다.");
+                return;
+            } else if (selectedCardCnt != {{ gamer.game.lastCardCnt }}){
+                alert("기존 카드와 동일한 개수만 제출 가능합니다.");
+                return;
+            }
+        }
+
+        var cardliststr = "";
+        var cardlist = document.getElementsByClassName("card");
+        for( var i = 0; i < cardlist.length ; i ++ ){
+            if ( cardlist[i].border == 2 ){
+                cardliststr = cardliststr + cardlist[i].name + ";";
+            }
+        }
+        id_cardlist.value = cardliststr;
+        id_action.value = "carddraw";
+        document.forms['cardform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'submitCard'
+        }));
+    }
+
+    function submitPass(username){
+        id_action.value = "turnpass";
+        document.forms['cardform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'submitPass'
+        }));
+    }
+    </script>
+
+</head>
+<body>
+{% include "./menu.html" %}
+{% load static %}
+{% load dalmutip_tags %}
+    <table class="table">
+        <tr>
+            <td>
+                <a href="{% url 'dalmutip:ingame' gamer.game.gamename user.username %}"><input value="새로고침" type="button" width="100%"/></a>
+            {% if gamer|isingame %}
+                {% if gamer.autopassYn %}
+                <a href="{% url 'dalmutip:autopass' gamer.game.gamename user.username %}"><input value="Pass:끄기" type="button" width="100%"/></a>
+                {% else %}
+                <a href="{% url 'dalmutip:autopass' gamer.game.gamename user.username %}"><input value="Pass:켜기" type="button" width="100%"/></a>
+                {% endif %}
+            {% endif %}
+            {% if user.username == ready_gamer_list.0.user.username and gamer.game.ingameCd >= 1 and gamer.game.ingameCd <= 3 %}
+                <input id="round_renew" value="도르마무" type="button" width="100%"/>
+                <script type="text/javascript">
+                // 카드분배 버튼 클릭 시, 카드 분배 후, 새로고침
+                document.querySelector('#round_renew').onclick = function(e) {
+                    document.location.href = "{% url 'dalmutip:roundrenew' gamer.game.gamename user.username %}";
+
+                    web_socket.send(JSON.stringify({
+                        'message': 'renew'
+                    }));
+                };
+                </script>
+            {% elif user.username == ready_gamer_list.last.user.username and gamer.game.ingameCd >= 1 and gamer.game.ingameCd <= 3 %}
+                <input id="img_change" value="모드변경" type="button" width="100%"/>
+                <script type="text/javascript">
+                // 모드변경 버튼 클릭 시, 카드 이미지 모드 변경 후, 새로고침
+                document.querySelector('#img_change').onclick = function(e) {
+                    document.location.href = "{% url 'dalmutip:imgchange' gamer.game.gamename user.username %}";
+
+                    web_socket.send(JSON.stringify({
+                        'message': 'imgchange'
+                    }));
+                };
+                </script>
+            {% endif %}
+            {% with gamer|checkquit:total_gamer as quitavail %}
+                {% if quitavail %}
+                <input id="card_quit" value="나가기" type="button" width="100%"/>
+                <script type="text/javascript">
+                // 나가기 버튼 클릭 시, 게이머 제외 후, 새로고침
+                document.querySelector('#card_quit').onclick = function(e) {
+                    document.location.href = "{% url 'dalmutip:gamequit' gamer.game.gamename user.username %}";
+
+                    web_socket.send(JSON.stringify({
+                        'message': 'gamequit'
+                    }));
+                };
+                </script>
+                {% endif %}
+            {% endwith %}
+            {% with user|checkshuffle:total_gamer as shuffleavail %}
+                {% if shuffleavail %}
+                <input id="card_shuffle" value="카드분배" type="button" width="100%"/>
+                <script type="text/javascript">
+                // 카드분배 버튼 클릭 시, 카드 분배 후, 새로고침
+                document.querySelector('#card_shuffle').onclick = function(e) {
+                    document.location.href = "{% url 'dalmutip:shuffle' gamer.game.gamename user.username %}";
+
+                    web_socket.send(JSON.stringify({
+                        'message': 'shuffle'
+                    }));
+                };
+                </script>
+                    {% if gamer.game.ingameCd == 4 %}
+                <input id="game_end" value="게임종료" type="button" width="100%"/>
+                <script type="text/javascript">
+                // 게임종료 버튼 클릭 시, 게임종료 후, 새로고침
+                document.querySelector('#game_end').onclick = function(e) {
+                    document.location.href = "{% url 'dalmutip:gameend' gamer.game.gamename user.username %}";
+
+                    web_socket.send(JSON.stringify({
+                        'message': 'gameend'
+                    }));
+                };
+                </script>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+            {% with user|checkintrusion:total_gamer as intrusionavail %}
+                {% if intrusionavail %}
+                <input id="intrusion_gamer" value="평민난입" type="button" width="100%"/>
+                <script type="text/javascript">
+                // 평민난입 버튼 클릭 시, 현재 계급구조대로 게임생성 후, 새로고침
+                document.querySelector('#intrusion_gamer').onclick = function(e) {
+                    document.location.href = "{% url 'dalmutip:intrusion' gamer.game.gamename user.username %}";
+
+                    web_socket.send(JSON.stringify({
+                        'message': 'intrusion'
+                    }));
+                };
+                </script>
+                {% endif %}
+            {% endwith %}
+            </td>
+            <td class="tdh6" style="text-align:right;">
+            {% if gamer.game.ingameCd == 4 %}
+                by {{ gamer.game.gamecode }}
+            {% else %}
+                Round : {{ gamer.game.round }} by {{ gamer.game.gamecode }}
+            {% endif %}
+            </td>
+        </tr>
+    </table>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td class="tdh6">
+                {% if gamer.game.ingameCd == 0 %}
+                    {% if gamer_list|length == 0 %}
+                        {% if ready_gamer_list|length >= 4 %}
+                    {{ ready_gamer_list.0.user.username }}님, 카드분배 버튼을 클릭하여 게임을 시작할 수 있습니다.
+                        {% else %}
+                    게임 인원이 충분하지 않습니다.
+                        {% endif %}
+                    {% else %}
+                    카드 선택 중 :
+                        {% for gamer in gamer_list %}
+                    <input value="{{ gamer.user.username }}" type="button" width="100%" disbled/>
+                        {% endfor %}
+                    {% endif %}
+                {% elif gamer.game.round != 13 and gamer.game.ingameCd == 4 %}
+                    {{ ready_gamer_list.0.user.username }}님, 다음 라운드 진행 혹은 게임종료할 수 있습니다.
+                    <br>{{ ready_gamer_list.last.user.username }}님, 평민을 난입시킬 수 있습니다.
+                {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <td class="tdh6w35b">참가</td>
+                <td class="tdh6w35b">상태</td>
+                <td class="tdh6w35b">개수</td>
+                <td class="readycard">카드</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% if ready_gamer_list|length == 0 %}
+            <tr>
+                <td class="tdh6w35"></td>
+                <td class="tdh6w35"></td>
+                <td class="tdh6w35"></td>
+                <td class="readycard">
+                {% for card in card_list %}
+                    <img id="card_pick{{ card }}" class="pickcard" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/0.jpg"  name="dalmutiImg{{ card }}" border="0">
+                    {% if forloop.counter|divisibleby:4 != 0 %}
+                    <br>
+                    {% endif %}
+                    <script type="text/javascript">
+                    // 카드선택 후,새로고침
+                    document.querySelector('#card_pick{{ card }}').onclick = function(e) {
+                        document.location.href = "{% url 'dalmutip:pick' gamer.game.gamename user.username card %}";
+
+                        web_socket.send(JSON.stringify({
+                            'message': 'pick'
+                        }));
+                    };
+                    </script>
+                {% endfor %}
+                </td>
+            </tr>
+        {% else %}
+            {% for ready_gamer in ready_gamer_list %}
+            <tr>
+                <td class="tdh6w35">
+                {{ ready_gamer.user.username }}
+                {% if ready_gamer.game.revYn == True and ready_gamer.game.revusername == ready_gamer.user.username %}
+                R
+                {% endif %}
+                </td>
+                <td class="tdh6w35">
+                {% if ready_gamer.status == 0 %}
+                    {% if ready_gamer.game.ingameCd == 4 %}
+                완료
+                    {% else %}
+                확인중
+                    {% endif %}
+                {% elif ready_gamer.status == 1 %}
+                세금
+                {% elif ready_gamer.status == 2 %}
+                    {% if gamer.game.ingameCd == 3 %}
+                        {% if ready_gamer.cardTotCnt == 0 %}
+                {{ ready_gamer.nextPosition }}등
+                        {% elif ready_gamer.user.username == ready_gamer.game.turnUser.username %}
+                turn
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+                </td>
+                <td class="tdh6w35">
+                {% if ready_gamer.cardTotCnt == 0 or ready_gamer.cardTotCnt > gamer.game.hideCardCnt %}
+                    {{ ready_gamer.cardTotCnt }}
+                {% else %}
+                    ?
+                {% endif %}
+                </td>
+                {% if forloop.counter == 1 %}
+                <td class="readycard" rowspan="{{ ready_gamer_list|length }}">
+                    {% if gamer.game.ingameCd == 0 %}
+                        {% if gamer.position == 0 %}
+                            {% for card in card_list %}
+                    <img id="card_pick2{{ card }}" class="pickcard" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/0.jpg"  name="dalmutiImg{{ card }}" border="0">
+                                {% if forloop.counter|divisibleby:4 != 0 %}
+                    <br>
+                                {% endif %}
+                    <script type="text/javascript">
+                    // 카드선택 후,새로고침
+                    document.querySelector('#card_pick2{{ card }}').onclick = function(e) {
+                        document.location.href = "{% url 'dalmutip:pick' gamer.game.gamename user.username card %}";
+
+                        web_socket.send(JSON.stringify({
+                            'message': 'pick'
+                        }));
+                    };
+                    </script>
+                            {% endfor %}
+                        {% else %}
+                    <img class="pick" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ gamer.position }}.jpg"  name="dalmutiImg{{ card }}" border="0">
+                        {% endif %}
+                    {% elif gamer.game.ingameCd == 3 %}
+                        {% if gamer.game.lastCardCnt != 0 %}
+                    선 : {{ ready_gamer.game.drawusername }}<br>
+                        {% endif %}
+                        {% with gamer.game.lastCardCnt|subtract:gamer.game.lastJokerCnt as cardCnt %}
+                            {% with ''|center:cardCnt as range %}
+                                {% for _ in range %}
+                    <img class="drawcard" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ gamer.game.lastCard }}.jpg"  name="dalmutiImg{{ gamer.game.lastCard }}" border="0">
+                                {% endfor %}
+                            {% endwith %}
+                        {% endwith %}
+                        {% with ''|center:gamer.game.lastJokerCnt as range %}
+                            {% for _ in range %}
+                    <img class="drawcard" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/13.jpg"  name="dalmutiImg{{ gamer.game.lastCard }}" border="0">
+                            {% endfor %}
+                        {% endwith %}
+                    {% elif gamer.game.ingameCd == 4 %}
+                        {% with ready_gamer_list|length|subtract:1 as range %}
+                            {% if gamer.position == 1 %}
+                    <img class="drawgif" src="{% static  'dalmutip/gifs/' %}1.gif"  name="dalmutiGif1" border="0">
+                            {% elif gamer.position == range %}
+                    <img class="drawgif" src="{% static  'dalmutip/gifs/' %}11.gif"  name="dalmutiGif11" border="0">
+                            {% elif gamer.position == ready_gamer_list|length %}
+                    <img class="drawgif" src="{% static  'dalmutip/gifs/' %}12.gif"  name="dalmutiGif12" border="0">
+                            {% elif ready_gamer_list|length != 12 and gamer.position == 2 %}
+                    <img class="drawgif" src="{% static  'dalmutip/gifs/' %}3.gif"  name="dalmutiGif3" border="0">
+                            {% elif ready_gamer_list|length >= 5 and ready_gamer_list|length <= 6 and gamer.position == 3 %}
+                    <img class="drawgif" src="{% static  'dalmutip/gifs/' %}6.gif"  name="dalmutiGif6" border="0">
+                            {% elif ready_gamer_list|length >= 7 and ready_gamer_list|length <= 9 and gamer.position == 4 %}
+                    <img class="drawgif" src="{% static  'dalmutip/gifs/' %}6.gif"  name="dalmutiGif6" border="0">
+                            {% elif ready_gamer_list|length == 10 and gamer.position == 5 %}
+                    <img class="drawgif" src="{% static  'dalmutip/gifs/' %}6.gif"  name="dalmutiGif6" border="0">
+                            {% elif ready_gamer_list|length == 11 and gamer.position == 5 %}
+                    <img class="drawgif" src="{% static  'dalmutip/gifs/' %}6.gif"  name="dalmutiGif6" border="0">
+                            {% elif ready_gamer_list|length == 12 %}
+                                {% if gamer.position == 3 %}
+                    <img class="drawgif" src="{% static  'dalmutip/gifs/' %}3.gif"  name="dalmutiGif3" border="0">
+                                {% elif gamer.position == 6 %}
+                    <img class="drawgif" src="{% static  'dalmutip/gifs/' %}6.gif"  name="dalmutiGif6" border="0">
+                                {% endif %}
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                    <input class="ipchat" id="onelinechat" type="text" readonly/>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            {% if gamer.game.ingameCd >= 1 and gamer.game.ingameCd <= 3 %}
+            <tr>
+                <td class="tdh6" style="text-align:right;" colspan="4">
+                    <input id="chatmsg" type="text" maxlength="20" size="30"/>
+                    <input id="chatbtn" type="button" value="한줄"/>
+                    <script type="text/javascript">
+                    // 채팅 후, 메시지 고침
+                    document.querySelector('#chatbtn').onclick = function(e) {
+                        web_socket.send(JSON.stringify({
+                            'message': '(' + '{{ gamer.user.username }}' + ') ' + document.getElementById('chatmsg').value
+                        }));
+                    };
+                    </script>
+                </td>
+            </tr>
+            {% endif %}
+        {% endif %}
+        </tbody>
+    </table>
+
+{% if gamer.game.ingameCd != 0 %}
+<form name="cardform" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" id="id_action"/>
+    <input type="hidden" name="username" id="id_username"/>
+    <input type="hidden" name="cardlist" id="id_cardlist"/>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td class="tdh6" colspan="6">
+                {% if gamer.game.ingameCd == 1 %}
+                    {% if gamer.status == 0 %}
+                        <input id="cardok" value="카드확인" type="button" width="100%"/>
+                        <script type="text/javascript">
+                        // 카드확인 후,새로고침
+                        document.querySelector('#cardok').onclick = function(e) {
+                            document.location.href = "{% url 'dalmutip:cardok' gamer.game.gamename user.username %}";
+
+                            web_socket.send(JSON.stringify({
+                                'message': 'cardok'
+                            }));
+                        };
+                        </script>
+                        {% if gamer.jokerCnt == 2 %}
+                        <input id="revolution" value="동학혁명" type="button" width="100%"/>
+                        혁명을 일으키거나, 카드를 확인하세요.
+                        <script type="text/javascript">
+                        // 혁명 후,새로고침
+                        document.querySelector('#revolution').onclick = function(e) {
+                            document.location.href = "{% url 'dalmutip:revolution' gamer.game.gamename user.username %}";
+
+                            web_socket.send(JSON.stringify({
+                                'message': 'revolution'
+                            }));
+                        };
+                        </script>
+                        {% else %}
+                        카드를 확인하세요.
+                        {% endif %}
+                    {% else %}
+                        게임 준비 중 입니다.
+                    {% endif %}
+                {% elif gamer.game.ingameCd == 2 %}
+                    {% if gamer.status == 1 %}
+                        {% if gamer.user.username == tax_list.3.user.username %}
+                        {{ tax_list.0.user.username }}에게 가장 높은 카드 2장을 세금으로 냅니다.
+                        {% elif gamer.user.username == tax_list.2.user.username %}
+                        {{ tax_list.1.user.username }}에게 가장 높은 카드 1장을 세금으로 냅니다.
+                        {% elif gamer.user.username == tax_list.1.user.username %}
+                        <input onclick="submitReceipt( '{{ tax_list.2.user.username }}' )" value="세금수령" type="button" width="100%"/>
+                        <input onclick="submitTaxPass( '{{ tax_list.2.user.username }}' )" value="세금면제" type="button" width="100%"/>
+                        {{ tax_list.2.user.username }}님과 교환할 카드 1장을 선택해 주세요.
+                        {% elif gamer.user.username == tax_list.0.user.username %}
+                        <input onclick="submitReceipt( '{{ tax_list.3.user.username }}' )" value="세금수령" type="button" width="100%"/>
+                        <input onclick="submitTaxPass( '{{ tax_list.3.user.username }}' )" value="세금면제" type="button" width="100%"/>
+                        {{ tax_list.3.user.username }}님과 교환할 카드 2장을 선택해 주세요.
+                        {% endif %}
+                    {% else %}
+                        게임 준비 중 입니다.
+                    {% endif %}
+                {% elif gamer.game.ingameCd == 3 %}
+                    {% if gamer.game.turnUser.username == gamer.user.username %}
+                        {% if total_gamer|islastgamer %}
+                    <input id="card_allin" value="손털기" type="button" width="100%"/>
+                    <script type="text/javascript">
+                    // 손털기 버튼 클릭 시, 전체카드 제출 및 게임종료 후, 새로고침
+                    document.querySelector('#card_allin').onclick = function(e) {
+                        document.location.href = "{% url 'dalmutip:cardallin' gamer.game.gamename user.username %}";
+
+                        web_socket.send(JSON.stringify({
+                            'message': 'cardallin'
+                        }));
+                    };
+                    </script>
+                    손을 털고 라운드를 종료하세요.
+                        {% else %}
+                            {% with gamer|carddrawavailable:my_cards as drawavail %}
+                                {% if drawavail %}
+                    <input onclick="submitCard()" value="카드제출" type="button" width="100%"/>
+                                {% endif %}
+                                {% if gamer.game.drawusername != gamer.user.username %}
+                    <input onclick="submitPass()" value="Pass" type="button" width="100%"/>
+                    <script type="text/javascript">
+                    // autopass on 이고, 3초 경과 시, 자동 패스 후, 새로고침
+                    if (!{{ drawavail|yesno:"true,false" }} && {{ gamer.autopassYn|yesno:"true,false" }}) {
+                        setTimeout(function(){
+                            submitPass()
+                        }, 3000);
+                    } else {    // autopass off 이고, 1분간 미 제출이면, 자동 패스 후, 새로고침
+                        setTimeout(function(){
+                            submitPass()
+                        }, 60000);
+                    }
+                    </script>
+                                {% endif %}
+                            {% endwith %}
+                    제출할 카드를 선택하세요.
+                        {% endif %}
+                    {% else %}
+                    {{ gamer.game.turnUser.username }}님이 카드 선택 중 입니다.
+                    {% endif %}
+                {% endif %}
+                </td>
+            </tr>
+            {% if gamer.game.round != 0 %}
+            <tr>
+                {% for my_card in my_cards %}
+                <td>
+                    {% if gamer.game.ingameCd == 1 %}
+                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
+                    {% elif gamer.game.ingameCd == 2 %}
+                        {% if gamer.user.username == tax_list.0.user.username %}
+                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0" onclick="selectTaxCard( dalmutiImg{{ my_card.card }}_{{ forloop.counter }}, 2 )">
+                        {% elif gamer.user.username == tax_list.1.user.username %}
+                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0" onclick="selectTaxCard( dalmutiImg{{ my_card.card }}_{{ forloop.counter }}, 1 )">
+                        {% elif gamer.user.username == tax_list.2.user.username or gamer.user.username == tax_list.3.user.username %}
+                            {% if gamer.status == 1 and gamer.game.ingameCd == 2 and forloop.counter == 1 %}
+                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="2">
+                            {% elif gamer.status == 1 and gamer.game.ingameCd == 2 and forloop.counter == 2 and gamer.user.username == tax_list.3.user.username %}
+                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="2">
+                            {% else %}
+                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
+                            {% endif %}
+                        {% else %}
+                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
+                        {% endif %}
+                    {% elif gamer.game.ingameCd == 3 %}
+                        {% if gamer.user.username == gamer.game.turnUser.username %}
+                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0" onclick="selectCard( dalmutiImg{{ my_card.card }}_{{ forloop.counter }}, {{ my_card.card }} )">
+                        {% else %}
+                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
+                        {% endif %}
+                    {% else %}
+                    {% endif %}
+                </td>
+                    {% if forloop.counter|divisibleby:4 != 0 %}
+            <tr></tr>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</form>
+{% endif %}
+{% if gamer.game.ingameCd == 4 %}
+<table>
+    <thead>
+        <tr>
+            <td class="tdh6w35pb"></td>
+            <td class="tdh6w35pb">왕</td>
+            {% if ready_gamer_list|length == 12 %}
+            <td class="tdh6w35pb">대군</td>
+            {% endif %}
+            <td class="tdh6w35pb">정승</td>
+            {% if ready_gamer_list|length >= 10 %}
+            <td class="tdh6w35pb">장군</td>
+            {% endif %}
+            {% if ready_gamer_list|length >= 7 %}
+            <td class="tdh6w35pb">양반</td>
+            {% endif %}
+            {% if ready_gamer_list|length >= 5 %}
+            <td class="tdh6w35pb">승려</td>
+            {% endif %}
+            {% if ready_gamer_list|length >= 9 %}
+            <td class="tdh6w35pb">중인</td>
+            {% endif %}
+            {% if ready_gamer_list|length >= 6 %}
+            <td class="tdh6w35pb">농민</td>
+            {% endif %}
+            {% if ready_gamer_list|length >= 11 %}
+            <td class="tdh6w35pb">장인</td>
+            {% endif %}
+            {% if ready_gamer_list|length >= 8 %}
+            <td class="tdh6w35pb">상인</td>
+            {% endif %}
+            <td class="tdh6w35pb">천민</td>
+            <td class="tdh6w35pb">노비</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for honors in honor_list %}
+        <tr>
+            <td class="tdh6w35p">
+            {% if forloop.counter0 == 0 %}
+            선
+            {% else %}
+            {{ forloop.counter0 }}
+            {% endif %}
+            </td>
+            {% for honor in honors %}
+            <td class="tdh6w35p">
+                {% if honor.user.username == user.username %}
+                <font color="blue"><b>{{ honor.user.username }}</b></font>
+                {% else %}
+            {{ honor.user.username }}
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+</body>
+</html>

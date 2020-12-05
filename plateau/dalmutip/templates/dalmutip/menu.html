@@ -1,0 +1,8 @@
+{# login.html #}
+<span style="font-size:0.8em;font-weight:bold">{{ user.username }}</span>
+<a href="{% url 'dalmutip:login' %}"><input  value="사용자" type="button" width="100%"/></a>
+<a href="{% url 'dalmutip:main' user.username %}"><input value="게임참가" type="button" width="100%"/></a>
+<a href="{% url 'dalmutip:honor' user.username %}"><input value="전적" type="button" width="100%"/></a>
+<a href="{% url 'dalmutip:rule' user.username %}"><input value="규칙" type="button" width="100%"/></a>
+</BR>
+</BR>
