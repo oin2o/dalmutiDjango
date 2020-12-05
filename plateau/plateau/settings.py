@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'dalmuti.apps.DalmutiConfig',   # Dalmuti 추가
+    'dalmutip.apps.DalmutipConfig',   # Dalmutip 추가
     'channels', # Websocket 추가
 
     'django.contrib.admin',

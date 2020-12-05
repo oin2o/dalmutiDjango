@@ -6,4 +6,5 @@ from . import consumers
 
 websocket_urlpatterns = [
     url(r'dalmuti/(?P<gamename>\w+)/(?P<username>\w+)', consumers.dalmuti_consumer),
+    url(r'dalmutip/(?P<gamename>\w+)/(?P<username>\w+)', consumers.dalmuti_consumer),
 ]
