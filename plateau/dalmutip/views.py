@@ -55,6 +55,9 @@ class MainView(generic.ListView):
     def post(self, request, username):
         username = request.POST.get('username')
 
+        if len(username) == 0:
+            return HttpResponseRedirect(reverse('dalmutip:login', ))
+
         user, created = User.objects.get_or_create(
             username=username
         )
