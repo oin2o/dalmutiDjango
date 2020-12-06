@@ -5,6 +5,7 @@
     <li class="breadcrumb-item">{{ user.username }}</li>
     <li class="breadcrumb-item"><a href="{% url 'dalmutip:login' %}">사용자</a></li>
     <li class="breadcrumb-item active"><a href="{% url 'dalmutip:main' user.username %}">게임참가</a></li>
+    <li class="breadcrumb-item active"><a href="{% url 'dalmutip:rank' user.username %}">랭킹</a></li>
     <li class="breadcrumb-item active"><a href="{% url 'dalmutip:honor' user.username %}">전적</a></li>
     <li class="breadcrumb-item active"><a href="{% url 'dalmutip:rule' user.username %}">규칙</a></li>
 </ol>

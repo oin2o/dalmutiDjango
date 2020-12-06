@@ -1,0 +1,53 @@
+{# login.html #}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>달무티 온라인</title>
+    <style>
+        table{
+            width: 100%;
+        }
+        .tdh6c{
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+    </style>
+
+    <script type="text/javascript">
+    </script>
+
+</head>
+<body>
+{% include "./menu.html" %}
+{% load static %}
+    <table style="margin-left: auto;margin-right: auto;">
+        <tbody>
+            <tr>
+                <td class="tdh6c">순위</td>
+                <td class="tdh6c">점수</td>
+                <td class="tdh6c">이름</td>
+                <td class="tdh6c">총게임</td>
+                <td class="tdh6c">달무티</td>
+                <td class="tdh6c">노비</td>
+            </tr>
+        {% for rank in users_ranking %}
+            {% if rank.king_count != None %}
+            <tr>
+                <td class="tdh6c">{{ forloop.counter }}</td>
+                <td class="tdh6c">{{ rank.score }}</td>
+                <td class="tdh6c">{{ rank.username }}</td>
+                <td class="tdh6c">{{ rank.tot_count }}</td>
+                <td class="tdh6c">{{ rank.king_count }}</td>
+                <td class="tdh6c">{{ rank.slave_count }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
