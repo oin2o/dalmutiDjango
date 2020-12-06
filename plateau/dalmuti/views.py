@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.views import generic
 from django.urls import reverse
-from django.db.models import Count, F, Subquery, OuterRef, FloatField, ExpressionWrapper
+from django.db.models import Count, F, Subquery, OuterRef, FloatField, Sum
 from django.db.models.functions import Cast
 
 from .models import User, Game, Gamer, Card, Honor
@@ -108,6 +108,38 @@ class HonorView(generic.DetailView):
             'honor_by_slave': users_honor.order_by('-slave_per'),
             'pick_by_king': users_pick_honor.order_by('-king_per'),
             'pick_by_slave': users_pick_honor.order_by('-slave_per'),
+        }
+
+        return render(request, self.template_name, context)
+
+
+class RankView(generic.DetailView):
+    template_name = "dalmuti/ranking.html"
+
+    # 전적 화면으로 전환
+    def get(self, request, username):
+        user = User.objects.filter(username=username).first()
+
+        user_exclude_guest = User.objects.filter(delYn=False).exclude(username__startswith='손님').order_by('username')
+        honors = Honor.objects.exclude(round=0)
+
+        users_ranking = user_exclude_guest.annotate(
+            tot_count=Subquery(
+                honors.values('user').annotate(tot_count=Count('user')).filter(user_id=OuterRef('id')).values(
+                    'tot_count')[:1]),
+            king_count=Subquery(honors.filter(position=1).values('user').annotate(king_count=Count('user')).filter(
+                user_id=OuterRef('id')).values('king_count')[:1]),
+            slave_count=Subquery(
+                honors.filter(gamerTotCnt=F("position")).values('user').annotate(slave_count=Count('user')).filter(
+                    user_id=OuterRef('id')).values('slave_count')[:1]),
+            score=Subquery(
+                honors.values('user').annotate(tot_count=Sum(F('gamerTotCnt') - F('position') -2)).filter(user_id=OuterRef('id')).values(
+                    'tot_count')[:1]),
+        )
+
+        context = {
+            'user': user,
+            'users_ranking': users_ranking.order_by('-score'),
         }
 
         return render(request, self.template_name, context)

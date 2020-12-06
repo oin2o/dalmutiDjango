@@ -2,6 +2,7 @@
 <span style="font-size:0.8em;font-weight:bold">{{ user.username }}</span>
 <a href="{% url 'dalmuti:login' %}"><input  value="사용자" type="button" width="100%"/></a>
 <a href="{% url 'dalmuti:main' user.username %}"><input value="게임참가" type="button" width="100%"/></a>
+<a href="{% url 'dalmuti:rank' user.username %}"><input value="랭킹" type="button" width="100%"/></a>
 <a href="{% url 'dalmuti:honor' user.username %}"><input value="전적" type="button" width="100%"/></a>
 <a href="{% url 'dalmuti:rule' user.username %}"><input value="규칙" type="button" width="100%"/></a>
 </BR>
