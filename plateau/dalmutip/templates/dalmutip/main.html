@@ -17,9 +17,10 @@
         }
         .tdh6{
             font-size: 0.67em;
-            margin-left: 0;
-            margin-right: 0;
+            margin-left: auto;
+            margin-right: auto;
             font-weight: bold;
+            text-align: center;
         }
     </style>
 
@@ -29,26 +30,29 @@
 </head>
 <body>
 {% include "./menu.html" %}
-<a href="{% url 'dalmutip:main' user.username %}"><input value="새로고침" type="button" width="100%"/></a>
-<a href="{% url 'dalmutip:newgame' user.username %}"><input value="새게임" type="button" width="100%"/></a>
 {% load static %}
 {% if message %}
 <script type="text/javascript">
     alert("{{ message }}")
 </script>
 {% endif %}
+<p style="text-indent: 0.5em;">
+    <a href="{% url 'dalmutip:main' user.username %}"><button type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">새로고침</button></a>
+    <a href="{% url 'dalmutip:newgame' user.username %}"><button type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">새게임</button></a>
+</p>
 <form action="{% url 'dalmutip:private' 'private' user.username %}" method="post">
 {% csrf_token %}
-    <p>
+    <p style="text-indent: 0.5em;">
         <input type="text" name="gamecode" maxlength="6" width="100%"/>
-        <input value="참가" type="submit" width="100%"/>
+        <button type="submit" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">참가</button>
     </p>
 </form>
-<table class="table">
+
+<table style="margin-left: auto;margin-right: auto;">
     <tbody>
         <tr>
         {% for game in game_list %}
-            <td class="tdh6" scope="row" style="text-align:center;">
+            <td class="tdh6" scope="row">
                 {% if game.round == 13 and game.ingameCd == 4 %}
                 Game Over
                 <br>
@@ -64,7 +68,7 @@
                 {% endif %}
             </td>
             {% if forloop.counter|divisibleby:4 != 0 %}
-         <tr></tr>
+         </tr><tr>
             {% endif %}
         {% endfor %}
         </tr>

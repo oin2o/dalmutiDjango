@@ -1,20 +1,26 @@
 {% extends 'dalmuti/base.html' %}
 
 {% block body %}
-<h2>Das Leben ist ungerecht.</h2>
+{% load static %}
+<link rel="stylesheet" href="{% static 'dalmutip/css/bootstrap.min.css' %}">
+<div class="alert alert-dismissible alert-light">
+  <strong><em>Das Leben ist ungerecht.</em></strong>
+</div>
 <form action="{% url 'dalmutip:main' 'main' %}" method="post">
     {% csrf_token %}
-    <p>
+    <p style="text-indent: 0.5em;">
         <input type="text" name="username" maxlength="6" width="100%"/>
-        <input value="로그인" type="submit" width="100%"/>
+        <button type="submit" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">로그인</button>
     </p>
 </form>
 {% if user_list %}
+<p style="text-indent: 0.5em;">
     {% for user in user_list %}
-    <a href="{% url 'dalmutip:main' username=user.username %}"><input value="{{ user.username }}" type="button" width="100%" style="margin:3px;padding:5px;font-size:15px;"/></a>
+    <a href="{% url 'dalmutip:main' username=user.username %}"><button type="button" class="btn btn-outline-secondary">{{ user.username }}</button></a>
         {% if forloop.counter|divisibleby:4 != 0 %}
-    <br>
+    </p><p style="text-indent: 0.5em;">
         {% endif %}
     {% endfor %}
+</p>
 {% endif %}
 {% endblock body %}

@@ -189,10 +189,12 @@
                 alert("카드는 " + maxTaxCardCnt + "장만 선택할 수 있습니다.");
                 return false;
             }
+            card.style.filter = "invert(100%) drop-shadow(2px 2px 2px #FF0000)";
             card.border = 2;
             selectTaxCardCnt++;
         }
         else{
+            card.style.filter = "";
             card.border = 0;
             selectTaxCardCnt--;
         }
@@ -254,10 +256,12 @@
         }
 
         if ( cardimg.border == 0 ){
+            cardimg.style.filter = "invert(100%) drop-shadow(2px 2px 2px #FF0000)";
             cardimg.border = 2;
             selectedCardCnt++;
         }
         else{
+            cardimg.style.filter = "";
             cardimg.border = 0;
             selectedCardCnt--;
         }
@@ -311,19 +315,20 @@
 {% include "./menu.html" %}
 {% load static %}
 {% load dalmutip_tags %}
-    <table class="table">
+<p style="text-indent: 0.5em;">
+    <table style="margin-left: auto;margin-right: auto;">
         <tr>
             <td>
-                <a href="{% url 'dalmutip:ingame' gamer.game.gamename user.username %}"><input value="새로고침" type="button" width="100%"/></a>
+                <a href="{% url 'dalmutip:ingame' gamer.game.gamename user.username %}"><button type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">새로고침</button></a>
             {% if gamer|isingame %}
                 {% if gamer.autopassYn %}
-                <a href="{% url 'dalmutip:autopass' gamer.game.gamename user.username %}"><input value="Pass:끄기" type="button" width="100%"/></a>
+                <a href="{% url 'dalmutip:autopass' gamer.game.gamename user.username %}"><button type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">Pass:끄기</button></a>
                 {% else %}
-                <a href="{% url 'dalmutip:autopass' gamer.game.gamename user.username %}"><input value="Pass:켜기" type="button" width="100%"/></a>
+                <a href="{% url 'dalmutip:autopass' gamer.game.gamename user.username %}"><button type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">Pass:켜기</button></a>
                 {% endif %}
             {% endif %}
             {% if user.username == ready_gamer_list.0.user.username and gamer.game.ingameCd >= 1 and gamer.game.ingameCd <= 3 %}
-                <input id="round_renew" value="도르마무" type="button" width="100%"/>
+                <button id="round_renew" type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">도르마무</button>
                 <script type="text/javascript">
                 // 카드분배 버튼 클릭 시, 카드 분배 후, 새로고침
                 document.querySelector('#round_renew').onclick = function(e) {
@@ -335,7 +340,7 @@
                 };
                 </script>
             {% elif user.username == ready_gamer_list.last.user.username and gamer.game.ingameCd >= 1 and gamer.game.ingameCd <= 3 %}
-                <input id="img_change" value="모드변경" type="button" width="100%"/>
+                <button id="img_change" type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">모드변경</button>
                 <script type="text/javascript">
                 // 모드변경 버튼 클릭 시, 카드 이미지 모드 변경 후, 새로고침
                 document.querySelector('#img_change').onclick = function(e) {
@@ -349,7 +354,7 @@
             {% endif %}
             {% with gamer|checkquit:total_gamer as quitavail %}
                 {% if quitavail %}
-                <input id="card_quit" value="나가기" type="button" width="100%"/>
+                <button id="card_quit" type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">나가기</button>
                 <script type="text/javascript">
                 // 나가기 버튼 클릭 시, 게이머 제외 후, 새로고침
                 document.querySelector('#card_quit').onclick = function(e) {
@@ -364,7 +369,7 @@
             {% endwith %}
             {% with user|checkshuffle:total_gamer as shuffleavail %}
                 {% if shuffleavail %}
-                <input id="card_shuffle" value="카드분배" type="button" width="100%"/>
+                <button id="card_shuffle" type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">카드분배</button>
                 <script type="text/javascript">
                 // 카드분배 버튼 클릭 시, 카드 분배 후, 새로고침
                 document.querySelector('#card_shuffle').onclick = function(e) {
@@ -376,7 +381,7 @@
                 };
                 </script>
                     {% if gamer.game.ingameCd == 4 %}
-                <input id="game_end" value="게임종료" type="button" width="100%"/>
+                <button id="game_end" type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">게임종료</button>
                 <script type="text/javascript">
                 // 게임종료 버튼 클릭 시, 게임종료 후, 새로고침
                 document.querySelector('#game_end').onclick = function(e) {
@@ -392,7 +397,7 @@
             {% endwith %}
             {% with user|checkintrusion:total_gamer as intrusionavail %}
                 {% if intrusionavail %}
-                <input id="intrusion_gamer" value="평민난입" type="button" width="100%"/>
+                <button id="intrusion_gamer" type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">평민난입</button>
                 <script type="text/javascript">
                 // 평민난입 버튼 클릭 시, 현재 계급구조대로 게임생성 후, 새로고침
                 document.querySelector('#intrusion_gamer').onclick = function(e) {
@@ -415,7 +420,8 @@
             </td>
         </tr>
     </table>
-    <table class="table">
+</p>
+    <table style="margin-left: auto;margin-right: auto;">
         <tbody>
             <tr>
                 <td class="tdh6">
@@ -429,19 +435,19 @@
                     {% else %}
                     카드 선택 중 :
                         {% for gamer in gamer_list %}
-                    <input value="{{ gamer.user.username }}" type="button" width="100%" disbled/>
+                    <button type="button" class="btn btn-outline-secondary" style="height:20px;padding-top:initial;padding-bottom:initial;">{{ gamer.user.username }}</button>
                         {% endfor %}
                     {% endif %}
                 {% elif gamer.game.round != 13 and gamer.game.ingameCd == 4 %}
-                    {{ ready_gamer_list.0.user.username }}님, 다음 라운드 진행 혹은 게임종료할 수 있습니다.
-                    <br>{{ ready_gamer_list.last.user.username }}님, 평민을 난입시킬 수 있습니다.
+                    &nbsp;&nbsp;{{ ready_gamer_list.0.user.username }}님, 다음 라운드 진행 혹은 게임종료할 수 있습니다.
+                    <br>&nbsp;&nbsp;{{ ready_gamer_list.last.user.username }}님, 평민을 난입시킬 수 있습니다.
                 {% endif %}
                 </td>
             </tr>
         </tbody>
     </table>
-
-    <table class="table">
+<p style="text-indent: 0.5em;"></p>
+    <table style="margin-left: auto;margin-right: auto;">
         <thead>
             <tr>
                 <td class="tdh6w35b">참가</td>
@@ -585,7 +591,7 @@
             <tr>
                 <td class="tdh6" style="text-align:right;" colspan="4">
                     <input id="chatmsg" type="text" maxlength="20" size="30"/>
-                    <input id="chatbtn" type="button" value="한줄"/>
+                    <button id="chatbtn" type="button" class="btn btn-outline-danger" style="height:20px;padding-top:initial;padding-bottom:initial;">한줄</button>
                     <script type="text/javascript">
                     // 채팅 후, 메시지 고침
                     document.querySelector('#chatbtn').onclick = function(e) {
@@ -607,13 +613,14 @@
     <input type="hidden" name="action" id="id_action"/>
     <input type="hidden" name="username" id="id_username"/>
     <input type="hidden" name="cardlist" id="id_cardlist"/>
-    <table class="table">
+    <p style="text-indent: 0.5em;">
+    <table style="margin-left: auto;margin-right: auto;">
         <tbody>
             <tr>
                 <td class="tdh6" colspan="6">
                 {% if gamer.game.ingameCd == 1 %}
                     {% if gamer.status == 0 %}
-                        <input id="cardok" value="카드확인" type="button" width="100%"/>
+                        <button id="cardok" type="button" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">카드확인</button>
                         <script type="text/javascript">
                         // 카드확인 후,새로고침
                         document.querySelector('#cardok').onclick = function(e) {
@@ -625,7 +632,7 @@
                         };
                         </script>
                         {% if gamer.jokerCnt == 2 %}
-                        <input id="revolution" value="동학혁명" type="button" width="100%"/>
+                        <button id="revolution" type="button" class="btn btn-outline-warning" style="height:30px;padding-top:initial;padding-bottom:initial;">동학혁명</button>
                         혁명을 일으키거나, 카드를 확인하세요.
                         <script type="text/javascript">
                         // 혁명 후,새로고침
@@ -650,12 +657,12 @@
                         {% elif gamer.user.username == tax_list.2.user.username %}
                         {{ tax_list.1.user.username }}에게 가장 높은 카드 1장을 세금으로 냅니다.
                         {% elif gamer.user.username == tax_list.1.user.username %}
-                        <input onclick="submitReceipt( '{{ tax_list.2.user.username }}' )" value="세금수령" type="button" width="100%"/>
-                        <input onclick="submitTaxPass( '{{ tax_list.2.user.username }}' )" value="세금면제" type="button" width="100%"/>
+                        <button onclick="submitReceipt( '{{ tax_list.2.user.username }}' )" type="button" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">세금수령</button>
+                        <button onclick="submitTaxPass( '{{ tax_list.2.user.username }}' )" type="button" class="btn btn-outline-warning" style="height:30px;padding-top:initial;padding-bottom:initial;">세금면제</button>
                         {{ tax_list.2.user.username }}님과 교환할 카드 1장을 선택해 주세요.
                         {% elif gamer.user.username == tax_list.0.user.username %}
-                        <input onclick="submitReceipt( '{{ tax_list.3.user.username }}' )" value="세금수령" type="button" width="100%"/>
-                        <input onclick="submitTaxPass( '{{ tax_list.3.user.username }}' )" value="세금면제" type="button" width="100%"/>
+                        <button onclick="submitReceipt( '{{ tax_list.3.user.username }}' )" type="button" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">세금수령</button>
+                        <button onclick="submitTaxPass( '{{ tax_list.3.user.username }}' )" type="button" class="btn btn-outline-warning" style="height:30px;padding-top:initial;padding-bottom:initial;">세금면제</button>
                         {{ tax_list.3.user.username }}님과 교환할 카드 2장을 선택해 주세요.
                         {% endif %}
                     {% else %}
@@ -664,7 +671,7 @@
                 {% elif gamer.game.ingameCd == 3 %}
                     {% if gamer.game.turnUser.username == gamer.user.username %}
                         {% if total_gamer|islastgamer %}
-                    <input id="card_allin" value="손털기" type="button" width="100%"/>
+                    <button id="card_allin" type="button" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">손털기</button>
                     <script type="text/javascript">
                     // 손털기 버튼 클릭 시, 전체카드 제출 및 게임종료 후, 새로고침
                     document.querySelector('#card_allin').onclick = function(e) {
@@ -679,10 +686,10 @@
                         {% else %}
                             {% with gamer|carddrawavailable:my_cards as drawavail %}
                                 {% if drawavail %}
-                    <input onclick="submitCard()" value="카드제출" type="button" width="100%"/>
+                    <button onclick="submitCard()" type="button" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">카드제출</button>
                                 {% endif %}
                                 {% if gamer.game.drawusername != gamer.user.username %}
-                    <input onclick="submitPass()" value="Pass" type="button" width="100%"/>
+                    <button onclick="submitPass()" type="button" class="btn btn-outline-warning" style="height:30px;padding-top:initial;padding-bottom:initial;">Pass</button>
                     <script type="text/javascript">
                     // autopass on 이고, 3초 경과 시, 자동 패스 후, 새로고침
                     if (!{{ drawavail|yesno:"true,false" }} && {{ gamer.autopassYn|yesno:"true,false" }}) {
@@ -718,9 +725,9 @@
                     <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0" onclick="selectTaxCard( dalmutiImg{{ my_card.card }}_{{ forloop.counter }}, 1 )">
                         {% elif gamer.user.username == tax_list.2.user.username or gamer.user.username == tax_list.3.user.username %}
                             {% if gamer.status == 1 and gamer.game.ingameCd == 2 and forloop.counter == 1 %}
-                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="2">
+                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="2" style="filter:invert(100%) drop-shadow(2px 2px 2px #FF0000);">
                             {% elif gamer.status == 1 and gamer.game.ingameCd == 2 and forloop.counter == 2 and gamer.user.username == tax_list.3.user.username %}
-                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="2">
+                    <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="2" style="filter:invert(100%) drop-shadow(2px 2px 2px #FF0000);">
                             {% else %}
                     <img class="card" src="{% static  'dalmutip/images/' %}{{ gamer.game.image }}/{{ my_card.card }}.jpg"  name="dalmutiImg{{ my_card.card }}_{{ forloop.counter }}" border="0">
                             {% endif %}
@@ -744,66 +751,69 @@
             {% endif %}
         </tbody>
     </table>
+    </p>
 </form>
 {% endif %}
 {% if gamer.game.ingameCd == 4 %}
-<table>
-    <thead>
-        <tr>
-            <td class="tdh6w35pb"></td>
-            <td class="tdh6w35pb">왕</td>
-            {% if ready_gamer_list|length == 12 %}
-            <td class="tdh6w35pb">대군</td>
-            {% endif %}
-            <td class="tdh6w35pb">정승</td>
-            {% if ready_gamer_list|length >= 10 %}
-            <td class="tdh6w35pb">장군</td>
-            {% endif %}
-            {% if ready_gamer_list|length >= 7 %}
-            <td class="tdh6w35pb">양반</td>
-            {% endif %}
-            {% if ready_gamer_list|length >= 5 %}
-            <td class="tdh6w35pb">승려</td>
-            {% endif %}
-            {% if ready_gamer_list|length >= 9 %}
-            <td class="tdh6w35pb">중인</td>
-            {% endif %}
-            {% if ready_gamer_list|length >= 6 %}
-            <td class="tdh6w35pb">농민</td>
-            {% endif %}
-            {% if ready_gamer_list|length >= 11 %}
-            <td class="tdh6w35pb">장인</td>
-            {% endif %}
-            {% if ready_gamer_list|length >= 8 %}
-            <td class="tdh6w35pb">상인</td>
-            {% endif %}
-            <td class="tdh6w35pb">천민</td>
-            <td class="tdh6w35pb">노비</td>
-        </tr>
-    </thead>
-    <tbody>
-        {% for honors in honor_list %}
-        <tr>
-            <td class="tdh6w35p">
-            {% if forloop.counter0 == 0 %}
-            선
-            {% else %}
-            {{ forloop.counter0 }}
-            {% endif %}
-            </td>
-            {% for honor in honors %}
-            <td class="tdh6w35p">
-                {% if honor.user.username == user.username %}
-                <font color="blue"><b>{{ honor.user.username }}</b></font>
-                {% else %}
-            {{ honor.user.username }}
+<p style="text-indent: 0.5em;">
+    <table style="margin-left: auto;margin-right: auto;">
+        <thead>
+            <tr>
+                <td class="tdh6w35pb"></td>
+                <td class="tdh6w35pb">왕</td>
+                {% if ready_gamer_list|length == 12 %}
+                <td class="tdh6w35pb">대군</td>
                 {% endif %}
-            </td>
+                <td class="tdh6w35pb">정승</td>
+                {% if ready_gamer_list|length >= 10 %}
+                <td class="tdh6w35pb">장군</td>
+                {% endif %}
+                {% if ready_gamer_list|length >= 7 %}
+                <td class="tdh6w35pb">양반</td>
+                {% endif %}
+                {% if ready_gamer_list|length >= 5 %}
+                <td class="tdh6w35pb">승려</td>
+                {% endif %}
+                {% if ready_gamer_list|length >= 9 %}
+                <td class="tdh6w35pb">중인</td>
+                {% endif %}
+                {% if ready_gamer_list|length >= 6 %}
+                <td class="tdh6w35pb">농민</td>
+                {% endif %}
+                {% if ready_gamer_list|length >= 11 %}
+                <td class="tdh6w35pb">장인</td>
+                {% endif %}
+                {% if ready_gamer_list|length >= 8 %}
+                <td class="tdh6w35pb">상인</td>
+                {% endif %}
+                <td class="tdh6w35pb">천민</td>
+                <td class="tdh6w35pb">노비</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for honors in honor_list %}
+            <tr>
+                <td class="tdh6w35p">
+                {% if forloop.counter0 == 0 %}
+                선
+                {% else %}
+                {{ forloop.counter0 }}
+                {% endif %}
+                </td>
+                {% for honor in honors %}
+                <td class="tdh6w35p">
+                    {% if honor.user.username == user.username %}
+                    <font color="blue"><b>{{ honor.user.username }}</b></font>
+                    {% else %}
+                {{ honor.user.username }}
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
             {% endfor %}
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</p>
 {% endif %}
 </body>
 </html>
