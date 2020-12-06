@@ -139,7 +139,7 @@ class RankView(generic.DetailView):
 
         context = {
             'user': user,
-            'users_ranking': users_ranking.order_by('-score'),
+            'users_ranking': users_ranking.order_by('-score','tot_count','-king_count','slave_count'),
         }
 
         return render(request, self.template_name, context)
