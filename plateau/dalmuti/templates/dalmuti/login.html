@@ -1,7 +1,7 @@
 {% extends 'dalmuti/base.html' %}
 
 {% block body %}
-<h2>Das Leben ist ungerecht.</h2>
+<h2>Das Leben ist <a href="{% url 'dalmutip:login' %}" style="text-decoration:none;color:#000000;">ungerecht</a>.</h2>
 {% if user_list %}
     {% for user in user_list %}
     <a href="{% url 'dalmuti:main' username=user.username %}"><input value="{{ user.username }}" type="button" width="100%" style="margin:3px;padding:5px;font-size:15px;"/></a>
