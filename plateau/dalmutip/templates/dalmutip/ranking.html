@@ -36,14 +36,14 @@
                 <td class="tdh6c">노비</td>
             </tr>
         {% for rank in users_ranking %}
-            {% if rank.king_count != None %}
+            {% if rank.score != None %}
             <tr>
                 <td class="tdh6c">{{ forloop.counter }}</td>
                 <td class="tdh6c">{{ rank.score }}</td>
                 <td class="tdh6c">{{ rank.username }}</td>
                 <td class="tdh6c">{{ rank.tot_count }}</td>
-                <td class="tdh6c">{{ rank.king_count }}</td>
-                <td class="tdh6c">{{ rank.slave_count }}</td>
+                <td class="tdh6c">{% if rank.king_count != None %}{{ rank.king_count }}{% else %}0{% endif %}</td>
+                <td class="tdh6c">{% if rank.slave_count != None %}{{ rank.slave_count }}{% else %}0{% endif %}</td>
             </tr>
             {% endif %}
         {% endfor %}
