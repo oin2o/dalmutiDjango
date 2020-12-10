@@ -415,7 +415,7 @@
             {% if gamer.game.ingameCd == 4 %}
                 by {{ gamer.game.gamecode }}
             {% else %}
-                Round : {{ gamer.game.round }} by {{ gamer.game.gamecode }}
+                Round : {{ gamer.game.round }} by <a href="{% url 'dalmutip:telegram' gamer.game.gamename user.username %}">{{ gamer.game.gamecode }}</a>
             {% endif %}
             </td>
         </tr>

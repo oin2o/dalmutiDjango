@@ -1,6 +1,7 @@
 import random
 import string
 from datetime import datetime
+import telegram
 
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -197,7 +198,7 @@ class PrivateGameView(generic.DetailView):
     # 게임코드 ingame 입장
     def post(self, request, gamename, username):
 
-        gamecode = request.POST.get('gamecode')
+        gamecode = request.POST.get('gamecode').upper()
 
         user = User.objects.filter(username=username).first()
         game = Game.objects.filter(gamecode=gamecode).first()
@@ -733,5 +734,19 @@ class ImageChangeView(generic.DetailView):
 
         game.image = int((game.image + 1)%2)
         game.save()
+
+        return HttpResponseRedirect(reverse('dalmutip:ingame', args=(gamename, username,)))
+
+
+class TelegramView(generic.DetailView):
+
+    # 텔레그램 전송
+    def get(self, request, gamename, username):
+
+        game = Game.objects.filter(gamename=gamename).first()
+        user = User.objects.filter(username=username).first()
+
+        bot = telegram.Bot(token="1480423142:AAHkkAlgShepdoXFW2HP8TzZAiRfCN8WpHI")
+        bot.sendMessage(chat_id="-413309173", text=game.gamecode)
 
         return HttpResponseRedirect(reverse('dalmutip:ingame', args=(gamename, username,)))
