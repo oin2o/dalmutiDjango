@@ -2,6 +2,7 @@ import random
 import string
 from datetime import datetime
 import telegram
+import socket
 
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -738,15 +739,43 @@ class ImageChangeView(generic.DetailView):
         return HttpResponseRedirect(reverse('dalmutip:ingame', args=(gamename, username,)))
 
 
+class TelegramLoginView(generic.ListView):
+    template_name = "dalmutip/telegramlogin.html"
+
+    # 현재 활성화된 사용자 리스트를 로그인 화면에 표시
+    def get(self, request, gamename, gamecode):
+
+        game = Game.objects.filter(gamename=gamename).first()
+
+        user_only_guest = User.objects.filter(delYn=False, username__startswith='손님').order_by('username')
+        user_exclude_guest = User.objects.filter(delYn=False).exclude(username__startswith='손님').order_by('username')
+
+        user_list = list(user_only_guest) + list(user_exclude_guest)
+
+        context = {
+            'game': game,
+            'user_list': user_list,
+        }
+
+        return render(request, self.template_name, context)
+
+
 class TelegramView(generic.DetailView):
 
     # 텔레그램 전송
     def get(self, request, gamename, username):
 
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        myip = s.getsockname()[0]
+        s.close()
+
         game = Game.objects.filter(gamename=gamename).first()
         user = User.objects.filter(username=username).first()
 
-        bot = telegram.Bot(token="1480423142:AAHkkAlgShepdoXFW2HP8TzZAiRfCN8WpHI")
-        bot.sendMessage(chat_id="-413309173", text=game.gamecode)
+        bot = telegram.Bot(token='1480423142:AAHkkAlgShepdoXFW2HP8TzZAiRfCN8WpHI')
+        bot.sendMessage(chat_id='-413309173',
+                        text='[게임코드:' + game.gamecode + '](http://' + myip + ':8000/dalmutip/telegram/login/' + game.gamename + '/' + game.gamecode + '/)',
+                        parse_mode='Markdown', disable_web_page_preview=True)
 
         return HttpResponseRedirect(reverse('dalmutip:ingame', args=(gamename, username,)))

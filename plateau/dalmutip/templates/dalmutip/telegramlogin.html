@@ -1,0 +1,19 @@
+{% extends 'dalmuti/base.html' %}
+
+{% block body %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'dalmutip/css/bootstrap.min.css' %}">
+<div class="alert alert-dismissible alert-light">
+  <strong><em>Das Leben ist <a href="{% url 'dalmuti:login' %}" style="text-decoration:none;color:3E3F3A;">ungerecht</a>.</em></strong>
+</div>
+{% if user_list %}
+<p style="text-indent: 0.5em;">
+    {% for user in user_list %}
+    <a href="{% url 'dalmutip:ingame' gamename=game.gamename username=user.username %}"><button type="button" class="btn btn-outline-secondary">{{ user.username }}</button></a>
+        {% if forloop.counter|divisibleby:4 != 0 %}
+    </p><p style="text-indent: 0.5em;">
+        {% endif %}
+    {% endfor %}
+</p>
+{% endif %}
+{% endblock body %}
