@@ -2,7 +2,6 @@ import random
 import string
 from datetime import datetime
 import telegram
-import socket
 
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -764,18 +763,12 @@ class TelegramView(generic.DetailView):
 
     # 텔레그램 전송
     def get(self, request, gamename, username):
-
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        myip = s.getsockname()[0]
-        s.close()
-
         game = Game.objects.filter(gamename=gamename).first()
         user = User.objects.filter(username=username).first()
 
         bot = telegram.Bot(token='1480423142:AAHkkAlgShepdoXFW2HP8TzZAiRfCN8WpHI')
         bot.sendMessage(chat_id='-413309173',
-                        text='[게임코드:' + game.gamecode + '](http://' + myip + ':8000/dalmutip/telegram/login/' + game.gamename + '/' + game.gamecode + '/)',
+                        text='[게임코드:' + game.gamecode + '](http://54.180.29.111:8000/dalmutip/telegram/login/' + game.gamename + '/' + game.gamecode + '/)',
                         parse_mode='Markdown', disable_web_page_preview=True)
 
         return HttpResponseRedirect(reverse('dalmutip:ingame', args=(gamename, username,)))
