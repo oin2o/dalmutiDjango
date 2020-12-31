@@ -9,7 +9,7 @@
 <form action="{% url 'dalmutip:main' 'main' %}" method="post">
     {% csrf_token %}
     <p style="text-indent: 0.5em;">
-        <input type="text" name="username" maxlength="6" width="100%"/>
+        <input type="text" name="username" maxlength="6" width="100%" placeholder="플레이어"/>
         <button type="submit" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">로그인</button>
     </p>
 </form>

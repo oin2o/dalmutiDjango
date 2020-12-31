@@ -43,7 +43,7 @@
 <form action="{% url 'dalmutip:private' 'private' user.username %}" method="post">
 {% csrf_token %}
     <p style="text-indent: 0.5em;">
-        <input type="text" name="gamecode" maxlength="6" width="100%"/>
+        <input type="text" name="gamecode" maxlength="6" width="100%" placeholder="게임코드"/>
         <button type="submit" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">참가</button>
     </p>
 </form>
