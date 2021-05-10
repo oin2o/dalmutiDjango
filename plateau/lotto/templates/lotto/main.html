@@ -1,0 +1,247 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>Lotto 온라인</title>
+    <style>
+        /* 645 ball */
+        .ball_645 {
+            display:inline-block;
+            border-radius:100%;
+            text-align:center;
+            vertical-align:middle;
+            color:#fff;
+            font-weight:500;
+        }
+        .ball_645.sml {
+            width:36px;
+            height:36px;
+            line-height:36px;
+            font-size:13px
+        }
+        .ball_645.ball1 {
+            background:#fbc400;
+            text-shadow: 0px 0px 3px rgba(73, 57, 0, .8)
+        }
+        .ball_645.ball2 {
+            background:#69c8f2;
+            text-shadow: 0px 0px 3px rgba(0, 49, 70, .8)
+        }
+        .ball_645.ball3 {
+            background:#ff7272;
+            text-shadow: 0px 0px 3px rgba(64, 0, 0, .8)
+        }
+        .ball_645.ball4 {
+            background:#aaa;
+            text-shadow: 0px 0px 3px rgba(61, 61, 61, .8)
+        }
+        .ball_645.ball5 {
+            background:#b0d840;
+            text-shadow: 0px 0px 3px rgba(41, 56, 0, .8)
+        }
+        .ball_645.ball1.selected {
+            filter:sepia(100%) opacity(60%);
+        }
+        .ball_645.ball2.selected {
+            filter:sepia(100%) opacity(60%);
+        }
+        .ball_645.ball3.selected {
+            filter:sepia(100%) opacity(40%);
+        }
+        .ball_645.ball4.selected {
+            filter:sepia(100%) opacity(40%);
+        }
+        .ball_645.ball5.selected {
+            filter:sepia(100%) opacity(40%);
+        }
+
+        .win_result {
+            border:1px solid #ddd;
+            text-align:center;
+            margin-bottom:10px;
+            padding:10px 10px 10px 10px;
+        }
+
+        .btn_common.mid {
+            border:1px solid #ddd;
+            width:auto;
+            padding:5px 25px 5px 25px;
+            border-radius:4px;
+        }
+    </style>
+    <script type="text/javascript">
+
+        let balls = [];
+        let ball_able_yn = true;
+        let action = '{{action}}';
+
+        function clickBall(ball_name, ball){
+            if(action == 'all') {
+                return;
+            }
+
+            let idx = balls.indexOf(ball);
+
+            if(idx < 0) {
+                balls.push(ball);
+                if(ball_able_yn) {
+                    document.getElementsByName(ball_name)[0].className = document.getElementsByName(ball_name)[0].className.replace(' selected', '');
+                    document.getElementsByName(ball_name)[0].className = document.getElementsByName(ball_name)[0].className + ' selected';
+                } else {
+                    document.getElementsByName(ball_name)[0].className = document.getElementsByName(ball_name)[0].className.replace(' selected', '');
+                }
+            } else {
+                balls.splice(idx, 1);
+                if(ball_able_yn) {
+                    document.getElementsByName(ball_name)[0].className = document.getElementsByName(ball_name)[0].className.replace(' selected', '');
+                } else {
+                    document.getElementsByName(ball_name)[0].className = document.getElementsByName(ball_name)[0].className.replace(' selected', '');
+                    document.getElementsByName(ball_name)[0].className = document.getElementsByName(ball_name)[0].className + ' selected';
+                }
+            }
+        }
+        function rbClick(id){
+            balls = [];
+            action = id;
+
+            if(id == 'include') {
+                ball_able_yn = false;
+            } else {
+                ball_able_yn = true;
+            }
+            for(let i = 1; i <= 45; i++) {
+                ball_name = 'ball_' + i;
+                if(ball_able_yn) {
+                    document.getElementsByName(ball_name)[0].className = document.getElementsByName(ball_name)[0].className.replace(' selected', '');
+                } else {
+                    document.getElementsByName(ball_name)[0].className = document.getElementsByName(ball_name)[0].className.replace(' selected', '');
+                    document.getElementsByName(ball_name)[0].className = document.getElementsByName(ball_name)[0].className + ' selected';
+                }
+            }
+        }
+        function lotto() {
+            if(action == 'all') {
+                id_action.value = "all";
+            } else {
+                if(balls.length < 1) {
+                    alert("수를 1개 이상 선택해 주세요.");
+                    return;
+                }
+                if(action == 'include') {
+                    if(balls.length > 5) {
+                        alert("포함할 수는 5개 이하로만 선택해 주세요.");
+                        return;
+                    }
+                    id_action.value = "include";
+                } else if(action == 'exclude') {
+                    if(balls.length > 38) {
+                        alert("제외하고 남은 수가 6개보다 많아야 합니다.");
+                        return;
+                    }
+                    id_action.value = "exclude";
+                }
+            }
+
+            id_data.value = balls;
+            document.forms['ballform'].submit();
+        }
+
+        function init() {
+            if(action == 'include') {
+                ball_able_yn = false;
+            } else {
+                ball_able_yn = true;
+            }
+            for(let i = 1; i <= 45; i++) {
+                ball_name = 'ball_' + i;
+                if(ball_able_yn) {
+                    document.getElementsByName(ball_name)[0].className = document.getElementsByName(ball_name)[0].className.replace(' selected', '');
+                } else {
+                    document.getElementsByName(ball_name)[0].className = document.getElementsByName(ball_name)[0].className.replace(' selected', '');
+                    document.getElementsByName(ball_name)[0].className = document.getElementsByName(ball_name)[0].className + ' selected';
+                }
+            }
+        {% for preball in data %}
+            clickBall('ball_{{ preball }}',{{ preball }});
+        {% endfor %}
+        }
+    </script>
+</head>
+<body onload="init()">
+{% load static %}
+{% load lotto_tags %}
+<form name="ballform" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" id="id_action"/>
+    <input type="hidden" name="data" id="id_data"/>
+</form>
+<link rel="stylesheet" href="{% static 'lotto/css/style.css' %}">
+<div class="group">
+    {% if action == 'all' %}
+    <input type="radio" name="rb" id="all" onclick="rbClick( this.id )" checked />
+    {% else %}
+    <input type="radio" name="rb" id="all" onclick="rbClick( this.id )" />
+    {% endif %}
+    <label for="all">전체</label>
+    {% if action == 'include' %}
+    <input type="radio" name="rb" id="include" onclick="rbClick( this.id )" checked />
+    {% else %}
+    <input type="radio" name="rb" id="include" onclick="rbClick( this.id )" />
+    {% endif %}
+    <label for="include">포함</label>
+    {% if action == 'exclude' %}
+    <input type="radio" name="rb" id="exclude" onclick="rbClick( this.id )" checked />
+    {% else %}
+    <input type="radio" name="rb" id="exclude" onclick="rbClick( this.id )" />
+    {% endif %}
+    <label for="exclude">제외</label>
+    <button type="button" class="btn_common mid" onclick="lotto()">Lotto</button>
+</div>
+
+<ol>
+    {% for i in 45|times %}
+        {% if i < 10 %}
+    <li class="ball_645 sml ball1" name="ball_{{ forloop.counter }}" onclick="clickBall( 'ball_{{ forloop.counter }}', {{ forloop.counter }} )">{{ forloop.counter }}</li>
+        {% elif i < 20 %}
+    <li class="ball_645 sml ball2" name="ball_{{ forloop.counter }}" onclick="clickBall( 'ball_{{ forloop.counter }}', {{ forloop.counter }} )">{{ forloop.counter }}</li>
+        {% elif i < 30 %}
+    <li class="ball_645 sml ball3" name="ball_{{ forloop.counter }}" onclick="clickBall( 'ball_{{ forloop.counter }}', {{ forloop.counter }} )">{{ forloop.counter }}</li>
+        {% elif i < 40 %}
+    <li class="ball_645 sml ball4" name="ball_{{ forloop.counter }}" onclick="clickBall( 'ball_{{ forloop.counter }}', {{ forloop.counter }} )">{{ forloop.counter }}</li>
+        {% else %}
+    <li class="ball_645 sml ball5" name="ball_{{ forloop.counter }}" onclick="clickBall( 'ball_{{ forloop.counter }}', {{ forloop.counter }} )">{{ forloop.counter }}</li>
+        {% endif %}
+        {% if forloop.counter|divisibleby:7 != 0 %}
+    <br><br>
+        {% endif %}
+    {% endfor %}
+</ol>
+{% if ball_list %}
+<div class="win_result">
+    <h4><strong>Lotto 6/45</strong></h4>
+    {% for balls in ball_list %}
+    <div class="nums">
+        <div class="num win">
+            <p>
+        {% for ball in balls %}
+            {% if ball < 10 %}
+                <span class="ball_645 sml ball1">{{ ball }}</span>
+            {% elif ball < 20 %}
+                <span class="ball_645 sml ball2">{{ ball }}</span>
+            {% elif ball < 30 %}
+                <span class="ball_645 sml ball3">{{ ball }}</span>
+            {% elif ball < 40 %}
+                <span class="ball_645 sml ball4">{{ ball }}</span>
+            {% else %}
+                <span class="ball_645 sml ball5">{{ ball }}</span>
+            {% endif %}
+        {% endfor %}
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+</body>
+</html>

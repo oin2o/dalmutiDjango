@@ -1,0 +1,55 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>Liar Game</title>
+</head>
+<body onload="init()">
+{% include "./menu.html" %}
+{% load static %}
+{% if categories %}
+<table style="margin-left: auto;margin-right: auto;">
+    <tbody>
+        <tr>
+        {% for category in categories %}
+            <td class="tdh6" scope="row">
+                <a href="{% url 'liar:add' category.categoryname %}">
+                    <button type="submit" class="btn btn-outline-info" style="height:30px;padding-top:initial;padding-bottom:initial;">{{ category.categoryname }}</button>
+                </a>
+            </td>
+            {% if forloop.counter|divisibleby:4 != 0 %}
+         </tr><tr>
+            {% endif %}
+        {% endfor %}
+        </tr>
+    </tbody>
+</table>
+{% elif category %}
+<form action="{% url 'liar:add' category.categoryname %}" method="post">
+    {% csrf_token %}
+    <p style="text-indent: 0.5em;">
+        <button type="button" class="btn btn-light disabled">{{ category.categoryname }}</button>
+        <input type="text" name="word" maxlength="100" width="100%" placeholder="단어"/>
+        <button type="submit" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">추가</button>
+    </p>
+</form>
+    {% if words %}
+<table style="margin-left: auto;margin-right: auto;">
+    <tbody>
+        <tr>
+        {% for word in words %}
+            <td class="tdh6" scope="row">
+                <button type="submit" class="btn btn-info disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">{{ word.word }}</button>
+            </td>
+            {% if forloop.counter|divisibleby:4 != 0 %}
+         </tr><tr>
+            {% endif %}
+        {% endfor %}
+        </tr>
+    </tbody>
+</table>
+    {% endif %}
+{% endif %}
+</body>
+</html>

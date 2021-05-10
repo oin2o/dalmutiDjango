@@ -1,0 +1,35 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>Liar Game</title>
+</head>
+<body onload="init()">
+{% include "./menu.html" %}
+{% load static %}
+<form action="{% url 'liar:category' %}" method="post">
+    {% csrf_token %}
+    <p style="text-indent: 0.5em;">
+        <input type="text" name="categoryname" maxlength="100" width="100%" placeholder="카테고리"/>
+        <button type="submit" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">추가</button>
+    </p>
+</form>
+{% if categories %}
+<table style="margin-left: auto;margin-right: auto;">
+    <tbody>
+        <tr>
+        {% for category in categories %}
+            <td class="tdh6" scope="row">
+                <button type="submit" class="btn btn-info disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">{{ category.categoryname }}</button>
+            </td>
+            {% if forloop.counter|divisibleby:4 != 0 %}
+         </tr><tr>
+            {% endif %}
+        {% endfor %}
+        </tr>
+    </tbody>
+</table>
+{% endif %}
+</body>
+</html>

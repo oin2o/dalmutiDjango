@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>Liar Game</title>
+    <script type="text/javascript">
+    function checkWord(word, btn){
+        if(word == 'liar') {
+            alert('당신은 라이어입니다. 화이팅!!!');
+        } else {
+            alert('당신은 시민입니다. 단어는 ' + word + '입니다.');
+        }
+        btn.style.display ='none';
+    }
+    </script>
+</head>
+<body onload="init()">
+{% include "./menu.html" %}
+{% load static %}
+{% if categories %}
+<table style="margin-left: auto;margin-right: auto;">
+    <tbody>
+        <tr>
+        {% for category in categories %}
+            <td class="tdh6" scope="row">
+                <a href="{% url 'liar:game' category.categoryname %}">
+                    <button type="submit" class="btn btn-outline-info" style="height:30px;padding-top:initial;padding-bottom:initial;">{{ category.categoryname }}</button>
+                </a>
+            </td>
+            {% if forloop.counter|divisibleby:4 != 0 %}
+         </tr><tr>
+            {% endif %}
+        {% endfor %}
+        </tr>
+    </tbody>
+</table>
+{% elif category %}
+<form action="{% url 'liar:game' category.categoryname %}" method="post">
+    {% csrf_token %}
+    <p style="text-indent: 0.5em;">
+        <button type="button" class="btn btn-light disabled">{{ category.categoryname }}</button>
+        <input type="number" name="number" value="{{ number }}" min="3" max="20" style="width:5em" placeholder="몇명??"/>
+        <button type="submit" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">시작</button>
+    </p>
+</form>
+    {% if word is not None %}
+    <table style="margin-left: auto;margin-right: auto;">
+        <tbody>
+            <tr>
+            {% for who in liar %}
+                <td class="tdh6" scope="row">
+                {% if who == 'liar' %}
+                    <div id="who_{{ forloop.counter }}">
+                        <button type="button" onclick="checkWord('liar', who_{{ forloop.counter }})" class="btn btn-primary disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">단어확인</button>
+                    </div>
+                {% else %}
+                    <div id="who_{{ forloop.counter }}">
+                        <button type="button" onclick="checkWord('{{ word.word }}', who_{{ forloop.counter }})" class="btn btn-primary disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">단어확인</button>
+                    </div>
+                {% endif %}
+                </td>
+                {% if forloop.counter|divisibleby:4 != 0 %}
+             </tr><tr>
+                {% endif %}
+            {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
+{% endif %}
+</body>
+</html>

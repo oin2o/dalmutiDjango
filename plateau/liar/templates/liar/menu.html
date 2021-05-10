@@ -1,0 +1,9 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'liar/css/bootstrap.min.css' %}">
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">Liar Game</li>
+    <li class="breadcrumb-item active"><a href="{% url 'liar:main' %}">게임시작</a></li>
+    <li class="breadcrumb-item active"><a href="{% url 'liar:category' %}">카테고리</a></li>
+    <li class="breadcrumb-item active"><a href="{% url 'liar:word' %}">단어</a></li>
+</ol>
+<p></p>
