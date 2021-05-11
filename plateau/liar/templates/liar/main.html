@@ -5,11 +5,13 @@
     <meta name="format-detection" content="telephone=no" />
     <title>Liar Game</title>
     <script type="text/javascript">
-    function checkWord(word, btn){
-        if(word == 'liar') {
+    function checkWord(who, word, btn){
+        if(who == 'liar') {
             alert('당신은 라이어입니다. 화이팅!!!');
+        } else if(who == 'trickster') {
+            alert('당신은 사기꾼입니다. 라이어를 도와주세요.\n제시어는 ' + word + '입니다.');
         } else {
-            alert('당신은 시민입니다. 단어는 ' + word + '입니다.');
+            alert('당신은 시민입니다.\n제시어는 ' + word + '입니다.');
         }
         btn.style.display ='none';
     }
@@ -50,15 +52,9 @@
             <tr>
             {% for who in liar %}
                 <td class="tdh6" scope="row">
-                {% if who == 'liar' %}
                     <div id="who_{{ forloop.counter }}">
-                        <button type="button" onclick="checkWord('liar', who_{{ forloop.counter }})" class="btn btn-primary disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">단어확인</button>
+                        <button type="button" onclick="checkWord('{{ who }}', '{{ word.word }}', who_{{ forloop.counter }})" class="btn btn-primary disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">단어확인</button>
                     </div>
-                {% else %}
-                    <div id="who_{{ forloop.counter }}">
-                        <button type="button" onclick="checkWord('{{ word.word }}', who_{{ forloop.counter }})" class="btn btn-primary disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">단어확인</button>
-                    </div>
-                {% endif %}
                 </td>
                 {% if forloop.counter|divisibleby:4 != 0 %}
              </tr><tr>

@@ -39,14 +39,14 @@ class GameView(generic.ListView):
 
         words = Words.objects.filter(category=category).all()
 
-        number = request.POST.get('number')
+        number = int(request.POST.get('number'))
 
         word = None
 
         if len(words) > 0:
             word = words[random.randrange(0, len(words))]
 
-        liar = ['citizen' for _ in range(int(number) - 1)]
+        liar = ['citizen' for _ in range(number - 1)]
         liar.append('liar')
         if number > 5:
             liar.pop(0)
