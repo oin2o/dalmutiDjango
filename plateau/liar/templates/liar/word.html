@@ -4,6 +4,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=no" />
     <title>Liar Game</title>
+    <script type="text/javascript">
+    function deleteWord(word){
+        if(confirm(word + '를 삭제하시겠습니까?')) {
+            id_action.value = "del";
+            id_word.value = word;
+            document.forms['wordform'].submit();
+        }
+    }
+    </script>
 </head>
 <body onload="init()">
 {% include "./menu.html" %}
@@ -26,11 +35,12 @@
     </tbody>
 </table>
 {% elif category %}
-<form action="{% url 'liar:add' category.categoryname %}" method="post">
+<form name="wordform" action="{% url 'liar:add' category.categoryname %}" method="post">
     {% csrf_token %}
+    <input type="hidden" name="action" id="id_action" value="add" />
     <p style="text-indent: 0.5em;">
         <button type="button" class="btn btn-light disabled">{{ category.categoryname }}</button>
-        <input type="text" name="word" maxlength="100" width="100%" placeholder="단어"/>
+        <input type="text" name="word" id="id_word" maxlength="100" width="100%" placeholder="단어"/>
         <button type="submit" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">추가</button>
     </p>
 </form>
@@ -40,7 +50,7 @@
         <tr>
         {% for word in words %}
             <td class="tdh6" scope="row">
-                <button type="submit" class="btn btn-info disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">{{ word.word }}</button>
+                <button onclick="deleteWord( '{{ word.word }}' )" type="button" class="btn btn-info disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">{{ word.word }}</button>
             </td>
             {% if forloop.counter|divisibleby:4 != 0 %}
          </tr><tr>

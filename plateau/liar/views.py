@@ -99,7 +99,7 @@ class WordView(generic.ListView):
         return render(request, self.template_name, context)
 
 
-class AddView(generic.ListView):
+class WordDetailView(generic.ListView):
     template_name = "liar/word.html"
 
     def get(self, request, categoryname):
@@ -119,12 +119,17 @@ class AddView(generic.ListView):
         category = Category.objects.filter(categoryname=categoryname).first()
 
         word = request.POST.get('word')
+        action = request.POST.get('action')
 
         if len(word) != 0:
-            _word, created = Words.objects.get_or_create(
-                category=category,
-                word=word
-            )
+            if action == 'add':
+                _word, created = Words.objects.get_or_create(
+                    category=category,
+                    word=word
+                )
+            elif action == 'del':
+                deleteWord = Words.objects.filter(category=category, word=word).first()
+                deleteWord.delete()
 
         words = Words.objects.filter(category=category).all()
 
