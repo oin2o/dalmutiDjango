@@ -37,7 +37,7 @@ class GameView(generic.ListView):
     def post(self, request, categoryname):
         category = Category.objects.filter(categoryname=categoryname).first()
 
-        words = Words.objects.filter(category=category).all().order_by('word')
+        words = Words.objects.filter(category=category).all()
 
         number = int(request.POST.get('number'))
 
