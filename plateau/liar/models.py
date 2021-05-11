@@ -10,7 +10,7 @@ class Category(models.Model):
 
 class Words(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    word = models.CharField(max_length=100, unique=True)
+    word = models.CharField(max_length=100)
 
     def __str__(self):
         return str(self.category) + ':' + self.word
