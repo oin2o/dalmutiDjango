@@ -21,7 +21,7 @@
         <tr>
         {% for category in categories %}
             <td class="tdh6" scope="row">
-                <button type="submit" class="btn btn-info disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">{{ category.categoryname }}</button>
+                <button type="button" class="btn btn-info disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">{{ category.categoryname }}</button>
             </td>
             {% if forloop.counter|divisibleby:4 != 0 %}
          </tr><tr>

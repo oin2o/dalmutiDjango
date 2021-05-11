@@ -24,7 +24,7 @@
         {% for category in categories %}
             <td class="tdh6" scope="row">
                 <a href="{% url 'liar:add' category.categoryname %}">
-                    <button type="submit" class="btn btn-outline-info" style="height:30px;padding-top:initial;padding-bottom:initial;">{{ category.categoryname }}</button>
+                    <button type="button" class="btn btn-outline-info" style="height:30px;padding-top:initial;padding-bottom:initial;">{{ category.categoryname }}</button>
                 </a>
             </td>
             {% if forloop.counter|divisibleby:4 != 0 %}
