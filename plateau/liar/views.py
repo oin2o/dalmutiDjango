@@ -12,7 +12,7 @@ class MainView(generic.ListView):
     template_name = "liar/main.html"
 
     def get(self, request):
-        categories = Category.objects.all()
+        categories = Category.objects.all().order_by('categoryname')
 
         context = {
             'categories': categories,
@@ -37,7 +37,7 @@ class GameView(generic.ListView):
     def post(self, request, categoryname):
         category = Category.objects.filter(categoryname=categoryname).first()
 
-        words = Words.objects.filter(category=category).all()
+        words = Words.objects.filter(category=category).all().order_by('word')
 
         number = int(request.POST.get('number'))
 
@@ -67,7 +67,7 @@ class CategoryView(generic.ListView):
     template_name = "liar/category.html"
 
     def get(self, request):
-        categories = Category.objects.all()
+        categories = Category.objects.all().order_by('categoryname')
 
         context = {
             'categories': categories,
@@ -90,7 +90,7 @@ class WordView(generic.ListView):
     template_name = "liar/word.html"
 
     def get(self, request):
-        categories = Category.objects.all()
+        categories = Category.objects.all().order_by('categoryname')
 
         context = {
             'categories': categories,
@@ -105,7 +105,7 @@ class WordDetailView(generic.ListView):
     def get(self, request, categoryname):
         category = Category.objects.filter(categoryname=categoryname).first()
 
-        words = Words.objects.filter(category=category).all()
+        words = Words.objects.filter(category=category).all().order_by('word')
 
         context = {
             'category': category,
@@ -131,7 +131,7 @@ class WordDetailView(generic.ListView):
                 deleteWord = Words.objects.filter(category=category, word=word).first()
                 deleteWord.delete()
 
-        words = Words.objects.filter(category=category).all()
+        words = Words.objects.filter(category=category).all().order_by('word')
 
         context = {
             'category': category,
