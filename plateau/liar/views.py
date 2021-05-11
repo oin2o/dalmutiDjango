@@ -48,6 +48,9 @@ class GameView(generic.ListView):
 
         liar = ['citizen' for _ in range(int(number) - 1)]
         liar.append('liar')
+        if number > 5:
+            liar.pop(0)
+            liar.append('trickster')
         random.shuffle(liar)
 
         context = {
