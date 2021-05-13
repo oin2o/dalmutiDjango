@@ -5,22 +5,37 @@
     <meta name="format-detection" content="telephone=no" />
     <title>Liar Game</title>
     <script type="text/javascript">
-    function checkWord(who, word, btn){
-        if(who == 'liar') {
-            alert('당신은 라이어입니다. 화이팅!!!');
-        } else if(who == 'trickster') {
-            alert('당신은 사기꾼입니다. 라이어를 도와주세요.\n제시어는 ' + word + '입니다.');
+    function checkWord(who, word, guest, btn){
+        const num = "{{ number }}";
+        if(num > 5) {
+            if(who == 'liar') {
+                swal("I am a Liar~👻", "당신은 " + guest + "번째 손님입니다.\n\n소속: 라이어\n직업: 라이어\n\n목표\n1. 제시어를 유추하세요.\n2. 배신자(내부고발자)를 찾으세요.");
+            } else if(who == 'trickster') {
+                swal("나는 나는 사기꾼~🎶", "당신은 " + guest + "번째 손님입니다.\n\n소속: 라이어\n직업: 사기꾼\n특수: 제시어는 " + word + "입니다.\n\n목표\n1. 라이어를 도와주세요.");
+            } else if(who == 'whistleblower') {
+                swal("라이어가 누구냐면? 쉿~🤫", "당신은 " + guest + "번째 손님입니다.\n\n소속: 시민\n직업: 내부고발자(배신자)\n특수: 라이어는 " + {{ whistle }} + "번째 손님입니다.\n제시어: " + word + "\n\n목표\n1. 라이어와 사기꾼을 찾으세요.\n2. 라이어에게 잡히지 마세요.");
+            } else {
+                swal("나 진짜 시민이라고~☠", "당신은 " + guest + "번째 손님입니다.\n\n소속: 시민\n직업: 시민\n제시어: " + word + "\n\n목표\n1. 라이어와 사기꾼을 찾으세요.\n2. 내부고발자(배신자)를 보호하세요.");
+            }
         } else {
-            alert('당신은 시민입니다.\n제시어는 ' + word + '입니다.');
+            if(who == 'liar') {
+                swal("I am a Liar~🎭", "당신은 " + guest + "번째 손님입니다.\n\n소속: 라이어\n직업: 라이어\n\n목표\n1. 제시어를 유추하세요.");
+            } else {
+                swal("나 진짜 시민이라고~☠", "당신은 " + guest + "번째 손님입니다.\n\n소속: 시민\n직업: 시민\n제시어: " + word + "\n\n목표\n1. 라이어를 찾으세요.");
+            }
         }
         btn.style.display ='none';
     }
     </script>
 </head>
-<body onload="init()">
+<body>
 {% include "./menu.html" %}
 {% load static %}
+{% load liar_tags %}
 {% if categories %}
+<div style="text-align:center;">
+    <p class="text-warning">카테고리를 선택해 주세요.</p>
+</div>
 <table style="margin-left: auto;margin-right: auto;">
     <tbody>
         <tr>
@@ -38,6 +53,15 @@
     </tbody>
 </table>
 {% elif category %}
+    {% if word is None %}
+<div style="text-align:center;">
+    <p class="text-warning">게임인원을 선택하고 시작버튼을 눌러 주세요.</p>
+</div>
+    {% else %}
+<div style="text-align:center;">
+    <p class="text-warning">단어를 확인하고 게임을 진행해 주세요.</p>
+</div>
+    {% endif %}
 <form action="{% url 'liar:game' category.categoryname %}" method="post">
     {% csrf_token %}
     <p style="text-indent: 0.5em;">
@@ -53,7 +77,7 @@
             {% for who in liar %}
                 <td class="tdh6" scope="row">
                     <div id="who_{{ forloop.counter }}">
-                        <button type="button" onclick="checkWord('{{ who }}', '{{ word.word }}', who_{{ forloop.counter }})" class="btn btn-primary disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">단어확인</button>
+                        <button type="button" onclick="checkWord('{{ who }}', '{{ word.word }}', '{{ guest|detectGuest:forloop.counter0 }}', who_{{ forloop.counter }})" class="btn btn-primary disabled" style="height:30px;padding-top:initial;padding-bottom:initial;">단어확인</button>
                     </div>
                 </td>
                 {% if forloop.counter|divisibleby:4 != 0 %}

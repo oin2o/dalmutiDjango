@@ -5,9 +5,12 @@
     <meta name="format-detection" content="telephone=no" />
     <title>Liar Game</title>
 </head>
-<body onload="init()">
+<body>
 {% include "./menu.html" %}
 {% load static %}
+<div style="text-align:center;">
+    <p class="text-warning">카테고리를 추가할 수 있습니다.</p>
+</div>
 <form action="{% url 'liar:category' %}" method="post">
     {% csrf_token %}
     <p style="text-indent: 0.5em;">

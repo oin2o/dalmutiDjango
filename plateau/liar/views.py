@@ -50,14 +50,21 @@ class GameView(generic.ListView):
         liar.append('liar')
         if number > 5:
             liar.pop(0)
+            liar.pop(0)
             liar.append('trickster')
+            liar.append('whistleblower')
         random.shuffle(liar)
+
+        guest = [o + 1 for o in range(number)]
+        random.shuffle(guest)
 
         context = {
             'category': category,
             'number': number,
             'word': word,
             'liar': liar,
+            'guest': guest,
+            'whistle': guest[liar.index('liar')],
         }
 
         return render(request, self.template_name, context)

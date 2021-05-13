@@ -14,10 +14,13 @@
     }
     </script>
 </head>
-<body onload="init()">
+<body>
 {% include "./menu.html" %}
 {% load static %}
 {% if categories %}
+<div style="text-align:center;">
+    <p class="text-warning">단어를 추가할 카테고리를 선택해 주세요.</p>
+</div>
 <table style="margin-left: auto;margin-right: auto;">
     <tbody>
         <tr>
@@ -35,6 +38,9 @@
     </tbody>
 </table>
 {% elif category %}
+<div style="text-align:center;">
+    <p class="text-warning">단어를 추가하거나, 선택하여 삭제할 수 있습니다.</p>
+</div>
 <form name="wordform" action="{% url 'liar:add' category.categoryname %}" method="post">
     {% csrf_token %}
     <input type="hidden" name="action" id="id_action" value="add" />
