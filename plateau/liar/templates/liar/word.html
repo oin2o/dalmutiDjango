@@ -6,11 +6,16 @@
     <title>Liar Game</title>
     <script type="text/javascript">
     function deleteWord(word){
-        if(confirm(word + '를 삭제하시겠습니까?')) {
-            id_action.value = "del";
-            id_word.value = word;
-            document.forms['wordform'].submit();
-        }
+        swal(word + "를 삭제하시겠습니까?", {
+            dangerMode: true,
+            buttons: ["취소", "삭제"],
+        }).then((isConfirm) => {
+            if(isConfirm) {
+                id_action.value = "del";
+                id_word.value = word;
+                document.forms['wordform'].submit();
+            }
+        });
     }
     </script>
 </head>
