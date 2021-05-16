@@ -334,7 +334,7 @@
             <thead>
                 <tr>
                     <td class="tdh6c" scope="row">플레이어</td>
-                    {% if ready_gamer.game.ingameCd < 2 %}
+                    {% if gamer.game.ingameCd < 2 %}
                     <td class="tdh6c" scope="row">상태</td>
                     {% endif %}
                     {% if gamer.game.ingameCd == 4 %}
@@ -347,11 +347,11 @@
                 {% for ready_gamer in ready_gamers %}
                 <tr>
                     <td class="td6c" scope="row">{{ ready_gamer.user.username }}</td>
-                {% if ready_gamer.game.ingameCd < 2 %}
+                {% if gamer.game.ingameCd < 2 %}
                     <td class="td6c" scope="row">
-                    {% if ready_gamer.game.ingameCd == 0 %}
+                    {% if gamer.game.ingameCd == 0 %}
                         참가
-                    {% elif ready_gamer.game.ingameCd == 1 %}
+                    {% elif gamer.game.ingameCd == 1 %}
                         {% if ready_gamer.categoryname %}
                         완료
                         {% else %}
