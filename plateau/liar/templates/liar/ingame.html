@@ -239,7 +239,7 @@
                 {% if gamer.game.ingameCd == 0 %}
                     by <a href="{% url 'liar:telegram' gamer.game.gamecode gamer.user.username %}">{{ gamer.game.gamecode }}</a>
                 {% else %}
-                    Round : {{ gamer.game.round }} by <a href="{% url 'liar:telegram' gamer.game.gamecode %}">{{ gamer.game.gamecode }}</a>
+                    Round : {{ gamer.game.round }} by {{ gamer.game.gamecode }}
                 {% endif %}
                 </td>
             </tr>
