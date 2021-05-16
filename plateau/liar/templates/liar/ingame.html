@@ -1,0 +1,421 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>Liar Game</title>
+    <style>
+        table{
+            width: 95%;
+        }
+        .td6{
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .td6c{
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .tdh6{
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+        .tdh6c{
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+    </style>
+    <script type="text/javascript">
+    // 클라이언트와 서버의 웹소켓 통신을 가능하도록 연결시켜주는 부분이다.
+    // router.py에서의 url과 일치하도록 해 주어야한다.
+    var web_socket = new WebSocket('ws://' + window.location.host + '/liar/' + '{{ gamer.game.gamecode }}' + '/' + '{{ gamer.user.username }}');
+
+    // onmessage는 counsumers에서 보내는 메세지를 받는 부분이다.
+    web_socket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+
+        if (message == 'refresh') {
+            setTimeout(function(){
+                document.location.href = "{% url 'liar:game' gamer.game.gamecode gamer.user.username %}";
+            }, 500);
+        }
+    };
+
+    function readygame() {
+        id_action.value = "readygame";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function viewgame() {
+        id_action.value = "viewgame";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function startgame() {
+        id_action.value = "startgame";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function votegame() {
+        swal("발언을 종료하고 라이어를 검거하시겠습니까?", {
+            dangerMode: true,
+            buttons: ["취소", "투표"],
+        }).then((isConfirm) => {
+            if(isConfirm) {
+                id_action.value = "votegame";
+                document.forms['gameform'].submit();
+
+                web_socket.send(JSON.stringify({
+                    'message': 'refresh'
+                }));
+            } else {
+                swal("발언을 계속합니다.");
+            }
+        });
+    }
+
+    function resultgame() {
+        id_action.value = "resultgame";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function endgame() {
+        id_action.value = "endgame";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function gamecategory(categoryname) {
+        id_action.value = "gamecategory";
+        id_categoryname.value = categoryname;
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function trickster(tricksterYn) {
+        let btn_text = "추가";
+        let danger_mode = false;
+        if(tricksterYn == "True") {
+            btn_text = "제외";
+            danger_mode = true;
+        }
+        swal("나는 나는 사기꾼~🎶", "소속: 라이어\n특수: 제시어를 알고 있습니다.\n\n목표\n1. 라이어를 도와주세요.\n2. 시민에게 정체를 들키지 마세요.", {
+            dangerMode: danger_mode,
+            buttons: ["취소", btn_text],
+        }).then((isConfirm) => {
+            if(isConfirm) {
+                id_action.value = "trickster";
+                document.forms['gameform'].submit();
+
+                web_socket.send(JSON.stringify({
+                    'message': 'refresh'
+                }));
+            }
+        });
+    }
+
+    function whistleblower(whistleblowerYn) {
+        let btn_text = "추가";
+        let danger_mode = false;
+        if(whistleblowerYn == "True") {
+            btn_text = "제외";
+            danger_mode = true;
+        }
+        swal("라이어가 누구냐면? 쉿~🤫", "소속: 시민\n특수: 라이어와 제시어를 알고 있습니다.\n\n목표\n1. 라이어와 사기꾼을 찾으세요.\n2. 라이어에게 정체를 들키지 마세요.", {
+            dangerMode: danger_mode,
+            buttons: ["취소", btn_text],
+        }).then((isConfirm) => {
+            if(isConfirm) {
+                id_action.value = "whistleblower";
+                document.forms['gameform'].submit();
+
+                web_socket.send(JSON.stringify({
+                    'message': 'refresh'
+                }));
+            }
+        });
+
+    }
+
+    function descjob(job) {
+        if(job == 'citizen') {
+            swal("나 진짜 시민이라고~☠", "소속: 시민\n특수: 제시어를 알고 있습니다.\n\n목표\n1. 라이어와 사기꾼을 찾으세요.\n2. 내부고발자(배신자)를 보호하세요.", {
+                buttons: false,
+                timer: 2000,
+            });
+        } else if(job == 'liar') {
+            swal("I am a Liar~👻", "소속: 라이어\n\n목표\n1. 제시어를 유추하세요.\n2. 배신자(내부고발자)를 찾으세요.", {
+                buttons: false,
+                timer: 2000,
+            });
+        } else if(job == 'trickster') {
+            swal("나는 나는 사기꾼~🎶", "소속: 라이어\n특수: 제시어를 알고 있습니다.\n\n목표\n1. 라이어를 도와주세요.\n2. 시민에게 정체를 들키지 마세요.", {
+                buttons: false,
+                timer: 2000,
+            });
+        } else if(job == 'whistleblower') {
+            swal("라이어가 누구냐면? 쉿~🤫", "소속: 시민\n특수: 라이어와 제시어를 알고 있습니다.\n\n목표\n1. 라이어와 사기꾼을 찾으세요.\n2. 라이어에게 정체를 들키지 마세요.", {
+                buttons: false,
+                timer: 2000,
+            });
+        }
+    }
+    </script>
+</head>
+<body>
+{% include "./menu.html" %}
+{% load static %}
+{% load liar_tags %}
+<form name="gameform" action="{% url 'liar:game' gamer.game.gamecode gamer.user.username %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" id="id_action"/>
+    <input type="hidden" name="categoryname" id="id_categoryname"/>
+</form>
+<div id="play_msg" style="text-align:center;">
+    {% if gamer.game.ingameCd == 0 %}
+    <p class="text-warning">대기 중인 플레이어들은 참가 혹은 관전을 선택해 주세요.</p>
+    {% elif gamer.game.ingameCd == 1 %}
+    <p class="text-warning">플레이어들은 제시어 카테고리를 선택해 주세요.</p>
+    {% endif %}
+</div>
+<p style="text-indent: 0.5em;">
+    <div id="play_btn">
+        <table style="margin-left: auto;margin-right: auto;">
+            <tr>
+                <td>
+                    <a href="{% url 'liar:game' gamer.game.gamecode gamer.user.username %}"><button type="button" class="btn btn-outline-info" style="height:25px;padding-top:initial;padding-bottom:initial;">새로고침</button></a>
+                    {% if gamer.game.ingameCd == 0 %}
+                        {% if gamer.status != 1 %}
+                    <button type="button" onclick="readygame()" class="btn btn-outline-info" style="height:25px;padding-top:initial;padding-bottom:initial;">참가</button></a>
+                        {% endif %}
+                        {% if gamer.status != 2 %}
+                    <button type="button" onclick="viewgame()" class="btn btn-outline-info" style="height:25px;padding-top:initial;padding-bottom:initial;">구경</button></a>
+                        {% endif %}
+                    {% endif %}
+                    {% if gamer.user.username == gamer.game.master.username %}
+                        {% if gamer.game.ingameCd == 0 and not wait_gamers and ready_gamers|length > 3 %}
+                    <button type="button" onclick="startgame()" class="btn btn-outline-primary" style="height:25px;padding-top:initial;padding-bottom:initial;">게임시작</button></a>
+                        {% elif gamer.game.ingameCd == 2 %}
+                    <button type="button" onclick="votegame()" class="btn btn-outline-primary" style="height:25px;padding-top:initial;padding-bottom:initial;">투표</button></a>
+                        {% elif gamer.game.ingameCd == 3 %}
+                    <button type="button" onclick="resultgame()" class="btn btn-outline-primary" style="height:25px;padding-top:initial;padding-bottom:initial;">결과확인</button></a>
+                        {% elif gamer.game.ingameCd == 4 %}
+                    <button type="button" onclick="endgame()" class="btn btn-outline-primary" style="height:25px;padding-top:initial;padding-bottom:initial;">게임종료</button></a>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td class="tdh6" style="text-align:right;">
+                {% if gamer.game.ingameCd == 0 %}
+                    by <a href="{% url 'liar:telegram' gamer.game.gamecode gamer.user.username %}">{{ gamer.game.gamecode }}</a>
+                {% else %}
+                    Round : {{ gamer.game.round }} by <a href="{% url 'liar:telegram' gamer.game.gamecode %}">{{ gamer.game.gamecode }}</a>
+                {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+</p>
+<div id="gamer_jobs">
+    <table style="margin-left: auto;margin-right: auto;">
+        <tbody>
+            <tr>
+                <td class="tdh6" scope="row" style="width: 10%;">
+                    직업
+                </td>
+                <td class="td6" scope="row">
+                    <button type="button" onclick="descjob('citizen')" class="btn btn-outline-warning disabled" style="height:20px;padding-top:initial;padding-bottom:initial;">시민</button>
+                </td>
+                <td class="td6" scope="row">
+                    <button type="button" onclick="descjob('liar')" class="btn btn-outline-warning disabled" style="height:20px;padding-top:initial;padding-bottom:initial;">라이어</button>
+                </td>
+                <td class="td6" scope="row">
+                {% if gamer.game.tricksterYn %}
+                    {% if gamer.game.ingameCd == 0 and gamer.user.username == gamer.game.master.username %}
+                    <button type="button" onclick="trickster('{{ gamer.game.tricksterYn }}')" class="btn btn-outline-warning" style="height:20px;padding-top:initial;padding-bottom:initial;">사기꾼</button>
+                    {% else %}
+                    <button type="button" onclick="descjob('trickster')" class="btn btn-outline-warning disabled" style="height:20px;padding-top:initial;padding-bottom:initial;">사기꾼</button>
+                    {% endif %}
+                {% elif gamer.game.ingameCd == 0 and gamer.user.username == gamer.game.master.username %}
+                    <button type="button" onclick="trickster('{{ gamer.game.tricksterYn }}')" class="btn btn-outline-danger" style="height:20px;padding-top:initial;padding-bottom:initial;">사기꾼</button>
+                {% endif %}
+                </td>
+                <td class="td6" scope="row">
+                {% if gamer.game.whistleblowerYn %}
+                    {% if gamer.game.ingameCd == 0 and gamer.user.username == gamer.game.master.username %}
+                    <button type="button" onclick="whistleblower('{{ gamer.game.whistleblowerYn }}')" class="btn btn-outline-warning" style="height:20px;padding-top:initial;padding-bottom:initial;">내부고발자</button>
+                    {% else %}
+                    <button type="button" onclick="descjob('whistleblower')" class="btn btn-outline-warning disabled" style="height:20px;padding-top:initial;padding-bottom:initial;">내부고발자</button>
+                    {% endif %}
+                {% elif gamer.game.ingameCd == 0 and gamer.user.username == gamer.game.master.username %}
+                    <button type="button" onclick="whistleblower('{{ gamer.game.whistleblowerYn }}')" class="btn btn-outline-danger" style="height:20px;padding-top:initial;padding-bottom:initial;">내부고발자</button>
+                {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% if wait_gamers %}
+<div id="gamer_wait">
+    <table style="margin-left: auto;margin-right: auto;">
+        <tbody>
+            <tr>
+                <td class="tdh6" scope="row" style="width: 10%;">
+                    대기
+                </td>
+                <td class="td6" scope="row">
+                    {% for wait_gamer in wait_gamers %}
+                    <button type="button" class="btn btn-outline-dark disabled" style="height:20px;padding-top:initial;padding-bottom:initial;">{{ wait_gamer.user.username }}</button>
+                    {% endfor %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% if view_gamers %}
+<div id="gamer_view">
+    <table style="margin-left: auto;margin-right: auto;">
+        <tbody>
+            <tr>
+                <td class="tdh6" scope="row" style="width: 10%;">
+                    관전
+                </td>
+                <td class="td6" scope="row">
+                    {% for view_gamer in view_gamers %}
+                    <button type="button" class="btn btn-outline-secondary disabled" style="height:20px;padding-top:initial;padding-bottom:initial;">{{ view_gamer.user.username }}</button>
+                    {% endfor %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% if ready_gamers %}
+<p style="text-indent: 0.5em;">
+    <div id="player">
+        <table style="margin-left: auto;margin-right: auto;">
+            <thead>
+                <tr>
+                    <td class="tdh6c" scope="row">플레이어</td>
+                    <td class="tdh6c" scope="row">상태</td>
+                    {% if gamer.game.ingameCd == 4 %}
+                    <td class="tdh6c" scope="row">정체</td>
+                    {% endif %}
+                    <td class="tdh6c" scope="row" style="width: 55%;">정보</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ready_gamer in ready_gamers %}
+                <tr>
+                    <td class="td6c" scope="row">{{ ready_gamer.user.username }}</td>
+                    <td class="td6c" scope="row">
+                    {% if ready_gamer.game.ingameCd == 0 %}
+                        참가
+                    {% elif ready_gamer.game.ingameCd == 1 %}
+                        {% if ready_gamer.categoryname %}
+                        완료
+                        {% else %}
+                        선택중
+                        {% endif %}
+                    {% elif ready_gamer.user.username == gamer.game.turnusername %}
+                        turn
+                    {% endif %}
+                    </td>
+                    {% if gamer.game.ingameCd == 4 %}
+                    <td class="td6c" scope="row">
+                        {% if ready_gamer.job == 'citizen' %}
+                        시민
+                        {% elif ready_gamer.job == 'liar' %}
+                        <b style='color:red !important;'>라이어</b>
+                        {% elif ready_gamer.job == 'trickster' %}
+                        <b style='color:orange !important;'>사기꾼</b>
+                        {% elif ready_gamer.job == 'whistleblower' %}
+                        <b style='color:blue !important;'>내부고발자</b>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                    {% if forloop.counter == 1 %}
+                        {% if gamer.status == 1 %}
+                            {% if gamer.game.ingameCd == 1 %}
+                    <td class="td6c" scope="row" style="width: 50%;" rowspan="{{ ready_gamers|length }}">
+                                {% if gamer.categoryname %}
+                                    {% for player_category in player_categories %}
+                        {{ player_category.0 }} : {{ player_category.1 }}<br>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for category in categories %}
+                        <button type="button" onclick="gamecategory('{{ category.categoryname }}')" class="btn btn-outline-success" style="height:25px;padding-top:initial;padding-bottom:initial;">{{ category.categoryname }}</button>
+                                    {% endfor %}
+                                {% endif %}
+                    </td>
+                            {% elif gamer.game.ingameCd == 2 or gamer.game.ingameCd == 3 %}
+                    <td class="td6" scope="row" style="width: 50%;" rowspan="{{ ready_gamers|length }}">
+                                {% if gamer.job == 'liar' %}
+                        I am a Liar~👻<br><br>카테고리: {{ gamer.game.categoryname }}
+                                {% elif gamer.job == 'citizen' %}
+                        나 진짜 시민이라고~☠<br><br>카테고리: {{ gamer.game.categoryname }}<br>제시어: {{ gamer.game.word }}
+                                {% elif gamer.job == 'trickster' %}
+                        나는 나는 사기꾼~🎶<br><br>카테고리: {{ gamer.game.categoryname }}<br>제시어: {{ gamer.game.word }}
+                                {% elif gamer.job == 'whistleblower' %}
+                        라이어가 누구냐면? 쉿~🤫<br><br>카테고리: {{ gamer.game.categoryname }}<br>제시어: {{ gamer.game.word }}<br>라이어: {{ liar.username }}
+                                {% endif %}
+                    </td>
+                            {% elif gamer.game.ingameCd == 4 %}
+                    <td class="td6c" scope="row" style="width: 50%;" rowspan="{{ ready_gamers|length }}">
+                        카테고리: {{ gamer.game.categoryname }}<br>제시어: {{ gamer.game.word }}
+                    </td>
+                            {% endif %}
+                        {% elif gamer.status == 2 %}
+                            {% if gamer.game.ingameCd == 1 %}
+                    <td class="td6c" scope="row" style="width: 50%;" rowspan="{{ ready_gamers|length }}">
+                                {% for player_category in player_categories %}
+                        {{ player_category.0 }} : {{ player_category.1 }}<br>
+                                {% endfor %}
+                    </td>
+                            {% elif gamer.game.ingameCd == 2 or gamer.game.ingameCd == 3 or gamer.game.ingameCd == 4 %}
+                    <td class="td6c" scope="row" style="width: 50%;" rowspan="{{ ready_gamers|length }}">
+                        카테고리: {{ gamer.game.categoryname }}<br>제시어: {{ gamer.game.word }}
+                    </td>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</p>
+{% endif %}
+</body>
+</html>
