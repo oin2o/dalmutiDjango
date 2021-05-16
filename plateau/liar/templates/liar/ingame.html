@@ -388,7 +388,7 @@
                                 {% elif gamer.job == 'trickster' %}
                         나는 나는 사기꾼~🎶<br><br>카테고리: {{ gamer.game.categoryname }}<br>제시어: {{ gamer.game.word }}
                                 {% elif gamer.job == 'whistleblower' %}
-                        라이어가 누구냐면? 쉿~🤫<br><br>카테고리: {{ gamer.game.categoryname }}<br>제시어: {{ gamer.game.word }}<br>라이어: {{ liar.username }}
+                        라이어가 누구냐면? 쉿~🤫<br><br>카테고리: {{ gamer.game.categoryname }}<br>제시어: {{ gamer.game.word }}<br>라이어: {{ liar.user.username }}
                                 {% endif %}
                     </td>
                             {% elif gamer.game.ingameCd == 4 %}
