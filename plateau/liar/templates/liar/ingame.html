@@ -207,6 +207,12 @@
     <p class="text-warning">대기 중인 플레이어들은 참가 혹은 관전을 선택해 주세요.</p>
     {% elif gamer.game.ingameCd == 1 %}
     <p class="text-warning">플레이어들은 제시어 카테고리를 선택해 주세요.</p>
+    {% elif gamer.game.ingameCd == 2 %}
+    <p class="text-warning">제시어에 따라 발언을 해주세요.</p>
+    {% elif gamer.game.ingameCd == 3 %}
+    <p class="text-warning">의심가는 플레이어에게 투표하세요.</p>
+    {% elif gamer.game.ingameCd == 4 %}
+    <p class="text-warning">결과를 확인하세요.</p>
     {% endif %}
 </div>
 <p style="text-indent: 0.5em;">
@@ -328,7 +334,9 @@
             <thead>
                 <tr>
                     <td class="tdh6c" scope="row">플레이어</td>
+                    {% if ready_gamer.game.ingameCd < 2 %}
                     <td class="tdh6c" scope="row">상태</td>
+                    {% endif %}
                     {% if gamer.game.ingameCd == 4 %}
                     <td class="tdh6c" scope="row">정체</td>
                     {% endif %}
@@ -339,6 +347,7 @@
                 {% for ready_gamer in ready_gamers %}
                 <tr>
                     <td class="td6c" scope="row">{{ ready_gamer.user.username }}</td>
+                {% if ready_gamer.game.ingameCd < 2 %}
                     <td class="td6c" scope="row">
                     {% if ready_gamer.game.ingameCd == 0 %}
                         참가
@@ -348,10 +357,9 @@
                         {% else %}
                         선택중
                         {% endif %}
-                    {% elif ready_gamer.user.username == gamer.game.turnusername %}
-                        turn
                     {% endif %}
                     </td>
+                {% endif %}
                     {% if gamer.game.ingameCd == 4 %}
                     <td class="td6c" scope="row">
                         {% if ready_gamer.job == 'citizen' %}

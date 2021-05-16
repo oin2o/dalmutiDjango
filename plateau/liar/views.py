@@ -68,15 +68,32 @@ class MainView(generic.ListView):
                 if not total_gamer.filter(user=user):
                     gamer, created = Gamer.objects.get_or_create(game=game, user=user, job="무직")
             else:
-                context = {
-                    'username': username,
-                    'message': '해당 게임에 참가할 수 없습니다.',
-                }
+                if total_gamer.filter(user=user):
+                    return HttpResponseRedirect(reverse('liar:game', args=(gamecode, user.username,)))
+                else:
+                    user_only_guest = User.objects.filter(delYn=False, username__startswith='손님').order_by('username')
+                    user_exclude_guest = User.objects.filter(delYn=False).exclude(username__startswith='손님').order_by(
+                        'username')
 
-                return render(request, self.template_name, context)
+                    user_list = list(user_only_guest) + list(user_exclude_guest)
+
+                    context = {
+                        'user_list': user_list,
+                        'username': username,
+                        'message': '해당 게임에 참가할 수 없습니다.',
+                    }
+
+                    return render(request, self.template_name, context)
         else:
+            user_only_guest = User.objects.filter(delYn=False, username__startswith='손님').order_by('username')
+            user_exclude_guest = User.objects.filter(delYn=False).exclude(username__startswith='손님').order_by(
+                'username')
+
+            user_list = list(user_only_guest) + list(user_exclude_guest)
+
             # 게임이 존재하지 않는 경우, 에러로 메인화면으로 전송
             context = {
+                'user_list': user_list,
                 'username': username,
                 'message': '존재하지 않는 게임입니다.',
             }
