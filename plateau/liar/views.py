@@ -253,6 +253,67 @@ class GameView(generic.ListView):
         return HttpResponseRedirect(reverse('liar:game', args=(gamecode, username,)))
 
 
+class OfflineView(generic.ListView):
+    template_name = "liar/offline.html"
+
+    def get(self, request):
+        categories = Category.objects.all().order_by('categoryname')
+
+        context = {
+            'categories': categories,
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        action = request.POST.get('action')
+        categoryname = request.POST.get('categoryname')
+
+        if action == "category":
+            category = Category.objects.filter(categoryname=categoryname).first()
+
+            context = {
+                'category': category,
+                'categoryname': categoryname,
+                'number': 3,
+            }
+        elif action == "startgame":
+            number = int(request.POST.get('player'))
+
+            category = Category.objects.filter(categoryname=categoryname).first()
+
+            words = Words.objects.filter(category=category).all()
+
+            word = None
+
+            if len(words) > 0:
+                word = words[random.randrange(0, len(words))]
+
+            liar = ['citizen' for _ in range(number - 1)]
+            liar.append('liar')
+            if number > 5:
+                liar.pop(0)
+                liar.pop(0)
+                liar.append('trickster')
+                liar.append('whistleblower')
+            random.shuffle(liar)
+
+            guest = [o + 1 for o in range(number)]
+            random.shuffle(guest)
+
+            context = {
+                'category': category,
+                'categoryname': categoryname,
+                'number': number,
+                'word': word,
+                'liar': liar,
+                'guest': guest,
+                'whistle': guest[liar.index('liar')],
+            }
+
+        return render(request, self.template_name, context)
+
+
 class CategoryView(generic.ListView):
     template_name = "liar/category.html"
 
