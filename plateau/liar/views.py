@@ -417,7 +417,7 @@ class TelegramView(generic.DetailView):
 
         bot = telegram.Bot(token='1480423142:AAHkkAlgShepdoXFW2HP8TzZAiRfCN8WpHI')
         bot.sendMessage(chat_id='-413309173',
-                        text='[게임코드:' + game.gamecode + '](http://3.35.239.74:8000/liar/telegram/login/' + game.gamecode + '/)',
+                        text='[라이어코드:' + game.gamecode + '](http://3.35.239.74:8000/liar/login/' + game.gamecode + '/)',
                         parse_mode='Markdown', disable_web_page_preview=True)
 
         return HttpResponseRedirect(reverse('liar:game', args=(gamecode, username,)))

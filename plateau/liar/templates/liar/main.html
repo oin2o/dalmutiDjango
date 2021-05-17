@@ -76,7 +76,7 @@
     });
 </script>
 {% endif %}
-<form name="mainform" method="post">
+<form name="mainform" action="{% url 'liar:main' %}" method="post">
     {% csrf_token %}
     <input type="hidden" name="action" id="id_action"/>
     <input type="hidden" name="gamecode" id="id_gamecode" value="{{ gamecode }}"/>
