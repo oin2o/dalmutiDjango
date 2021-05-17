@@ -12,7 +12,7 @@
     function userami(username) {
         id_username.value = username;
 
-        if(id_gamecode.value != null) {
+        if(id_gamecode.value != "") {
             if(regcode.test(id_gamecode.value)) {
                 id_gamecode.value = id_gamecode.value.toUpperCase();
                 id_action.value = "ingame";
