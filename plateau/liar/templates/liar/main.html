@@ -4,12 +4,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=no" />
     <title>Liar Game</title>
-    <script type="text/javascript">
+</head>
+<script type="text/javascript">
 
     const regcode = /^[A-Za-z0-9+]{6}$/;
 
     function userami(username) {
         id_username.value = username;
+
+        if(regcode.test(id_gamecode.value)) {
+            id_gamecode.value = id_gamecode.value.toUpperCase();
+            id_action.value = "ingame";
+            document.forms['mainform'].submit();
+        } else {
+            swal("게임 코드를 다시 확인해 주세요.", {
+                buttons: false,
+                icon: "warning",
+                timer: 1000,
+            });
+        }
     }
 
     function newgame(){
@@ -62,7 +75,6 @@
         });
     }
     </script>
-</head>
 <body>
 {% include "./menu.html" %}
 {% load static %}
