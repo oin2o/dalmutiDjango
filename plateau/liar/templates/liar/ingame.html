@@ -617,15 +617,20 @@
                                 }));
                             });
                         } else {
-                            swal("검거 대상을 선택해 주세요.", {
+                            swal("제시어는 무엇일까요?", {
                                 dangerMode: true,
-                                buttons: ["사기꾼", "라이어"],
-                            }).then((isConfirm) => {
-                                id_vote.value = "trickster";
-                                if(isConfirm) {
-                                    id_vote.value = "liar";
-                                }
-                                id_action.value = "vote";
+                                buttons: {
+                                    {% for word in words %}
+                                    '{{ word.word }}': {
+                                        text: '{{ word.word }}',
+                                        value: '{{ word.word }}',
+                                    },
+                                    {% endfor %}
+                                },
+                            }).then((response) => {
+                                id_lock.value = 'word';
+                                id_key.value = response;
+                                id_action.value = "runaway";
                                 document.forms['gameform'].submit();
 
                                 web_socket.send(JSON.stringify({
