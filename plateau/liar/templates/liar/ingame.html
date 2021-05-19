@@ -618,13 +618,12 @@
                             });
                         } else {
                             swal("제시어는 무엇일까요?", {
+                                dangerMode: true,
                                 buttons: {
-                                    {% for word in words %}
-                                    '{{ word.word }}': {
-                                        text: '{{ word.word }}',
-                                        value: '{{ word.word }}',
+                                    "냉장고": {
+                                        text: "냉장고",
+                                        value: "냉장고",
                                     },
-                                    {% endfor %}
                                 },
                             }).then((response) => {
                                 id_lock.value = 'word';
