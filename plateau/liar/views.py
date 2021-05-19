@@ -195,6 +195,7 @@ class GameView(generic.ListView):
             game.vote = 0
             game.targetusername = ''
             game.winner = ''
+            game.liarkey = 0
             game.save()
 
         elif action == "gamecategory":
@@ -370,9 +371,11 @@ class GameView(generic.ListView):
             key = request.POST.get('key')
 
             if lock == "word":
+                game.liarkey = 1
                 if key == game.word:
                     game.winner = 'liar'
             elif lock == "whistleblower":
+                game.liarkey = 2
                 runaway_user = User.objects.filter(username=key).first()
                 runaway_gamer = Gamer.objects.filter(game=game, user=runaway_user).first()
                 if runaway_gamer.job == "whistleblower":
