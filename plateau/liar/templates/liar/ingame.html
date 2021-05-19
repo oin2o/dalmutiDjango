@@ -600,21 +600,39 @@
                             {% endif %}
                             {% if gamer.user.username == liar.user.username %}
                         <script type="text/javascript">
-                        swal("검거 대상을 선택해 주세요.", {
-                            dangerMode: true,
-                            buttons: ["사기꾼", "라이어"],
-                        }).then((isConfirm) => {
-                            id_vote.value = "trickster";
-                            if(isConfirm) {
-                                id_vote.value = "liar";
-                            }
-                            id_action.value = "vote";
-                            document.forms['gameform'].submit();
+                        if('{{ gamer.game.whistleblowerYn }}' == "True") {
+                            swal("검거 대상을 선택해 주세요.", {
+                                dangerMode: true,
+                                buttons: ["사기꾼", "라이어"],
+                            }).then((isConfirm) => {
+                                id_vote.value = "trickster";
+                                if(isConfirm) {
+                                    id_vote.value = "liar";
+                                }
+                                id_action.value = "vote";
+                                document.forms['gameform'].submit();
 
-                            web_socket.send(JSON.stringify({
-                                'message': 'refresh'
-                            }));
-                        });
+                                web_socket.send(JSON.stringify({
+                                    'message': 'refresh'
+                                }));
+                            });
+                        } else {
+                            swal("검거 대상을 선택해 주세요.", {
+                                dangerMode: true,
+                                buttons: ["사기꾼", "라이어"],
+                            }).then((isConfirm) => {
+                                id_vote.value = "trickster";
+                                if(isConfirm) {
+                                    id_vote.value = "liar";
+                                }
+                                id_action.value = "vote";
+                                document.forms['gameform'].submit();
+
+                                web_socket.send(JSON.stringify({
+                                    'message': 'refresh'
+                                }));
+                            });
+                        }
                         </script>
                             {% endif %}
                         {% endif %}
