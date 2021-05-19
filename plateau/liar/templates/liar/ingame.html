@@ -620,10 +620,12 @@
                             swal("제시어는 무엇일까요?", {
                                 dangerMode: true,
                                 buttons: {
-                                    "냉장고": {
-                                        text: "냉장고",
-                                        value: "냉장고",
+                                    {% for word in words %}
+                                    "{{ word.word }}": {
+                                        text: "{{ word.word }}",
+                                        value: "{{ word.word }}",
                                     },
+                                    {% endfor %}
                                 },
                             }).then((response) => {
                                 id_lock.value = 'word';
