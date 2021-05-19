@@ -481,7 +481,7 @@
                     {% else %}
                     <td class="tdh6c" scope="row">상태</td>
                     {% endif %}
-                    {% if gamer.game.ingameCd > 1 %}
+                    {% if gamer.game.ingameCd > 1 and ready_gamers.0.speech1 %}
                     <td class="tdh6c" scope="row">발언</td>
                     {% endif %}
                     <td class="tdh6c" scope="row" style="width: 40%;">정보</td>
@@ -685,7 +685,7 @@
                         {% endif %}
                     </td>
                     {% endif %}
-                    {% if gamer.game.ingameCd > 1 %}
+                    {% if gamer.game.ingameCd > 1 and ready_gamers.0.speech1 %}
                     <td class="td6c" scope="row">
                         {% if ready_gamer.speech1 %}
                         <button type="button" onclick="saying('{{ ready_gamer.speech1 }}')" class="btn btn-outline-dark btn-sm" style="height:20px;padding-top:initial;padding-bottom:initial;">1</button>
