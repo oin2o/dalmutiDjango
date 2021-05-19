@@ -182,13 +182,12 @@
         if(job == 'citizen') {
             desc += "소속: 시민\n특수: 제시어를 알고 있습니다.";
             if('{{ gamer.game.tricksterYn }}' == 'True') {
-                desc += "\n\n목표\n1. 라이어와 사기꾼을 찾으세요.\n2. 내부고발자(배신자)를 보호하세요.";
+                desc += "\n\n목표\n1. 라이어와 사기꾼을 찾으세요.";
             } else  {
-                if('{{ gamer.game.whistleblowerYn }}' == 'True') {
-                    desc += "\n\n목표\n1. 라이어를 찾으세요.\n2. 내부고발자(배신자)를 보호하세요.";
-                } else {
-                    desc += "\n\n목표\n1. 라이어를 찾으세요.";
-                }
+                desc += "\n\n목표\n1. 라이어를 찾으세요.";
+            }
+            if('{{ gamer.game.whistleblowerYn }}' == 'True') {
+                desc += "\n2. 내부고발자(배신자)를 보호하세요.";
             }
             swal("나 진짜 시민이라고~☠", desc, {
                 buttons: false,
@@ -212,9 +211,9 @@
         } else if(job == 'whistleblower') {
             desc += "소속: 시민\n특수: 라이어와 제시어를 알고 있습니다.";
             if('{{ gamer.game.tricksterYn }}' == 'True') {
-                desc += "\n\n목표\n1. 라이어를 찾으세요.";
-            } else  {
                 desc += "\n\n목표\n1. 라이어와 사기꾼을 찾으세요.";
+            } else  {
+                desc += "\n\n목표\n1. 라이어를 찾으세요.";
             }
             desc += "\n2. 라이어에게 정체를 들키지 마세요.";
             swal("라이어가 누구냐면? 쉿~🤫", desc, {
@@ -229,13 +228,12 @@
         if(job == 'citizen') {
             desc += "소속: 시민\n\n카테고리: " + '{{ gamer.game.categoryname }}' + "\n제시어: " + '{{ gamer.game.word }}';
             if('{{ gamer.game.tricksterYn }}' == 'True') {
-                desc += "\n\n목표\n1. 라이어와 사기꾼을 찾으세요.\n2. 내부고발자(배신자)를 보호하세요.";
+                desc += "\n\n목표\n1. 라이어와 사기꾼을 찾으세요.";
             } else  {
-                if('{{ gamer.game.whistleblowerYn }}' == 'True') {
-                    desc += "\n\n목표\n1. 라이어를 찾으세요.\n2. 내부고발자(배신자)를 보호하세요.";
-                } else {
-                    desc += "\n\n목표\n1. 라이어를 찾으세요.";
-                }
+                desc += "\n\n목표\n1. 라이어를 찾으세요.";
+            }
+            if('{{ gamer.game.whistleblowerYn }}' == 'True') {
+                desc += "\n2. 내부고발자(배신자)를 보호하세요.";
             }
             swal("나 진짜 시민이라고~☠", desc, {
                 buttons: false,
@@ -259,9 +257,9 @@
         } else if(job == 'whistleblower') {
             desc += "소속: 시민\n\n카테고리: " + '{{ gamer.game.categoryname }}' + "\n제시어: " + '{{ gamer.game.word }}' + "\n라이어: " + '{{ liar.user.username }}';
             if('{{ gamer.game.tricksterYn }}' == 'True') {
-                desc += "\n\n목표\n1. 라이어를 찾으세요.";
-            } else  {
                 desc += "\n\n목표\n1. 라이어와 사기꾼을 찾으세요.";
+            } else  {
+                desc += "\n\n목표\n1. 라이어를 찾으세요.";
             }
             desc += "\n2. 라이어에게 정체를 들키지 마세요.";
             swal("라이어가 누구냐면? 쉿~🤫", desc, {
