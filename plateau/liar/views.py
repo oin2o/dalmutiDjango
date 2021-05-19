@@ -116,6 +116,10 @@ class GameView(generic.ListView):
 
         categories = Category.objects.all().order_by('categoryname')
 
+        words = []
+        if game.categoryname:
+            words = Words.objects.all().order_by('word')
+
         total_players = Gamer.objects.filter(game=game, status=1)
         player_category = {}
         for _player in total_players:
@@ -135,6 +139,7 @@ class GameView(generic.ListView):
             'ready_gamers': ready_gamers,
             'view_gamers': view_gamers,
             'categories': categories,
+            'words': words,
             'liar': liar,
             'player_categories': sorted(player_category.items(), key=operator.itemgetter(1), reverse=True),
         }
@@ -175,7 +180,10 @@ class GameView(generic.ListView):
                 _gamer.job = "무직"
                 _gamer.position = 0
                 _gamer.categoryname = ''
+                _gamer.speech1 = ''
+                _gamer.speech2 = ''
                 _gamer.vote = 0
+                _gamer.targetusername = ''
                 _gamer.save()
 
             # 게임 라운드 증가 및 게임상태코드 단어선택 상태로 변경
@@ -184,6 +192,9 @@ class GameView(generic.ListView):
             game.categoryname = ''
             game.word = ''
             game.turnusername = ''
+            game.vote = 0
+            game.targetusername = ''
+            game.winner = ''
             game.save()
 
         elif action == "gamecategory":
@@ -238,12 +249,143 @@ class GameView(generic.ListView):
                 game.turnusername = turnusername
                 game.save()
 
+        elif action == "speech":
+            # 입력한 발언 내용을 각 플레이어별 발언으로 등록
+            if not gamer.speech1:
+                gamer.speech1 = request.POST.get('speech')
+            elif not gamer.speech2:
+                gamer.speech2 = request.POST.get('speech')
+            gamer.save()
+
+            # 다음 플레이어 저장을 위한 순번 확인
+            ready_gamers = Gamer.objects.filter(game=game, status=1).order_by('position')
+
+            # 플레이어의 두번째 발언이 등록되었고, 현재 순번이 플레이어 숫자와 동일한 경우(마지막 플레이어의 두번째 발언인 경우)
+            if gamer.speech2 and gamer.position == len(ready_gamers):
+                # 해당 게임의 단계를 발언종료 후, 투표 단계로 변경(검거대상이 라이어만 있는 경우)
+                if not game.tricksterYn:
+                    for _gamer in ready_gamers:
+                        _gamer.vote = 1
+                        _gamer.save()
+
+                    game.vote = 1
+                game.ingameCd = 3
+                game.save()
+            else:
+                game.turnusername = ready_gamers[gamer.position % len(ready_gamers)].user.username
+                game.save()
+
         elif action == "votegame":
+            if not game.tricksterYn:
+                ready_gamers = Gamer.objects.filter(game=game, status=1).order_by('position')
+                for _gamer in ready_gamers:
+                    _gamer.vote = 1
+                    _gamer.save()
+
+                game.vote = 1
             game.ingameCd = 3
             game.save()
 
-        elif action == "resultgame":
+        elif action == "vote":
+            vote = request.POST.get('vote')
+            if vote == "liar":
+                gamer.vote = 1
+            else:
+                gamer.vote = 2
+            gamer.save()
+
+            no_vote_players = Gamer.objects.filter(game=game, status=1, vote=0)
+            # 모든 참가 플레이어가 검거 대상을 투표한 경우
+            if not no_vote_players:
+                total_players = Gamer.objects.filter(game=game, status=1)
+                vote_liar = total_players.filter(vote=1)
+                if len(vote_liar) >= len(total_players) - len(vote_liar):
+                    game.vote = 1
+                else:
+                    game.vote = 2
+                game.save()
+
+        elif action == "target":
+            gamer.targetusername = request.POST.get('targetusername')
+            gamer.save()
+
+            # 전체 플레이어가 타겟을 지정하면 게임 타겟으로 지정
+            no_target_players = Gamer.objects.filter(game=game, status=1, targetusername='')
+
+            # 타겟을 모두 고른 경우에만 표기
+            if not no_target_players:
+                target_category = {}
+                total_players = Gamer.objects.filter(game=game, status=1)
+
+                for _player in total_players:
+
+                    # 카테고리 우선순위를 위해 딕셔너리 생성 및 카운트
+                    if _player.targetusername:
+                        if _player.targetusername in target_category:
+                            target_category[_player.targetusername] = target_category[_player.targetusername] + 1
+                        else:
+                            target_category[_player.targetusername] = 1
+
+                sorted_target_category = sorted(target_category.items(), key=operator.itemgetter(1), reverse=True)
+
+                # 상위 타겟이 투표점수 동점인 경우, 라이어 승
+                if len(sorted_target_category) > 1 and sorted_target_category[0][1] == sorted_target_category[1][1]:
+                    game.targetusername = 'TIE'
+                    game.winner = 'liar'
+                    game.ingameCd = 5
+                    game.save()
+                else:
+                    game.targetusername = sorted_target_category[0][0]
+                    target_user = User.objects.filter(username=game.targetusername).first()
+                    target_gamer = Gamer.objects.filter(game=game, user=target_user).first()
+
+                    if game.vote == 1:
+                        if target_gamer.job == 'liar':
+                            # 타겟 대상이 라이어이고, 지정된 타겟이 라이어라면 마지막 찬스 단계로 이동
+                            game.ingameCd = 4
+                            game.save()
+                        else:
+                            # 타겟 대상이 라이어이고, 지정된 타겟이 라이어가 아니라면 라이어 승
+                            game.winner = 'liar'
+                            game.ingameCd = 5
+                            game.save()
+                    else:
+                        if target_gamer.job == 'trickster':
+                            # 타겟 대상이 사기꾼이고, 지정된 사기꾼이라면 시민 승
+                            game.winner = 'citizen'
+                            game.ingameCd = 5
+                            game.save()
+                        else:
+                            # 타겟 대상이 사기꾼이고, 지정된 타겟이 라이어가 아니라면 라이어 승
+                            game.winner = 'liar'
+                            game.ingameCd = 5
+                            game.save()
+
+        elif action == "liargame":
             game.ingameCd = 4
+            game.save()
+
+        elif action == "runaway":
+            lock = request.POST.get('lock')
+            key = request.POST.get('key')
+
+            if lock == "word":
+                if key == game.word:
+                    game.winner = 'liar'
+            elif lock == "whistleblower":
+                runaway_user = User.objects.filter(username=key).first()
+                runaway_gamer = Gamer.objects.filter(game=game, user=runaway_user).first()
+                if runaway_gamer.job == "whistleblower":
+                    game.winner = 'liar'
+
+            if not game.winner:
+                game.winner = 'citizen'
+
+            game.ingameCd = 5
+            game.save()
+
+        elif action == "resultgame":
+            game.ingameCd = 5
             game.save()
 
         elif action == "endgame":

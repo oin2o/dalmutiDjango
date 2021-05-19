@@ -56,12 +56,11 @@
                     type: "text",
                     maxlength: 6,
                     placeholder: "게임코드",
-                    value: id_gamecode.value,
                 },
             },
             buttons: ["취소", "입장"],
         }).then(function(response) {
-            if(response != null) {
+            if(response != null && response != '') {
                 if(regcode.test(response)) {
                     id_gamecode.value = response.toUpperCase();
                     id_action.value = "ingame";
