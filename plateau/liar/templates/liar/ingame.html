@@ -600,26 +600,7 @@
                             {% endif %}
                             {% if gamer.user.username == liar.user.username %}
                         <script type="text/javascript">
-                        swal("제시어는 무엇일까요?", {
-                            dangerMode: true,
-                            buttons: {
-                                {% for word in words %}
-                                '{{ word.word }}': {
-                                    text: '{{ word.word }}',
-                                    value: '{{ word.word }}',
-                                },
-                                {% endfor %}
-                            },
-                        }).then((response) => {
-                            id_lock.value = 'word';
-                            id_key.value = response;
-                            id_action.value = "runaway";
-                            document.forms['gameform'].submit();
 
-                            web_socket.send(JSON.stringify({
-                                'message': 'refresh'
-                            }));
-                        });
                         </script>
                             {% endif %}
                         {% endif %}
