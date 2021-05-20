@@ -320,6 +320,58 @@
         {% endfor %}
         );
     }
+
+    function whoistarget(target) {
+        id_vote.value = target;
+        id_action.value = "vote";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function votetarget(target) {
+        id_targetusername.value = target;
+        id_action.value = "target";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function runawaylock(lock) {
+        id_lock.value = lock;
+        id_action.value = "lock";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function killtarget(target) {
+        id_lock.value = 'whistleblower';
+        id_key.value = target;
+        id_action.value = "runaway";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function killword(target) {
+        id_lock.value = 'word';
+        id_key.value = target;
+        id_action.value = "runaway";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
     </script>
 </head>
 <body>
@@ -349,6 +401,8 @@
         {% else %}
     <p class="text-warning">의심가는 플레이어에게 투표하세요.</p>
         {% endif %}
+    {% elif gamer.game.ingameCd == 4 %}
+    <p class="text-warning">라이어({{ liar.user.username }})가 도주를 시도하고 있습니다.</p>
     {% elif gamer.game.ingameCd == 5 %}
     <p class="text-warning">결과를 확인하세요.</p>
     {% endif %}
@@ -520,7 +574,7 @@
                                 {% endif %}
                             {% endif %}
                         {% elif gamer.game.ingameCd == 3 %}
-                            {% if gamer.vote == 0 and gamer.status == 1 %}
+                            {% if gamer.game.vote == 0 %}
                                 {% if ready_gamer.vote == 1 %}
                         라이어
                                 {% elif ready_gamer.vote == 2 %}
@@ -528,63 +582,6 @@
                                 {% else %}
                         선택중
                                 {% endif %}
-                        <script type="text/javascript">
-                        swal("검거 대상을 선택해 주세요.", {
-                            dangerMode: true,
-                            buttons: ["사기꾼", "라이어"],
-                        }).then((isConfirm) => {
-                            id_vote.value = "trickster";
-                            if(isConfirm) {
-                                id_vote.value = "liar";
-                            }
-                            id_action.value = "vote";
-                            document.forms['gameform'].submit();
-
-                            web_socket.send(JSON.stringify({
-                                'message': 'refresh'
-                            }));
-                        });
-                        </script>
-                            {% elif gamer.game.vote == 0 %}
-                                {% if ready_gamer.vote == 1 %}
-                        라이어
-                                {% elif ready_gamer.vote == 2 %}
-                        사기꾼
-                                {% else %}
-                        선택중
-                                {% endif %}
-                            {% elif not gamer.targetusername and gamer.status == 1 %}
-                                {% if ready_gamer.targetusername %}
-                        선택완료
-                                {% else %}
-                        선택중
-                                {% endif %}
-                        <script type="text/javascript">
-                        var target_job = '라이어는';
-                        if('{{ gamer.game.vote }}' != 1) {
-                            target_job = '사기꾼은';
-                        }
-                        swal(target_job + " 누구일까요?", {
-                            buttons: {
-                                {% for target_gamer in ready_gamers %}
-                                '{{ target_gamer.user.username }}': {
-                                    text: '{{ target_gamer.user.username }}',
-                                    value: '{{ target_gamer.user.username }}',
-                                },
-                                {% endfor %}
-                            },
-                        }).then((response) => {
-                            if(response != null) {
-                                id_targetusername.value = response;
-                                id_action.value = "target";
-                                document.forms['gameform'].submit();
-
-                                web_socket.send(JSON.stringify({
-                                    'message': 'refresh'
-                                }));
-                            }
-                        });
-                        </script>
                             {% elif not gamer.game.targetusername %}
                                 {% if ready_gamer.targetusername %}
                         선택완료
@@ -595,96 +592,6 @@
                         {% elif gamer.game.ingameCd == 4 %}
                             {% if ready_gamer.user.username == liar.user.username %}
                         도주시도
-                            {% endif %}
-                            {% if gamer.user.username == liar.user.username %}
-                        <script type="text/javascript">
-                        if('{{ gamer.game.whistleblowerYn }}' == "True") {
-                            swal("도주를 시도할 방법은?", {
-                                dangerMode: true,
-                                buttons: {
-                                    '제시어': {
-                                        text: '제시어',
-                                        value: '제시어',
-                                    },
-                                    '배신자': {
-                                        text: '배신자',
-                                        value: '배신자',
-                                    },
-                                },
-                            }).then((response) => {
-                                if(response == '제시어') {
-                                    swal("제시어는 무엇일까요~?", {
-                                        dangerMode: true,
-                                        content: {
-                                            element: "input",
-                                            attributes: {
-                                                type: "text",
-                                                maxlength: 100,
-                                                placeholder: "제시어",
-                                            },
-                                        },
-                                        buttons: ["취소", "도주"],
-                                    }).then((response) => {
-                                        if(response != null && response != '') {
-                                            id_lock.value = 'word';
-                                            id_key.value = response;
-                                            id_action.value = "runaway";
-                                            document.forms['gameform'].submit();
-
-                                            web_socket.send(JSON.stringify({
-                                                'message': 'refresh'
-                                            }));
-                                        }
-                                    });
-                                } else {
-                                    swal("배신자는 누구일까요~🔫?", {
-                                        dangerMode: true,
-                                        buttons: {
-                                            {% for target_gamer in ready_gamers %}
-                                            '{{ target_gamer.user.username }}': {
-                                                text: '{{ target_gamer.user.username }}',
-                                                value: '{{ target_gamer.user.username }}',
-                                            },
-                                            {% endfor %}
-                                        },
-                                    }).then((response) => {
-                                        id_lock.value = 'whistleblower';
-                                        id_key.value = response;
-                                        id_action.value = "runaway";
-                                        document.forms['gameform'].submit();
-
-                                        web_socket.send(JSON.stringify({
-                                            'message': 'refresh'
-                                        }));
-                                    });
-                                }
-                            });
-                        } else {
-                            swal("제시어는 무엇일까요?", {
-                                dangerMode: true,
-                                content: {
-                                    element: "input",
-                                    attributes: {
-                                        type: "text",
-                                        maxlength: 100,
-                                        placeholder: "제시어",
-                                    },
-                                },
-                                buttons: ["취소", "도주"],
-                            }).then((response) => {
-                                if(response != null && response != '') {
-                                    id_lock.value = 'word';
-                                    id_key.value = response;
-                                    id_action.value = "runaway";
-                                    document.forms['gameform'].submit();
-
-                                    web_socket.send(JSON.stringify({
-                                        'message': 'refresh'
-                                    }));
-                                }
-                            });
-                        }
-                        </script>
                             {% endif %}
                         {% endif %}
                     </td>
@@ -737,12 +644,24 @@
                         ).then((response) => {
                             if('{{ gamer.game.winner }}' == "citizen") {
                                 if('{{ gamer.game.vote }}' == 1) {
-                                    swal("시민팀 승~🧐", "라이어를 검거하였습니다.", {
-                                        buttons: false,
-                                        timer: 2000,
-                                    });
+                                    if('{{ gamer.game.liarlock }}' == 1) {
+                                        swal("시민팀 승~🧐", "라이어가 제시어(" + '{{ liar.game.liarkey }}' + ")로 탈출 실패~🚔", {
+                                            buttons: false,
+                                            timer: 2000,
+                                        });
+                                    } else if('{{ gamer.game.liarlock }}' == 2) {
+                                        swal("시민팀 승~🧐", "무고한 시민(" + '{{ liar.game.liarkey }}' + ") 사망~😱", {
+                                            buttons: false,
+                                            timer: 2000,
+                                        });
+                                    } else {
+                                        swal("시민팀 승~🧐", "라이어 " + '{{ gamer.game.targetusername }}' + " 검거~🚔", {
+                                            buttons: false,
+                                            timer: 2000,
+                                        });
+                                    }
                                 } else {
-                                    swal("시민팀 승~🧐", "사기꾼을 검거하였습니다.", {
+                                    swal("시민팀 승~🧐", "사기꾼 " + '{{ gamer.game.targetusername }}' + " 검거~🚔", {
                                         buttons: false,
                                         timer: 2000,
                                     });
@@ -750,30 +669,30 @@
                             } else {
                                 if('{{ gamer.game.vote }}' == 1) {
                                     if('{{ gamer.game.targetusername }}' == '{{ liar.user.username }}') {
-                                        if('{{ gamer.game.liarkey }}' == 1) {
-                                            swal("라이어팀 승~👻", "라이어 검거에 성공하였으나, 제시어를 눈치챘습니다.", {
+                                        if('{{ gamer.game.liarlock }}' == 1) {
+                                            swal("라이어팀 승~👻", "라이어가 제시어(" + '{{ liar.game.liarkey }}' + ")로 탈출~🛫", {
                                                 buttons: false,
                                                 timer: 2000,
                                             });
-                                        } else if('{{ gamer.game.liarkey }}' == 2) {
-                                            swal("라이어팀 승~👻", "라이어 검거에 성공하였으나, 내부고발자가 사망하였습니다.", {
+                                        } else if('{{ gamer.game.liarlock }}' == 2) {
+                                            swal("라이어팀 승~👻", "배신자 " + '{{ liar.game.liarkey }}' + " 처단~😵 by.라이어", {
                                                 buttons: false,
                                                 timer: 2000,
                                             });
                                         } else {
-                                            swal("라이어팀 승~👻", "라이어 검거에 실패하였습니다.", {
+                                            swal("라이어팀 승~👻", "라이어 검거 실패~😞", {
                                                 buttons: false,
                                                 timer: 2000,
                                             });
                                         }
                                     } else {
-                                        swal("라이어팀 승~👻", "라이어 검거에 실패하였습니다.", {
+                                        swal("라이어팀 승~👻", "억울한 시민 " + '{{ gamer.game.targetusername }}' + "씨~😡", {
                                             buttons: false,
                                             timer: 2000,
                                         });
                                     }
                                 } else {
-                                    swal("라이어팀 승~🎶", "사기꾼 검거에 실패하였습니다.", {
+                                    swal("라이어팀 승~🎶", "억울한 시민 " + '{{ gamer.game.targetusername }}' + "씨~😤", {
                                         buttons: false,
                                         timer: 2000,
                                     });
@@ -792,6 +711,103 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+</p><p>
+    <div id="comment">
+    {% if gamer.game.ingameCd == 3 %}
+        {% if gamer.vote == 0 and gamer.status == 1 %}
+        <table style="margin-left: auto;margin-right: auto;">
+            <thead>
+                <tr>
+                    <td class="tdh6c" scope="row">검거 대상을 선택해 주세요.</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="td6c" scope="row">
+                        <button type="button" onclick="whoistarget('trickster')" class="btn btn-warning btn-sm" style="height:25px;padding-top:initial;padding-bottom:initial;">사기꾼</button>
+                        <button type="button" onclick="whoistarget('liar')" class="btn btn-danger btn-sm" style="height:25px;padding-top:initial;padding-bottom:initial;">라이어</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        {% elif not gamer.targetusername and gamer.game.vote != 0 and gamer.status == 1 %}
+        <table style="margin-left: auto;margin-right: auto;">
+            <thead>
+                <tr>
+            {% if gamer.game.vote == 1 %}
+                    <td class="tdh6c" scope="row">라이어는 누구일까요?</td>
+            {% else %}
+                    <td class="tdh6c" scope="row">사기꾼은 누구일까요?</td>
+            {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="td6c" scope="row">
+            {% for target_gamer in ready_gamers %}
+                        <button type="button" onclick="votetarget('{{ target_gamer.user.username }}')" class="btn btn-info btn-sm" style="height:25px;padding-top:initial;padding-bottom:initial;">{{ target_gamer.user.username }}</button>
+            {% endfor %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
+    {% elif gamer.game.ingameCd == 4 %}
+        {% if gamer.user.username == liar.user.username %}
+            {% if gamer.game.whistleblowerYn and gamer.game.liarlock == 0 %}
+        <table style="margin-left: auto;margin-right: auto;">
+            <thead>
+                <tr>
+                    <td class="tdh6c" scope="row">도주를 시도할 방법은?</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="td6c" scope="row">
+                        <button type="button" onclick="runawaylock('word')" class="btn btn-success" style="height:25px;padding-top:initial;padding-bottom:initial;">제시어</button>
+                        <button type="button" onclick="runawaylock('whistleblower')" class="btn btn-danger" style="height:25px;padding-top:initial;padding-bottom:initial;">배신자</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+            {% elif gamer.game.liarlock == 2 %}
+        <table style="margin-left: auto;margin-right: auto;">
+            <thead>
+                <tr>
+                    <td class="tdh6c" scope="row">배신자는 누구일까요~🔫?</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="td6c" scope="row">
+                {% for target_gamer in ready_gamers %}
+                        <button type="button" onclick="killtarget('{{ target_gamer.user.username }}')" class="btn btn-danger" style="height:25px;padding-top:initial;padding-bottom:initial;">{{ target_gamer.user.username }}</button>
+                {% endfor %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+            {% else %}
+        <table style="margin-left: auto;margin-right: auto;">
+            <thead>
+                <tr>
+                    <td class="tdh6c" scope="row">제시어는 무엇일까요~?</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="td6c" scope="row">
+                {% for word in words %}
+                        <button type="button" onclick="killword('{{ word.word }}')" class="btn btn-info" style="height:25px;padding-top:initial;padding-bottom:initial;">{{ word.word }}</button>
+                {% endfor %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+            {% endif %}
+        {% endif %}
+    {% endif %}
     </div>
 </p>
 {% endif %}

@@ -37,13 +37,14 @@ class Game(models.Model):
     vote = models.IntegerField(default=0, help_text="0:미선택, 1:라이어, 2:사기꾼")
     targetusername = models.CharField(default="", max_length=10)
     winner = models.CharField(default="", max_length=10)
-    liarkey = models.IntegerField(default=0, help_text="0:미선택, 1:제시어, 2:배신자")
+    liarlock = models.IntegerField(default=0, help_text="0:미선택, 1:제시어, 2:배신자")
+    liarkey = models.CharField(default="", max_length=100)
 
     def __str__(self):
         return self.gamecode + ':' + str(self.round) + ':' + str(self.ingameCd) \
                + ':' + self.categoryname + ':' + self.word + ':' + str(self.master) + ':' + self.turnusername \
                + ':' + str(self.tricksterYn) + ':' + str(self.whistleblowerYn) + ':' + str(self.vote) \
-               + ':' + self.targetusername + ':' + self.winner + ':' + str(self.liarkey)
+               + ':' + self.targetusername + ':' + self.winner + ':' + str(self.liarlock) + ':' + self.liarkey
 
 
 class Gamer(models.Model):
