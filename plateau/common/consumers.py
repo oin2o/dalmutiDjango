@@ -3,7 +3,7 @@ import json
 
 
 #웹소켓 class instance를 만듦
-class dalmuti_consumer(AsyncWebsocketConsumer):
+class common_consumer(AsyncWebsocketConsumer):
 
     # websocket이 연결 되었을 때
     async def connect(self):
