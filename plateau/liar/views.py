@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.views import generic
 
-from .models import Category, Words, User, Game, Gamer
+from .models import Category, Words, User, Game, Gamer, Honor
 
 
 class MainView(generic.ListView):
@@ -337,6 +337,29 @@ class GameView(generic.ListView):
                     game.winner = 'liar'
                     game.ingameCd = 5
                     game.save()
+
+                    # 게임 결과 저장
+                    honor_gamers = Gamer.objects.filter(game=game, status=1).order_by('position')
+
+                    for _gamer in honor_gamers:
+                        winYn = False
+                        if game.winner == 'liar':
+                            if _gamer.job in ['liar', 'trickster']:
+                                winYn = True
+                        else:
+                            if _gamer.job not in ['liar', 'trickster']:
+                                winYn = True
+                        honor = Honor.objects.create(
+                            game=_gamer.game,
+                            user=_gamer.user,
+                            round=_gamer.game.round,
+                            categoryname=_gamer.game.categoryname,
+                            word=_gamer.game.word,
+                            tricksterYn=_gamer.game.tricksterYn,
+                            whistleblowerYn=_gamer.game.whistleblowerYn,
+                            job=_gamer.job,
+                            winYn=winYn
+                        )
                 else:
                     game.targetusername = sorted_target_category[0][0]
                     target_user = User.objects.filter(username=game.targetusername).first()
@@ -352,6 +375,29 @@ class GameView(generic.ListView):
                             game.winner = 'liar'
                             game.ingameCd = 5
                             game.save()
+
+                            # 게임 결과 저장
+                            honor_gamers = Gamer.objects.filter(game=game, status=1).order_by('position')
+
+                            for _gamer in honor_gamers:
+                                winYn = False
+                                if game.winner == 'liar':
+                                    if _gamer.job in ['liar', 'trickster']:
+                                        winYn = True
+                                else:
+                                    if _gamer.job not in ['liar', 'trickster']:
+                                        winYn = True
+                                honor = Honor.objects.create(
+                                    game=_gamer.game,
+                                    user=_gamer.user,
+                                    round=_gamer.game.round,
+                                    categoryname=_gamer.game.categoryname,
+                                    word=_gamer.game.word,
+                                    tricksterYn=_gamer.game.tricksterYn,
+                                    whistleblowerYn=_gamer.game.whistleblowerYn,
+                                    job=_gamer.job,
+                                    winYn=winYn
+                                )
                     else:
                         if target_gamer.job == 'trickster':
                             # 타겟 대상이 사기꾼이고, 지정된 사기꾼이라면 시민 승
@@ -363,6 +409,29 @@ class GameView(generic.ListView):
                             game.winner = 'liar'
                             game.ingameCd = 5
                             game.save()
+
+                        # 게임 결과 저장
+                        honor_gamers = Gamer.objects.filter(game=game, status=1).order_by('position')
+
+                        for _gamer in honor_gamers:
+                            winYn = False
+                            if game.winner == 'liar':
+                                if _gamer.job in ['liar', 'trickster']:
+                                    winYn = True
+                            else:
+                                if _gamer.job not in ['liar', 'trickster']:
+                                    winYn = True
+                            honor = Honor.objects.create(
+                                game=_gamer.game,
+                                user=_gamer.user,
+                                round=_gamer.game.round,
+                                categoryname=_gamer.game.categoryname,
+                                word=_gamer.game.word,
+                                tricksterYn=_gamer.game.tricksterYn,
+                                whistleblowerYn=_gamer.game.whistleblowerYn,
+                                job=_gamer.job,
+                                winYn=winYn
+                            )
 
         elif action == "liargame":
             game.ingameCd = 4
@@ -398,9 +467,34 @@ class GameView(generic.ListView):
             game.ingameCd = 5
             game.save()
 
+            # 게임 결과 저장
+            honor_gamers = Gamer.objects.filter(game=game, status=1).order_by('position')
+
+            for _gamer in honor_gamers:
+                winYn = False
+                if game.winner == 'liar':
+                    if _gamer.job in ['liar', 'trickster']:
+                        winYn = True
+                else:
+                    if _gamer.job not in ['liar', 'trickster']:
+                        winYn = True
+                honor = Honor.objects.create(
+                    game=_gamer.game,
+                    user=_gamer.user,
+                    round=_gamer.game.round,
+                    categoryname=_gamer.game.categoryname,
+                    word=_gamer.game.word,
+                    tricksterYn=_gamer.game.tricksterYn,
+                    whistleblowerYn=_gamer.game.whistleblowerYn,
+                    job=_gamer.job,
+                    winYn=winYn
+                )
+
         elif action == "resultgame":
             game.ingameCd = 5
             game.save()
+
+            # 강제로 게임을 종료한 경우(마스터 플레이어가 버튼으로 종료한 경우, 별도 전적을 저장하지 않음)
 
         elif action == "endgame":
             game.ingameCd = 0

@@ -69,7 +69,14 @@ class Honor(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     round = models.IntegerField(default=0, help_text="게임 진행 라운드")
+    categoryname = models.CharField(default="", max_length=100)
+    word = models.CharField(default="", max_length=100)
+    tricksterYn = models.BooleanField(default=False)
+    whistleblowerYn = models.BooleanField(default=False)
+    job = models.CharField(default="", max_length=100)
     winYn = models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.game) + ':' + str(self.user) + ':' + str(self.round) + ':' + str(self.winYn)
+        return str(self.game) + ':' + str(self.user) + ':' + str(self.round) + ':' + self.categoryname \
+               + ':' + self.word + ':' + str(self.tricksterYn) + ':' + str(self.whistleblowerYn) \
+               + ':' + self.job + ':' + str(self.winYn)

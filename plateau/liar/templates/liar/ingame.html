@@ -105,12 +105,19 @@
     }
 
     function resultgame() {
-        id_action.value = "resultgame";
-        document.forms['gameform'].submit();
+        swal("전적을 저장하지 않고 결과만 보시겠습니까?", {
+            dangerMode: true,
+            buttons: ["취소", "결과확인"],
+        }).then((isConfirm) => {
+            if(isConfirm) {
+                id_action.value = "resultgame";
+                document.forms['gameform'].submit();
 
-        web_socket.send(JSON.stringify({
-            'message': 'refresh'
-        }));
+                web_socket.send(JSON.stringify({
+                    'message': 'refresh'
+                }));
+            }
+        });
     }
 
     function endgame() {
@@ -633,72 +640,91 @@
                             {% endif %}
                         {% elif gamer.game.ingameCd == 5 %}
                         <script type="text/javascript">
-                        var target_job = '라이어';
-                        if('{{ gamer.game.vote }}' != 1) {
-                            target_job = '사기꾼';
-                        }
-                        swal( "투표 결과(대상:" + target_job + ")", ""
-                        {% for ready_gamer in ready_gamers %}
-                             + "\n" + '{{ ready_gamer.user.username }}' + ": " + '{{ ready_gamer.targetusername }}'
-                        {% endfor %}
-                        ).then((response) => {
-                            if('{{ gamer.game.winner }}' == "citizen") {
-                                if('{{ gamer.game.vote }}' == 1) {
-                                    if('{{ gamer.game.liarlock }}' == 1) {
-                                        swal("시민팀 승~🧐", "라이어가 제시어(" + '{{ liar.game.liarkey }}' + ")로 탈출 실패~🚔", {
-                                            buttons: false,
-                                            timer: 2000,
-                                        });
-                                    } else if('{{ gamer.game.liarlock }}' == 2) {
-                                        swal("시민팀 승~🧐", "무고한 시민(" + '{{ liar.game.liarkey }}' + ") 사망~😱", {
-                                            buttons: false,
-                                            timer: 2000,
-                                        });
-                                    } else {
-                                        swal("시민팀 승~🧐", "라이어 " + '{{ gamer.game.targetusername }}' + " 검거~🚔", {
-                                            buttons: false,
-                                            timer: 2000,
-                                        });
-                                    }
-                                } else {
-                                    swal("시민팀 승~🧐", "사기꾼 " + '{{ gamer.game.targetusername }}' + " 검거~🚔", {
-                                        buttons: false,
-                                        timer: 2000,
-                                    });
-                                }
-                            } else {
-                                if('{{ gamer.game.vote }}' == 1) {
-                                    if('{{ gamer.game.targetusername }}' == '{{ liar.user.username }}') {
+                        if(('{{ gamer.game.vote }}' == 0) || ('{{ gamer.game.vote }}' == 1 && '{{ gamer.game.liarkey }}' == '')) {
+                            swal("라운드 종료~⛔", "by. 마스터 플레이어(" + '{{ gamer.game.master.username }}' + ")", {
+                                buttons: false,
+                                timer: 2000,
+                            });
+                        } else {
+                            var target_job = '라이어';
+                            if('{{ gamer.game.vote }}' != 1) {
+                                target_job = '사기꾼';
+                            }
+                            swal( "투표 결과(대상:" + target_job + ")", ""
+                            {% for ready_gamer in ready_gamers %}
+                                 + "\n" + '{{ ready_gamer.user.username }}' + ": " + '{{ ready_gamer.targetusername }}'
+                            {% endfor %}
+                            ).then((response) => {
+                                if('{{ gamer.game.winner }}' == "citizen") {
+                                    if('{{ gamer.game.vote }}' == 1) {
                                         if('{{ gamer.game.liarlock }}' == 1) {
-                                            swal("라이어팀 승~👻", "라이어가 제시어(" + '{{ liar.game.liarkey }}' + ")로 탈출~🛫", {
+                                            swal("시민팀 승~🧐", "라이어가 제시어(" + '{{ liar.game.liarkey }}' + ")로 탈출 실패~🚔", {
                                                 buttons: false,
                                                 timer: 2000,
                                             });
                                         } else if('{{ gamer.game.liarlock }}' == 2) {
-                                            swal("라이어팀 승~👻", "배신자 " + '{{ liar.game.liarkey }}' + " 처단~😵 by.라이어", {
+                                            swal("시민팀 승~🧐", "무고한 시민(" + '{{ liar.game.liarkey }}' + ") 사망~😱", {
                                                 buttons: false,
                                                 timer: 2000,
                                             });
                                         } else {
-                                            swal("라이어팀 승~👻", "라이어 검거 실패~😞", {
+                                            swal("시민팀 승~🧐", "라이어 " + '{{ gamer.game.targetusername }}' + " 검거~🚔", {
                                                 buttons: false,
                                                 timer: 2000,
                                             });
                                         }
                                     } else {
-                                        swal("라이어팀 승~👻", "억울한 시민 " + '{{ gamer.game.targetusername }}' + "씨~😡", {
+                                        swal("시민팀 승~🧐", "사기꾼 " + '{{ gamer.game.targetusername }}' + " 검거~🚔", {
                                             buttons: false,
                                             timer: 2000,
                                         });
                                     }
                                 } else {
-                                    swal("라이어팀 승~🎶", "억울한 시민 " + '{{ gamer.game.targetusername }}' + "씨~😤", {
-                                        buttons: false,
-                                        timer: 2000,
-                                    });
+                                    if('{{ gamer.game.vote }}' == 1) {
+                                        if('{{ gamer.game.targetusername }}' == '{{ liar.user.username }}') {
+                                            if('{{ gamer.game.liarlock }}' == 1) {
+                                                swal("라이어팀 승~👻", "라이어가 제시어(" + '{{ liar.game.liarkey }}' + ")로 탈출~🛫", {
+                                                    buttons: false,
+                                                    timer: 2000,
+                                                });
+                                            } else if('{{ gamer.game.liarlock }}' == 2) {
+                                                swal("라이어팀 승~👻", "배신자 " + '{{ liar.game.liarkey }}' + " 처단~😵 by.라이어", {
+                                                    buttons: false,
+                                                    timer: 2000,
+                                                });
+                                            } else {
+                                                swal("라이어팀 승~👻", "라이어 검거 실패~😞", {
+                                                    buttons: false,
+                                                    timer: 2000,
+                                                });
+                                            }
+                                        } else if('{{ gamer.game.targetusername }}' == 'TIE') {
+                                            swal("라이어팀 승~👻", "혼란하다~혼란해~😵‍💫", {
+                                                buttons: false,
+                                                timer: 2000,
+                                            });
+                                        } else {
+                                            swal("라이어팀 승~👻", "억울한 시민 " + '{{ gamer.game.targetusername }}' + "~😡", {
+                                                buttons: false,
+                                                timer: 2000,
+                                            });
+                                        }
+                                    } else {
+                                        if('{{ gamer.game.targetusername }}' == '{{ liar.user.username }}') {
+                                            swal("라이어팀 승~🎶", "똑똑한 라이어 " + '{{ gamer.game.targetusername }}' + "~😤", {
+                                                buttons: false,
+                                                timer: 2000,
+                                            });
+                                        } else {
+                                            swal("라이어팀 승~🎶", "억울한 시민 " + '{{ gamer.game.targetusername }}' + "~😎", {
+                                                buttons: false,
+                                                timer: 2000,
+                                            });
+                                        }
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                         </script>
                         카테고리: {{ gamer.game.categoryname }}<br>제시어: {{ gamer.game.word }}
                             {% if ready_gamers.0.speech1 %}
