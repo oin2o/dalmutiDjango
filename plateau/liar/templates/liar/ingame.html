@@ -746,7 +746,7 @@
                 <tr>
                     <td class="td6c" scope="row">
             {% for target_gamer in ready_gamers %}
-                        <button type="button" onclick="votetarget('{{ target_gamer.user.username }}')" class="btn btn-info btn-sm" style="height:25px;padding-top:initial;padding-bottom:initial;">{{ target_gamer.user.username }}</button>
+                        <button type="button" onclick="votetarget('{{ target_gamer.user.username }}')" class="btn btn-info" style="height:25px;padding-top:initial;padding-bottom:initial;">{{ target_gamer.user.username }}</button>
             {% endfor %}
                     </td>
                 </tr>
@@ -765,8 +765,8 @@
             <tbody>
                 <tr>
                     <td class="td6c" scope="row">
-                        <button type="button" onclick="runawaylock('word')" class="btn btn-success" style="height:25px;padding-top:initial;padding-bottom:initial;">제시어</button>
-                        <button type="button" onclick="runawaylock('whistleblower')" class="btn btn-danger" style="height:25px;padding-top:initial;padding-bottom:initial;">배신자</button>
+                        <button type="button" onclick="runawaylock('word')" class="btn btn-success btn-sm" style="height:25px;padding-top:initial;padding-bottom:initial;">제시어</button>
+                        <button type="button" onclick="runawaylock('whistleblower')" class="btn btn-danger btn-sm" style="height:25px;padding-top:initial;padding-bottom:initial;">배신자</button>
                     </td>
                 </tr>
             </tbody>
