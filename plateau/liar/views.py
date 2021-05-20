@@ -118,7 +118,8 @@ class GameView(generic.ListView):
 
         words = []
         if game.categoryname:
-            words = Words.objects.filter(categoryname=game.categoryname).order_by('word')
+            category = Category.objects.filter(categoryname=game.categoryname).first()
+            words = Words.objects.filter(category=category).order_by('word')
 
         total_players = Gamer.objects.filter(game=game, status=1)
         player_category = {}
