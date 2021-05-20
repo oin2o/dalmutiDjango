@@ -739,13 +739,13 @@
                 {% if ready_gamers|length > 4 %}
                     <td class="tdh6c" scope="row" colspan="4">라이어는 누구일까요?</td>
                 {% else %}
-                    <td class="tdh6c" scope="row">라이어는 누구일까요?</td>
+                    <td class="tdh6c" scope="row" colspan="{{ ready_gamers|length }}">라이어는 누구일까요?</td>
                 {% endif %}
             {% else %}
                 {% if ready_gamers|length > 4 %}
                     <td class="tdh6c" scope="row" colspan="4">사기꾼은 누구일까요?</td>
                 {% else %}
-                    <td class="tdh6c" scope="row">사기꾼은 누구일까요?</td>
+                    <td class="tdh6c" scope="row" colspan="{{ ready_gamers|length }}">사기꾼은 누구일까요?</td>
                 {% endif %}
             {% endif %}
                 </tr>
@@ -789,7 +789,7 @@
                 {% if ready_gamers|length > 4 %}
                     <td class="tdh6c" scope="row" colspan="4">배신자는 누구일까요~🔫?</td>
                 {% else %}
-                    <td class="tdh6c" scope="row">배신자는 누구일까요~🔫?</td>
+                    <td class="tdh6c" scope="row" colspan="{{ ready_gamers|length }}">배신자는 누구일까요~🔫?</td>
                 {% endif %}
                 </tr>
             </thead>
@@ -810,10 +810,10 @@
         <table style="margin-left: auto;margin-right: auto;">
             <thead>
                 <tr>
-                {% if ready_gamers|length > 4 %}
+                {% if words|length > 4 %}
                     <td class="tdh6c" scope="row" colspan="4">제시어는 무엇일까요~?</td>
                 {% else %}
-                    <td class="tdh6c" scope="row">제시어는 무엇일까요~?</td>
+                    <td class="tdh6c" scope="row" colspan="{{ words|length }}">제시어는 무엇일까요~?</td>
                 {% endif %}
                 </tr>
             </thead>
