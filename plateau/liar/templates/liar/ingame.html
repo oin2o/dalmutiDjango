@@ -748,7 +748,7 @@
             {% for target_gamer in ready_gamers %}
                         <button type="button" onclick="votetarget('{{ target_gamer.user.username }}')" class="btn btn-info" style="height:25px;padding-top:initial;padding-bottom:initial;">{{ target_gamer.user.username }}</button>
                 {% if forloop.counter|divisibleby:4 != 0 %}
-                        <br>
+                        <br><br>
                 {% endif %}
             {% endfor %}
                     </td>
@@ -787,7 +787,7 @@
                 {% for target_gamer in ready_gamers %}
                         <button type="button" onclick="killtarget('{{ target_gamer.user.username }}')" class="btn btn-danger" style="height:25px;padding-top:initial;padding-bottom:initial;">{{ target_gamer.user.username }}</button>
                     {% if forloop.counter|divisibleby:4 != 0 %}
-                        <br>
+                        <br><br>
                     {% endif %}
                 {% endfor %}
                     </td>
@@ -807,7 +807,7 @@
                 {% for word in words %}
                         <button type="button" onclick="killword('{{ word.word }}')" class="btn btn-info" style="height:25px;padding-top:initial;padding-bottom:initial;">{{ word.word }}</button>
                     {% if forloop.counter|divisibleby:4 != 0 %}
-                        <br>
+                        <br><br>
                     {% endif %}
                 {% endfor %}
                     </td>
