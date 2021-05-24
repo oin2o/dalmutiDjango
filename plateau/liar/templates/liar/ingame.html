@@ -320,10 +320,25 @@
              + "\n" + '{{ ready_gamer.user.username }}' + ": " + '{{ ready_gamer.speech1 }}'
             {% endif %}
         {% endfor %}
+             + "\n"
         {% for ready_gamer in ready_gamers %}
             {% if ready_gamer.speech2 %}
              + "\n" + '{{ ready_gamer.user.username }}' + ": " + '{{ ready_gamer.speech2 }}'
             {% endif %}
+        {% endfor %}
+        );
+    }
+
+    function sayingplayer() {
+        swal( "너 지금 뭐라했냐?", ""
+        {% for ready_gamer in ready_gamers %}
+            {% if ready_gamer.speech1 %}
+             + "\n" + '{{ ready_gamer.user.username }}' + ": " + '{{ ready_gamer.speech1 }}'
+            {% endif %}
+            {% if ready_gamer.speech2 %}
+             + "\n" + '{{ ready_gamer.user.username }}' + ": " + '{{ ready_gamer.speech2 }}'
+            {% endif %}
+             + "\n"
         {% endfor %}
         );
     }
@@ -636,6 +651,7 @@
                                 {% if ready_gamers.0.speech1 %}
                         <br><br>
                         <button type="button" onclick="sayingall()" class="btn btn-outline-success" style="height:25px;padding-top:initial;padding-bottom:initial;">발언(전체)</button>
+                        <button type="button" onclick="sayingplayer()" class="btn btn-outline-success" style="height:25px;padding-top:initial;padding-bottom:initial;">발언(모음)</button>
                                 {% endif %}
                             {% endif %}
                         {% elif gamer.game.ingameCd == 5 %}
@@ -730,6 +746,7 @@
                             {% if ready_gamers.0.speech1 %}
                         <br><br>
                         <button type="button" onclick="sayingall()" class="btn btn-outline-success" style="height:25px;padding-top:initial;padding-bottom:initial;">발언(전체)</button>
+                        <button type="button" onclick="sayingplayer()" class="btn btn-outline-success" style="height:25px;padding-top:initial;padding-bottom:initial;">발언(모음)</button>
                             {% endif %}
                         {% endif %}
                     {% endif %}
