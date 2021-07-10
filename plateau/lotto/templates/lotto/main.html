@@ -225,13 +225,13 @@
         <div class="num win">
             <p>
         {% for ball in balls %}
-            {% if ball < 10 %}
+            {% if ball <= 10 %}
                 <span class="ball_645 sml ball1">{{ ball }}</span>
-            {% elif ball < 20 %}
+            {% elif ball <= 20 %}
                 <span class="ball_645 sml ball2">{{ ball }}</span>
-            {% elif ball < 30 %}
+            {% elif ball <= 30 %}
                 <span class="ball_645 sml ball3">{{ ball }}</span>
-            {% elif ball < 40 %}
+            {% elif ball <= 40 %}
                 <span class="ball_645 sml ball4">{{ ball }}</span>
             {% else %}
                 <span class="ball_645 sml ball5">{{ ball }}</span>
