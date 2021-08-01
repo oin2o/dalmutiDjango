@@ -348,7 +348,7 @@
 
                                             pointer += 1;
                                         }
-                                        console.log(pointer + ',' + pre_cards.length);
+                                        console.log({{ players_card.card.type }} + ',' + {{ players_card.card.number }} + ',' + pointer + ',' + pre_cards.length);
                                         if(uninjected && pointer == pre_cards.length) {
                                             const img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrder }} = document.createElement('img');
                                             img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrder }}.src = "{% static  'davinci/images/' %}{{ ready_card.type }}/{{ ready_card.number }}.jpg";
