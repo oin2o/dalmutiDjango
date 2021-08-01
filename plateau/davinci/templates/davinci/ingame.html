@@ -1,0 +1,488 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>Davinci Code</title>
+    <style>
+        table{
+            width: 95%;
+        }
+        .td6{
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .td6c{
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .tdh6{
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+        .tdh6c{
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+        .pickcard{
+            width: 16%;
+            border-color: #FF0000;
+        }
+        .playcard{
+            width: 16%;
+            border-color: #FF0000;
+        }
+    </style>
+    <script type="text/javascript">
+    // 클라이언트와 서버의 웹소켓 통신을 가능하도록 연결시켜주는 부분이다.
+    // router.py에서의 url과 일치하도록 해 주어야한다.
+    var web_socket = new WebSocket('ws://' + window.location.host + '/davinci/' + '{{ gamer.game.gamecode }}' + '/' + '{{ gamer.user.username }}');
+
+    // onmessage는 counsumers에서 보내는 메세지를 받는 부분이다.
+    web_socket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+
+        if (message == 'refresh') {
+            setTimeout(function(){
+                document.location.href = "{% url 'davinci:game' gamer.game.gamecode gamer.user.username %}";
+            }, 500);
+        }
+    };
+
+    function readygame() {
+
+        if('{{ ready_gamers|length }}' >= 4) {
+            swal("게임인원은 최대 4명까지 가능합니다.");
+        } else {
+            id_action.value = "readygame";
+            document.forms['gameform'].submit();
+
+            web_socket.send(JSON.stringify({
+                'message': 'refresh'
+            }));
+        }
+    }
+
+    function viewgame() {
+        id_action.value = "viewgame";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function startgame() {
+        id_action.value = "startgame";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function resultgame() {
+        swal("전적을 저장하지 않고 게임을 종료하시겠습니까?", {
+            dangerMode: true,
+            buttons: ["취소", "게임종료"],
+        }).then((isConfirm) => {
+            if(isConfirm) {
+                id_action.value = "resultgame";
+                document.forms['gameform'].submit();
+
+                web_socket.send(JSON.stringify({
+                    'message': 'refresh'
+                }));
+            }
+        });
+    }
+
+    function endgame() {
+        id_action.value = "endgame";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function pickcard(pickcard) {
+        id_action.value = "pickcard";
+        id_card.value = pickcard;
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function checkcard(checkcard) {
+        id_action.value = "checkcard";
+        id_card.value = checkcard;
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function endturn() {
+        id_action.value = "endturn";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+    </script>
+</head>
+<body>
+{% include "./menu.html" %}
+{% load static %}
+{% load davinci_tags %}
+<form name="gameform" action="{% url 'davinci:game' gamer.game.gamecode gamer.user.username %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" id="id_action"/>
+    <input type="hidden" name="card" id="id_card"/>
+</form>
+<div id="play_msg" style="text-align:center;">
+    {% if gamer.game.ingameCd == 0 %}
+    <p class="text-warning">대기 중인 플레이어들은 참가 혹은 관전을 선택해 주세요.</p>
+    {% elif gamer.game.ingameCd == 1 %}
+    <p class="text-warning">다른 플레이어의 카드를 맞추세요.(순서:K무티 우)</p>
+    {% elif gamer.game.ingameCd == 2 %}
+    <p class="text-warning">결과를 확인하세요.</p>
+    {% endif %}
+</div>
+<p style="text-indent: 0.5em;">
+    <div id="play_btn">
+        <table style="margin-left: auto;margin-right: auto;">
+            <tr>
+                <td>
+                    <a href="{% url 'davinci:game' gamer.game.gamecode gamer.user.username %}"><button type="button" class="btn btn-outline-info" style="height:25px;padding-top:initial;padding-bottom:initial;">새로고침</button></a>
+                    {% if gamer.game.ingameCd == 0 %}
+                        {% if gamer.status != 1 %}
+                    <button type="button" onclick="readygame()" class="btn btn-outline-info" style="height:25px;padding-top:initial;padding-bottom:initial;">참가</button></a>
+                        {% endif %}
+                        {% if gamer.status != 2 %}
+                    <button type="button" onclick="viewgame()" class="btn btn-outline-info" style="height:25px;padding-top:initial;padding-bottom:initial;">구경</button></a>
+                        {% endif %}
+                    {% endif %}
+                    {% if gamer.user.username == gamer.game.mastername %}
+                        {% if gamer.game.ingameCd == 0 and not wait_gamers and ready_gamers|length > 1 and ready_gamers|length < 5 %}
+                    <button type="button" onclick="startgame()" class="btn btn-outline-primary" style="height:25px;padding-top:initial;padding-bottom:initial;">게임시작</button></a>
+                        {% elif gamer.game.ingameCd == 1 %}
+                    <button type="button" onclick="resultgame()" class="btn btn-outline-primary" style="height:25px;padding-top:initial;padding-bottom:initial;">게임종료</button></a>
+                        {% elif gamer.game.ingameCd == 2 %}
+                    <button type="button" onclick="endgame()" class="btn btn-outline-primary" style="height:25px;padding-top:initial;padding-bottom:initial;">처음으로</button></a>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td class="tdh6" style="text-align:right;">
+                {% if gamer.game.ingameCd == 0 %}
+                    by <a href="{% url 'davinci:telegram' gamer.game.gamecode gamer.user.username %}">{{ gamer.game.gamecode }}</a>
+                {% else %}
+                    Round : {{ gamer.game.round }} by {{ gamer.game.gamecode }}
+                {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+</p>
+{% if wait_gamers %}
+<div id="gamer_wait">
+    <table style="margin-left: auto;margin-right: auto;">
+        <tbody>
+            <tr>
+                <td class="tdh6" scope="row" style="width: 10%;">
+                    대기
+                </td>
+                <td class="td6" scope="row">
+                    {% for wait_gamer in wait_gamers %}
+                    <button type="button" class="btn btn-outline-dark disabled" style="height:20px;padding-top:initial;padding-bottom:initial;">{{ wait_gamer.user.username }}</button>
+                    {% endfor %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% if view_gamers %}
+<div id="gamer_view">
+    <table style="margin-left: auto;margin-right: auto;">
+        <tbody>
+            <tr>
+                <td class="tdh6" scope="row" style="width: 10%;">
+                    관전
+                </td>
+                <td class="td6" scope="row">
+                    {% for view_gamer in view_gamers %}
+                    <button type="button" class="btn btn-outline-secondary disabled" style="height:20px;padding-top:initial;padding-bottom:initial;">{{ view_gamer.user.username }}</button>
+                    {% endfor %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% if ready_gamers %}
+<p style="text-indent: 0.5em;">
+    {% if gamer.game.ingameCd == 1 %}
+        {% if ready_cards %}
+    <div id="cards">
+        <table style="margin-left: auto;margin-right: auto;">
+            <tbody>
+                <tr>
+                    <td class="tdh6c" scope="row">
+                    {% for ready_card in ready_cards %}
+                        <img id="card_pick{{ ready_card.type }}{{ ready_card.number }}" class="pickcard" src="{% static  'davinci/images/' %}{{ ready_card.type }}/0.jpg"  name="davinciImg{{ ready_card.type }}0" border="0">
+                        {% if forloop.counter|divisibleby:6 != 0 %}
+                            <br>
+                        {% endif %}
+                        {% if not gamer.lastCard and gamer.user.username == gamer.game.turnUser.username %}
+                        <script type="text/javascript">
+                        document.querySelector('#card_pick{{ ready_card.type }}{{ ready_card.number }}').onclick = function(e) {
+                            const container = document.createElement("div");
+
+                            const pre_cards = [];
+                            {% for players_card in players_cards %}
+                                {% if gamer.user.username == players_card.user.username %}
+                                const player_card{{ players_card.card.number }}{{ players_card.card.type }} = [{{ players_card.card.number }}, {{ players_card.card.type }}, {{ players_card.order }}];
+                                pre_cards.push(player_card{{ players_card.card.number }}{{ players_card.card.type }});
+                                {% endif %}
+                            {% endfor %}
+
+                            if({{ ready_card.number }} == 13) {
+                                const img{{ ready_card.type }}{{ ready_card.number }}{{ 0|caculCardOrder }} = document.createElement('img');
+                                img{{ ready_card.type }}{{ ready_card.number }}{{ 0|caculCardOrder }}.src = "{% static  'davinci/images/' %}{{ ready_card.type }}/{{ ready_card.number }}.jpg";
+                                img{{ ready_card.type }}{{ ready_card.number }}{{ 0|caculCardOrder }}.style = "width: 13%; border-width: medium; border-style: outset; border-color: #FF0000;";
+                                img{{ ready_card.type }}{{ ready_card.number }}{{ 0|caculCardOrder }}.onclick = function() { pickcard({{ ready_card.type }} + ',' + {{ ready_card.number }} + ',' + {{ 0|caculCardOrder }}) };
+                                container.append(img{{ ready_card.type }}{{ ready_card.number }}{{ 0|caculCardOrder }});
+
+                                {% for players_card in players_cards %}
+                                    {% if gamer.user.username == players_card.user.username %}
+                                // You could also use container.innerHTML to set the content.
+                                const img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }} = document.createElement('img');
+                                img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}.src = "{% static  'davinci/images/' %}{{ players_card.card.type }}/{{ players_card.card.number }}.jpg";
+                                img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}.style = "width: 11%; border-color: #FF0000;";
+                                container.append(img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }});
+
+                                const img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrder }} = document.createElement('img');
+                                img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrder }}.src = "{% static  'davinci/images/' %}{{ ready_card.type }}/{{ ready_card.number }}.jpg";
+                                img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrder }}.style = "width: 13%; border-width: medium; border-style: outset; border-color: #FF0000;";
+                                img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrder }}.onclick = function() { pickcard({{ ready_card.type }} + ',' + {{ ready_card.number }} + ',' + {{ players_card.order|caculCardOrder }}) };
+                                container.append(img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrder }});
+                                    {% endif %}
+                                {% endfor %}
+                            } else {
+                                let pointer = 0;
+                                let uninjected = true;
+                                const cards = [];
+                                {% for players_card in players_cards %}
+                                    {% if gamer.user.username == players_card.user.username %}
+                                        if(uninjected) {
+                                            {% if players_card.card.number == 13 %}
+                                                const img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrderDesc }} = document.createElement('img');
+                                                img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrderDesc }}.src = "{% static  'davinci/images/' %}{{ ready_card.type }}/{{ ready_card.number }}.jpg";
+                                                img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrderDesc }}.style = "width: 13%; border-width: medium; border-style: outset; border-color: #FF0000;";
+                                                img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrderDesc }}.onclick = function() { pickcard({{ ready_card.type }} + ',' + {{ ready_card.number }} + ',' + {{ players_card.order|caculCardOrderDesc  }}) };
+
+                                                cards.push(img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrderDesc }})
+
+                                                const img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }} = document.createElement('img');
+                                                img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}.src = "{% static  'davinci/images/' %}{{ players_card.card.type }}/{{ players_card.card.number }}.jpg";
+                                                img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}.style = "width: 11%; border-color: #FF0000;";
+
+                                                cards.push(img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }})
+                                            {% else %}
+                                                if({{ ready_card.number }} < {{ players_card.card.number }} || ({{ ready_card.number }} == {{ players_card.card.number }} && {{ ready_card.type }} < {{ players_card.card.type }})) {
+                                                    for(let i = 0; i < cards.length / 2; i++) {
+                                                        container.append(cards.shift());
+                                                        container.append(cards.shift());
+                                                    }
+                                                    const img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrderDesc }} = document.createElement('img');
+                                                    img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrderDesc }}.src = "{% static  'davinci/images/' %}{{ ready_card.type }}/{{ ready_card.number }}.jpg";
+                                                    img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrderDesc }}.style = "width: 13%; border-width: medium; border-style: outset; border-color: #FF0000;";
+                                                    img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrderDesc }}.onclick = function() { pickcard({{ ready_card.type }} + ',' + {{ ready_card.number }} + ',' + {{ players_card.order|caculCardOrderDesc  }}) };
+                                                    container.append(img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrderDesc }});
+
+                                                    uninjected = false;
+
+                                                    // You could also use container.innerHTML to set the content.
+                                                    const img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }} = document.createElement('img');
+                                                    img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}.src = "{% static  'davinci/images/' %}{{ players_card.card.type }}/{{ players_card.card.number }}.jpg";
+                                                    img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}.style = "width: 11%; border-color: #FF0000;";
+                                                    container.append(img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }});
+
+                                                    pointer += 1;
+                                                } else {
+                                                    for(let i = 0; i < cards.length / 2; i++) {
+                                                        cards.shift();
+                                                        container.append(cards.shift());
+                                                    }
+
+                                                    // You could also use container.innerHTML to set the content.
+                                                    const img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }} = document.createElement('img');
+                                                    img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}.src = "{% static  'davinci/images/' %}{{ players_card.card.type }}/{{ players_card.card.number }}.jpg";
+                                                    img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}.style = "width: 11%; border-color: #FF0000;";
+                                                    container.append(img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }});
+
+                                                    pointer += 1;
+                                                }
+                                            {% endif %}
+                                        } else {
+                                            // You could also use container.innerHTML to set the content.
+                                            const img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }} = document.createElement('img');
+                                            img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}.src = "{% static  'davinci/images/' %}{{ players_card.card.type }}/{{ players_card.card.number }}.jpg";
+                                            img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}.style = "width: 11%; border-color: #FF0000;";
+                                            container.append(img{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }});
+
+                                            pointer += 1;
+                                        }
+                                        if(uninjected && pointer == pre_cards.length) {
+                                            const img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrder }} = document.createElement('img');
+                                            img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrder }}.src = "{% static  'davinci/images/' %}{{ ready_card.type }}/{{ ready_card.number }}.jpg";
+                                            img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrder }}.style = "width: 13%; border-width: medium; border-style: outset; border-color: #FF0000;";
+                                            img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrder }}.onclick = function() { pickcard({{ ready_card.type }} + ',' + {{ ready_card.number }} + ',' + {{ players_card.order|caculCardOrder }}) };
+                                            container.append(img{{ ready_card.type }}{{ ready_card.number }}{{ players_card.order|caculCardOrder }});
+
+                                            uninjected = false;
+                                        }
+                                    {% endif %}
+                                {% endfor %}
+                            }
+
+                            swal({
+                                text: "카드 위치를 정해주세요.",
+                                content: container,
+                                buttons: false,
+                                closeOnClickOutside: false,
+                            });
+                        };
+                        </script>
+                        {% endif %}
+                    {% endfor %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        {% endif %}
+</p><p style="text-indent: 0.5em;">
+    <div id="player_btn">
+        <table style="margin-left: auto;margin-right: auto;">
+            <tr>
+                <td>
+                {% if gamer.user.username == gamer.game.turnUser.username %}
+                    {% if not lastCard %}
+                    <font size="2em"><b>{{ gamer.game.turnUser.username }}님</b>, 위의 덱에서 카드를 한장 선택해 주세요.</font>
+                    {% else %}
+                    <font size="2em"><b>{{ gamer.game.turnUser.username }}님</b>, 타 플레이어의 카드를 맞추거나, 턴을 종료해 주세요.</font>
+                    {% endif %}
+                {% else %}
+                    {% if not lastCard %}
+                    <font size="2em"><b>{{ gamer.game.turnUser.username }}님</b>, 차례(덱 선택 중)입니다.</font>
+                    {% else %}
+                    <font size="2em"><b>{{ gamer.game.turnUser.username }}님</b>, 차례(카드 추리 중)입니다.</font>
+                    {% endif %}
+                {% endif %}
+                </td>
+                <td class="tdh6" style="text-align:right;">
+                {% if gamer.user.username == gamer.game.turnUser.username %}
+                    {% if lastCard or players_cards|length == 26 %}
+                    <button type="button" onclick="endturn()" class="btn btn-outline-warning" style="height:25px;padding-top:initial;padding-bottom:initial;">턴종료</button></a>
+                    {% endif %}
+                {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+</p><p style="text-indent: 0.5em;">
+    {% endif %}
+    <div id="player">
+        <table style="margin-left: auto;margin-right: auto;">
+            <thead>
+                <tr>
+                    <td class="tdh6c" scope="row">플레이어</td>
+                    <td class="tdh6c" scope="row" style="width: 80%;">정보</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ready_gamer in ready_gamers %}
+                <tr>
+                    <td class="td6c" scope="row">
+                    {% if ready_gamer.game.turnUser.username == ready_gamer.user.username %}
+                        <font color="red"><b>{{ ready_gamer.user.username }}</b></font>
+                    {% else %}
+                        {{ ready_gamer.user.username }}
+                    {% endif %}
+                    </td>
+                    <td class="td6c" scope="row">
+                    {% if players_cards and gamer.game.ingameCd == 1 %}
+                        {% for players_card in players_cards %}
+                            {% if ready_gamer.user.username == players_card.user.username %}
+                                {% if ready_gamer.user.username == gamer.user.username %}
+                                    {% if players_card.check == 1 %}
+                        <img id="card_{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}1" class="playcard" src="{% static  'davinci/images/' %}{{ players_card.card.type }}/{{ players_card.card.number }}.jpg"  name="davinciImg{{ players_card.card.type }}{{ players_card.card.number }}" style="border-width: medium; border-style: outset; border-color: #FF0000;">
+                                    {% else %}
+                        <img id="card_{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}0" class="playcard" src="{% static  'davinci/images/' %}{{ players_card.card.type }}/{{ players_card.card.number }}.jpg"  name="davinciImg{{ players_card.card.type }}{{ players_card.card.number }}" border="0">
+                                    {% endif %}
+                                {% elif players_card.check == 1 %}
+                        <img id="card_{{ players_card.card.type }}{{ players_card.card.number }}1" class="playcard" src="{% static  'davinci/images/' %}{{ players_card.card.type }}/{{ players_card.card.number }}.jpg"  name="davinciImg{{ players_card.card.type }}{{ players_card.card.number }}" border="0">
+                                {% else %}
+                        <img id="card_{{ players_card.card.type }}{{ players_card.card.number }}0" class="playcard" src="{% static  'davinci/images/' %}{{ players_card.card.type }}/0.jpg"  name="davinciImg{{ players_card.card.type }}0" border="0">
+                                    {% if gamer.user.username == gamer.game.turnUser.username %}
+                                        {% if lastCard or players_cards|length == 26 %}
+                        <script type="text/javascript">
+                        document.querySelector('#card_{{ players_card.card.type }}{{ players_card.card.number }}0').onclick = function(e) {
+                            console.log({{ players_card.card.type }} + ',' + {{ players_card.card.number }});
+                            const container = document.createElement("div");
+
+                            {% for idx in 13|times %}
+                                const btn{{ idx }} = document.createElement('button');
+                                btn{{ idx }}.className = "btn btn-outline-info";
+                                btn{{ idx }}.innerText = {{ idx }} + 1;
+                                btn{{ idx }}.onclick = function() { checkcard('{{ players_card.game.gamecode }}' + ',' + '{{ players_card.user.username }}' + ',' + ({{ idx }} + 1) + ',' + {{ players_card.card.type }} + ',' + {{ players_card.card.number }}) };
+                                container.append(btn{{ idx }});
+
+                                if({{ idx }} == 6) {
+                                    container.append(document.createElement("br"));
+                                    container.append(document.createElement("br"));
+                                }
+
+                            {% endfor %}
+
+                            swal({
+                                text: "카드 숫자를 맞춰주세요.",
+                                content: container,
+                                button: "취소",
+                            });
+                        };
+                        </script>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% elif ready_cards and gamer.game.ingameCd == 2 %}
+                        {{ ready_gamer.result }}등
+                    {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</p>
+{% endif %}
+</body>
+</html>

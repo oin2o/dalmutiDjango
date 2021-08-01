@@ -1,0 +1,113 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>Davinci Code</title>
+</head>
+<script type="text/javascript">
+
+    const regcode = /^[A-Za-z0-9+]{6}$/;
+
+    function userami(username) {
+        id_username.value = username;
+
+        if(id_gamecode.value != "") {
+            if(regcode.test(id_gamecode.value)) {
+                id_gamecode.value = id_gamecode.value.toUpperCase();
+                id_action.value = "ingame";
+                document.forms['mainform'].submit();
+            } else {
+                swal("게임 코드를 다시 확인해 주세요.", {
+                    buttons: false,
+                    icon: "warning",
+                    timer: 1000,
+                });
+            }
+        }
+    }
+
+    function newgame(){
+        if(id_username.value == "") {
+            return  swal("게임에서 사용할 별칭을 입력하세요.", {
+                        buttons: false,
+                        icon: "warning",
+                        timer: 1000,
+                    });
+        }
+
+        id_action.value = "newgame";
+        document.forms['mainform'].submit();
+    }
+
+    function ingame(){
+        if(id_username.value == "") {
+            return  swal("게임에서 사용할 별칭을 입력하세요.", {
+                        buttons: false,
+                        icon: "warning",
+                        timer: 1000,
+                    });
+        }
+
+        swal("입장할 게임의 코드를 입력하세요.", {
+            content: {
+                element: "input",
+                attributes: {
+                    type: "text",
+                    maxlength: 6,
+                    placeholder: "게임코드",
+                },
+            },
+            buttons: ["취소", "입장"],
+        }).then(function(response) {
+            if(response != null && response != '') {
+                if(regcode.test(response)) {
+                    id_gamecode.value = response.toUpperCase();
+                    id_action.value = "ingame";
+                    document.forms['mainform'].submit();
+                } else {
+                    swal("게임 코드를 다시 확인해 주세요.", {
+                        buttons: false,
+                        icon: "warning",
+                        timer: 1000,
+                    });
+                }
+            }
+        });
+    }
+    </script>
+<body>
+{% include "./menu.html" %}
+{% load static %}
+{% load davinci_tags %}
+{% if message %}
+<script type="text/javascript">
+    swal("{{ message }}", {
+        buttons: false,
+        icon: "error",
+        timer: 1000,
+    });
+</script>
+{% endif %}
+<form name="mainform" action="{% url 'davinci:main' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" id="id_action"/>
+    <input type="hidden" name="gamecode" id="id_gamecode" value="{{ gamecode }}"/>
+    <p style="text-indent: 0.5em;">
+        <input type="text" name="username" id="id_username" value="{{ username }}" maxlength="6" width="100%" placeholder="플레이어"/>
+        <button type="button" onclick="newgame()" class="btn btn-outline-warning" style="height:30px;padding-top:initial;padding-bottom:initial;">새 게임</button>
+        <button type="button" onclick="ingame()" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">입장</button>
+    </p>
+</form>
+{% if user_list %}
+<p style="text-indent: 0.5em;">
+    {% for user in user_list %}
+    <button type="button" onclick="userami('{{ user.username }}')" class="btn btn-outline-secondary">{{ user.username }}</button>
+        {% if forloop.counter|divisibleby:4 != 0 %}
+    </p><p style="text-indent: 0.5em;">
+        {% endif %}
+    {% endfor %}
+</p>
+{% endif %}
+</body>
+</html>

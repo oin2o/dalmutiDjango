@@ -1,0 +1,20 @@
+{# login.html #}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>Davinci Code</title>
+    <style>
+        .rule{
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+{% include "./menu.html" %}
+{% load static %}
+{% load davinci_tags %}
+    <img class="rule" src="{% static  'davinci/images/' %}rule.jpg"  name="gameRule" border="0">
+</body>
+</html>
