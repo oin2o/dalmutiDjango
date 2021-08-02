@@ -54,7 +54,7 @@
         if (message == 'refresh') {
             setTimeout(function(){
                 document.location.href = "{% url 'davinci:game' gamer.game.gamecode gamer.user.username %}";
-            }, 500);
+            }, 300);
         }
     };
 
