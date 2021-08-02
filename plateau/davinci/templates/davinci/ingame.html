@@ -445,7 +445,7 @@
                                 {% else %}
                         <img id="card_{{ players_card.card.type }}{{ players_card.card.number }}0" class="playcard" src="{% static  'davinci/images/' %}{{ players_card.card.type }}/0.jpg"  name="davinciImg{{ players_card.card.type }}0" border="0">
                                     {% if gamer.user.username == gamer.game.turnUser.username %}
-                                        {% if lastCard or players_cards|length == 26 %}
+                                        {% if not ready_cards or lastCard %}
                         <script type="text/javascript">
                         document.querySelector('#card_{{ players_card.card.type }}{{ players_card.card.number }}0').onclick = function(e) {
                             console.log({{ players_card.card.type }} + ',' + {{ players_card.card.number }});

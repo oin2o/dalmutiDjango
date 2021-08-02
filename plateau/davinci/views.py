@@ -265,6 +265,13 @@ class GameView(generic.ListView):
 
             else:
                 tcard = Card.objects.filter(game=game, user=user, card=gamer.lastCard).first()
+
+                if not tcard:
+                    tcards_unchecked = Card.objects.filter(game=game, user=user, check=0)
+                    tcards = [o for o in tcards_unchecked]
+                    random.shuffle(tcards)
+                    tcard = tcards.pop()
+
                 tcard.check = 1
                 tcard.save()
 
