@@ -255,7 +255,7 @@ class GameView(generic.ListView):
                         gamer.result = 1
                         gamer.save()
 
-                        gamers = Gamer.objects.filter(game=game).order_by('position')
+                        gamers = Gamer.objects.filter(game=game, status=1).order_by('position')
                         for gamer in gamers:
                             _honor, created = Honor.objects.get_or_create(game=game, user=user, round=game.round,
                                                                           result=gamer.result,
@@ -275,17 +275,22 @@ class GameView(generic.ListView):
                 tcard.check = 1
                 tcard.save()
 
-                gamers = Gamer.objects.filter(game=game).order_by('position')
+                gamers = Gamer.objects.filter(game=game, status=1).order_by('position')
                 unresult_gamers = Gamer.objects.filter(game=game, result=0)
                 unchecked_cards = Card.objects.filter(game=game, user=user, check=0)
-                if len(unchecked_cards) == 0:
+
+                if len(unchecked_cards) == 0 and len(unresult_gamers) == 2:
                     gamer.result = len(unresult_gamers)
                     gamer.save()
 
-                if len(unresult_gamers) == 0:
-                    for gamer in gamers:
-                        _honor, created = Honor.objects.get_or_create(game=game, user=user, round=game.round,
-                                                                    result=gamer.result, winYn=True if gamer.result == 1 else False)
+                    for _gamer in gamers:
+                        if _gamer.result == 0:
+                            _gamer.result = 1
+                            _gamer.save()
+
+                        _honor, created = Honor.objects.get_or_create(game=game, user=_gamer.user, round=game.round,
+                                                                      result=_gamer.result,
+                                                                      winYn=True if _gamer.result == 1 else False)
                     game.ingameCd = 2
                     game.save()
                 else:
@@ -304,12 +309,15 @@ class GameView(generic.ListView):
                     game.turnUser = ingamers[idx].user
                     game.save()
 
+                    if len(unchecked_cards) == 0:
+                        gamer.result = len(unresult_gamers)
+
                     gamer.lastCard = None
                     gamer.save()
 
         elif action == "endturn":
 
-            gamers = Gamer.objects.filter(game=game).order_by('position')
+            gamers = Gamer.objects.filter(game=game, status=1).order_by('position')
             ingamers = gamers.exclude(result__gt=0)
 
             idx = 0

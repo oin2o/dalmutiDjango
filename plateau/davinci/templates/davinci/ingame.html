@@ -387,7 +387,7 @@
             <tr>
                 <td>
                 {% if gamer.user.username == gamer.game.turnUser.username %}
-                    {% if not lastCard %}
+                    {% if ready_cards and not lastCard %}
                     <font size="2em"><b>{{ gamer.game.turnUser.username }}님</b>, 위의 덱에서 카드를 한장 선택해 주세요.</font>
                     {% else %}
                     <font size="2em"><b>{{ gamer.game.turnUser.username }}님</b>, 카드 추리 혹은 종료해 주세요.</font>
@@ -455,6 +455,7 @@
                                 const btn{{ idx }} = document.createElement('button');
                                 btn{{ idx }}.className = "btn btn-outline-info";
                                 btn{{ idx }}.innerText = {{ idx }} + 1;
+                                btn{{ idx }}.style = "margin-right: 4px; margin-left: 4px;";
                                 btn{{ idx }}.onclick = function() { checkcard('{{ players_card.game.gamecode }}' + ',' + '{{ players_card.user.username }}' + ',' + ({{ idx }} + 1) + ',' + {{ players_card.card.type }} + ',' + {{ players_card.card.number }}) };
                                 container.append(btn{{ idx }});
 
