@@ -245,7 +245,7 @@ class GameView(generic.ListView):
                 tcard.save()
 
                 tgamer = Gamer.objects.filter(game=game, user=tuser).first()
-                unresult_gamers = Gamer.objects.filter(game=game, result=0)
+                unresult_gamers = Gamer.objects.filter(game=game, status=1, result=0)
                 unchecked_cards = Card.objects.filter(game=game, user=tuser, check=0)
                 if len(unchecked_cards) == 0:
                     tgamer.result = len(unresult_gamers)
@@ -276,7 +276,7 @@ class GameView(generic.ListView):
                 tcard.save()
 
                 gamers = Gamer.objects.filter(game=game, status=1).order_by('position')
-                unresult_gamers = Gamer.objects.filter(game=game, result=0)
+                unresult_gamers = Gamer.objects.filter(game=game, status=1, result=0)
                 unchecked_cards = Card.objects.filter(game=game, user=user, check=0)
 
                 if len(unchecked_cards) == 0 and len(unresult_gamers) == 2:
