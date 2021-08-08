@@ -1,0 +1,58 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>Dixit</title>
+    <style>
+        table{
+            width: 95%;
+        }
+        .td6c{
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .playcard{
+            width: 100%;
+            border-color: #FF0000;
+        }
+    </style>
+</head>
+<body>
+{% include "./menu.html" %}
+{% load static %}
+{% if cards %}
+<table style="margin-left: auto;margin-right: auto;">
+    <tbody>
+        <tr>
+        {% for card in cards %}
+            <td class="td6c" scope="row">
+                <img id="card_{{ card.category }}{{ card.name }}" class="playcard" src="{% static  'dixit/images/' %}{{ card.category }}/{{ card.name }}.png"  name="dixitImg{{ card.category }}{{ card.name }}" border="0">
+                <script type="text/javascript">
+                document.querySelector('#card_{{ card.category }}{{ card.name }}').onclick = function(e) {
+                    console.log('{{ card.category }},{{ card.name }}');
+                    const container = document.createElement("div");
+
+                    const img{{ card.category  }}{{ card.name }} = document.createElement('img');
+                    img{{ card.category  }}{{ card.name }}.src = "{% static  'dixit/images/' %}{{ card.category }}/{{ card.name }}.png";
+                    container.append(img{{ card.category  }}{{ card.name }});
+
+                    swal({
+                        content: container,
+                        button: "확인",
+                    });
+                };
+                </script>
+            </td>
+            {% if forloop.counter|divisibleby:4 != 0 %}
+         </tr><tr>
+            {% endif %}
+        {% endfor %}
+        </tr>
+    </tbody>
+</table>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,21 @@
+{# login.html #}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>Dixit</title>
+    <style>
+        .rule{
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+{% include "./menu.html" %}
+{% load static %}
+{% load dixit_tags %}
+    <img class="rule" src="{% static  'dixit/images/' %}rule01.jpg"  name="gameRule" border="0">
+    <img class="rule" src="{% static  'dixit/images/' %}rule02.jpg"  name="gameRule" border="0">
+</body>
+</html>

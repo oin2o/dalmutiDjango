@@ -1,0 +1,433 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>Dixit</title>
+    <style>
+        table{
+            width: 95%;
+        }
+        .td6{
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .td6c{
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .tdh6{
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+        .tdh6c{
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+        .storycard{
+            width: 23%;
+            border-color: #FF0000;
+        }
+        .playcard{
+            width: 15%;
+            border-color: #FF0000;
+        }
+    </style>
+    <script type="text/javascript">
+    // 클라이언트와 서버의 웹소켓 통신을 가능하도록 연결시켜주는 부분이다.
+    // router.py에서의 url과 일치하도록 해 주어야한다.
+    var web_socket = new WebSocket('ws://' + window.location.host + '/dixit/' + '{{ gamer.game.gamecode }}' + '/' + '{{ gamer.user.username }}');
+
+    // onmessage는 counsumers에서 보내는 메세지를 받는 부분이다.
+    web_socket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+
+        if (message == 'refresh') {
+            setTimeout(function(){
+                document.location.href = "{% url 'dixit:game' gamer.game.gamecode gamer.user.username %}";
+            }, 300);
+        }
+    };
+
+    function readygame() {
+
+        if('{{ ready_gamers|length }}' >= 8) {
+            swal("게임인원은 최대 8명까지 가능합니다.");
+        } else {
+            id_action.value = "readygame";
+            document.forms['gameform'].submit();
+
+            web_socket.send(JSON.stringify({
+                'message': 'refresh'
+            }));
+        }
+    }
+
+    function viewgame() {
+        id_action.value = "viewgame";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function startgame() {
+        id_action.value = "startgame";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function resultgame() {
+        swal("전적을 저장하지 않고 게임을 종료하시겠습니까?", {
+            dangerMode: true,
+            buttons: ["취소", "게임종료"],
+        }).then((isConfirm) => {
+            if(isConfirm) {
+                id_action.value = "resultgame";
+                document.forms['gameform'].submit();
+
+                web_socket.send(JSON.stringify({
+                    'message': 'refresh'
+                }));
+            }
+        });
+    }
+
+    function endgame() {
+        id_action.value = "endgame";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function keyword(keyword, card) {
+        id_action.value = "keyword";
+        id_keyword.value = keyword;
+        id_card.value = card;
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function storycard(card) {
+        id_action.value = "storycard";
+        id_card.value = card;
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function votecard(pickusername) {
+        id_action.value = "votecard";
+        id_pickusername.value = pickusername;
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+
+    function endturn() {
+        id_action.value = "endturn";
+        document.forms['gameform'].submit();
+
+        web_socket.send(JSON.stringify({
+            'message': 'refresh'
+        }));
+    }
+    </script>
+</head>
+<body>
+{% include "./menu.html" %}
+{% load static %}
+{% load dixit_tags %}
+<form name="gameform" action="{% url 'dixit:game' gamer.game.gamecode gamer.user.username %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" id="id_action"/>
+    <input type="hidden" name="keyword" id="id_keyword"/>
+    <input type="hidden" name="card" id="id_card"/>
+    <input type="hidden" name="pickusername" id="id_pickusername"/>
+</form>
+<div id="play_msg" style="text-align:center;">
+    {% if gamer.game.ingameCd == 0 %}
+    <p class="text-warning">대기 중인 플레이어들은 참가 혹은 관전을 선택해 주세요.</p>
+    {% elif gamer.game.ingameCd == 1 %}
+    <p class="text-warning">자유롭게 설명하세요.</p>
+    {% elif gamer.game.ingameCd == 2 %}
+    <p class="text-warning">결과를 확인하세요.</p>
+    {% endif %}
+</div>
+<p style="text-indent: 0.5em;">
+    <div id="play_btn">
+        <table style="margin-left: auto;margin-right: auto;">
+            <tr>
+                <td>
+                    <a href="{% url 'dixit:game' gamer.game.gamecode gamer.user.username %}"><button type="button" class="btn btn-outline-info" style="height:25px;padding-top:initial;padding-bottom:initial;">새로고침</button></a>
+                    {% if gamer.game.ingameCd == 0 %}
+                        {% if gamer.status != 1 %}
+                    <button type="button" onclick="readygame()" class="btn btn-outline-info" style="height:25px;padding-top:initial;padding-bottom:initial;">참가</button></a>
+                        {% endif %}
+                        {% if gamer.status != 2 %}
+                    <button type="button" onclick="viewgame()" class="btn btn-outline-info" style="height:25px;padding-top:initial;padding-bottom:initial;">구경</button></a>
+                        {% endif %}
+                    {% endif %}
+                    {% if gamer.user.username == gamer.game.mastername %}
+                        {% if gamer.game.ingameCd == 0 and not wait_gamers and ready_gamers|length > 2 and ready_gamers|length < 9 %}
+                    <button type="button" onclick="startgame()" class="btn btn-outline-primary" style="height:25px;padding-top:initial;padding-bottom:initial;">게임시작</button></a>
+                        {% elif gamer.game.ingameCd == 1 %}
+                    <button type="button" onclick="resultgame()" class="btn btn-outline-primary" style="height:25px;padding-top:initial;padding-bottom:initial;">게임종료</button></a>
+                        {% elif gamer.game.ingameCd == 2 %}
+                    <button type="button" onclick="endgame()" class="btn btn-outline-primary" style="height:25px;padding-top:initial;padding-bottom:initial;">처음으로</button></a>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td class="tdh6" style="text-align:right;">
+                {% if gamer.game.ingameCd == 0 %}
+                    by <a href="{% url 'dixit:telegram' gamer.game.gamecode gamer.user.username %}">{{ gamer.game.gamecode }}</a>
+                {% else %}
+                    Round : {{ gamer.game.round }} by {{ gamer.game.gamecode }}
+                {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+</p>
+{% if wait_gamers %}
+<div id="gamer_wait">
+    <table style="margin-left: auto;margin-right: auto;">
+        <tbody>
+            <tr>
+                <td class="tdh6" scope="row" style="width: 10%;">
+                    대기
+                </td>
+                <td class="td6" scope="row">
+                    {% for wait_gamer in wait_gamers %}
+                    <button type="button" class="btn btn-outline-dark disabled" style="height:20px;padding-top:initial;padding-bottom:initial;">{{ wait_gamer.user.username }}</button>
+                    {% endfor %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% if view_gamers %}
+<div id="gamer_view">
+    <table style="margin-left: auto;margin-right: auto;">
+        <tbody>
+            <tr>
+                <td class="tdh6" scope="row" style="width: 10%;">
+                    관전
+                </td>
+                <td class="td6" scope="row">
+                    {% for view_gamer in view_gamers %}
+                    <button type="button" class="btn btn-outline-secondary disabled" style="height:20px;padding-top:initial;padding-bottom:initial;">{{ view_gamer.user.username }}</button>
+                    {% endfor %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% if ready_gamers %}
+<p style="text-indent: 0.5em;">
+    <div id="play_desc">
+        {% if gamer.game.ingameCd == 1 %}
+        <table style="margin-left: auto;margin-right: auto;">
+            <tbody>
+                <tr>
+                    <td>
+                {% if gamer.status == 1 %}
+                    {% if not gamer.game.keyword %}
+                        <font size="2em"><b>{{ gamer.game.turnUser.username }}님</b>, 카드를 고르고 설명하세요.</font>
+                    {% elif gamer.user.username == gamer.game.turnUser.username %}
+                        {% if ready_gamers|length != story_cards|length %}
+                        <font size="2em">플레이어들이 카드 제출 중입니다.</font>
+                        {% elif ready_gamers|length != vote_gamers|length|add:1 %}
+                        <font size="2em">플레이어들이 투표 중입니다.</font>
+                        {% else %}
+                        <font size="2em"><b>{{ gamer.game.turnUser.username }}님</b>, 턴을 종료해 주세요.</font>
+                        {% endif %}
+                    {% elif not gamer.storyCard %}
+                        <font size="2em"><b>{{ gamer.user.username }}님</b>, 카드를 제출해 주세요.</font>
+                    {% elif ready_gamers|length != story_cards|length %}
+                        <font size="2em">플레이어들이 카드 제출 중입니다.</font>
+                    {% elif not gamer.pickusername %}
+                        <font size="2em"><b>{{ gamer.user.username }}님</b>, 키워드에 맞는 카드에 투표해 주세요.</font>
+                    {% elif ready_gamers|length != vote_gamers|length|add:1 %}
+                        <font size="2em">플레이어들이 투표 중입니다.</font>
+                    {% else %}
+                        <font size="2em"><b>{{ gamer.game.turnUser.username }}님</b>, 턴을 종료해 주세요.</font>
+                    {% endif %}
+                    </td>
+                    <td class="tdh6" style="text-align:right;">
+                    {% if gamer.user.username == gamer.game.turnUser.username %}
+                        {% if ready_gamers|length == vote_gamers|length|add:1 %}
+                        <button type="button" onclick="endturn()" class="btn btn-outline-warning" style="height:25px;padding-top:initial;padding-bottom:initial;">턴종료</button></a>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
+        {% if ready_gamers %}
+        <table style="margin-left: auto;margin-right: auto;">
+            <thead>
+                <tr>
+                    <td class="tdh6c" scope="row" style="width: 10%;">닉네임</td>
+                    <td class="tdh6c" scope="row" style="width: 10%;">상태</td>
+                    <td class="tdh6c" scope="row" style="width: 10%;">점수</td>
+                    <td class="tdh6c" scope="row" style="width: 70%;">카드</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for ready_gamer in ready_gamers %}
+                <tr>
+                    <td class="td6c" scope="row">{{ ready_gamer.user.username }}</td>
+                    <td class="td6c" scope="row">
+                {% if ready_gamer.user.username == gamer.game.turnUser.username %}
+                    술래
+                {% elif ready_gamer.pickusername %}
+                    투표
+                {% endif %}
+                    </td>
+                    <td class="td6c" scope="row">{{ ready_gamer.point }}</td>
+                {% if forloop.counter == 1 %}
+                    <td class="td6c" scope="row" rowspan="{{ ready_gamers|length }}">
+                    {% if gamer.game.keyword %}
+                        <font class="text-info"><b>키워드 : {{ gamer.game.keyword }}</b><br></font>
+                    {% endif %}
+                    {% for story_card in story_cards %}
+                        {% if ready_gamers|length != story_cards|length %}
+                        <img id="card_{{ story_card.storyCard.category }}" class="storycard" src="{% static  'dixit/images/' %}back.png"  name="dixitImg{{ story_card.storyCard.category }}" border="0">
+                        {% else %}
+                        <img id="card_{{ story_card.storyCard.category }}{{ story_card.storyCard.name }}" class="storycard" src="{% static  'dixit/images/' %}{{ story_card.storyCard.category }}/{{ story_card.storyCard.name }}.png"  name="dixitImg{{ story_card.storyCard.category }}{{ story_card.storyCard.name }}" border="0">
+                        <script type="text/javascript">
+                        document.querySelector('#card_{{ story_card.storyCard.category }}{{ story_card.storyCard.name }}').onclick = function(e) {
+                            const container = document.createElement("div");
+
+                            const storyimg{{ story_card.storyCard.category }}{{ story_card.storyCard.name }} = document.createElement('img');
+                            storyimg{{ story_card.storyCard.category }}{{ story_card.storyCard.name }}.src = "{% static  'dixit/images/' %}{{ story_card.storyCard.category }}/{{ story_card.storyCard.name }}.png";
+                            container.append(storyimg{{ story_card.storyCard.category }}{{ story_card.storyCard.name }});
+
+                            console.log('{{ gamer.pickusername }}');
+                            if({{ gamer.status }} == 1 && ('{{ gamer.pickusername }}' == 'None' || '{{ gamer.pickusername }}' == '') && '{{ gamer.user.username }}' != '{{ gamer.game.turnUser.username }}') {
+                                swal({
+                                    text: "선택한 그림에 투표할까요?",
+                                    content: container,
+                                    buttons: ["취소", "제출"],
+                                }).then(function(response) {
+                                    if(response != null && response != '' && response) {
+                                        votecard('{{ story_card.user.username }}');
+                                    }
+                                });
+                            } else {
+                                swal({
+                                    content: container,
+                                    button: "확인",
+                                });
+                            }
+                        };
+                        </script>
+                        {% endif %}
+                    {% endfor %}
+                    </td>
+                {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+{% if gamer.game.ingameCd == 1 and gamer.status == 1 %}
+</fontp><p style="text-indent: 0.5em;">
+    <div id="player">
+        <table style="margin-left: auto;margin-right: auto;">
+            <tbody>
+                <tr>
+                    <td class="tdh6c" scope="row">{{ gamer.user.username }}</td>
+                    <td class="tdh6c" scope="row" style="width: 80%;">
+                    {% for player_card in player_cards %}
+                        <img id="mycard_{{ player_card.card.category }}{{ player_card.card.name }}" class="playcard" src="{% static  'dixit/images/' %}{{ player_card.card.category }}/{{ player_card.card.name }}.png"  name="dixitImg{{ player_card.card.category }}{{ player_card.card.name }}" border="0">
+                        <script type="text/javascript">
+                        document.querySelector('#mycard_{{ player_card.card.category }}{{ player_card.card.name }}').onclick = function(e) {
+                            const container = document.createElement("div");
+
+                            const myimg{{ player_card.card.category  }}{{ player_card.card.name }} = document.createElement('img');
+                            myimg{{ player_card.card.category  }}{{ player_card.card.name }}.src = "{% static  'dixit/images/' %}{{ player_card.card.category }}/{{ player_card.card.name }}.png";
+                            container.append(myimg{{ player_card.card.category  }}{{ player_card.card.name }});
+
+                            if('{{ gamer.user.username }}' == '{{ gamer.game.turnUser.username }}' && '{{ gamer.game.keyword }}' == '') {
+                                container.append(document.createElement("br"));
+                                container.append(document.createElement("br"));
+
+                                const myinput{{ player_card.card.category  }}{{ player_card.card.name }} = document.createElement('input');
+                                myinput{{ player_card.card.category  }}{{ player_card.card.name }}.placeholder = "키워드를 입력하세요.";
+                                myinput{{ player_card.card.category  }}{{ player_card.card.name }}.maxlength = 100,
+                                container.append(myinput{{ player_card.card.category  }}{{ player_card.card.name }});
+
+                                swal({
+                                    text: "그림에 맞는 키워드를 입력해 주세요.",
+                                    content: container,
+                                    buttons: ["취소", "제출"],
+                                }).then(function(response) {
+                                    if(response != null && response != '' && response) {
+                                        if(myinput{{ player_card.card.category  }}{{ player_card.card.name }}.value == null || myinput{{ player_card.card.category  }}{{ player_card.card.name }}.value == '') {
+                                            swal('키워드를 입력하세요.', {
+                                                buttons: false,
+                                                timer: 1000,
+                                            });
+                                        } else {
+                                            keyword(myinput{{ player_card.card.category  }}{{ player_card.card.name }}.value, '{{ player_card.card.category  }},{{ player_card.card.name }}');
+                                        }
+                                    }
+                                });
+                            } else if('{{ gamer.game.keyword }}' != '' && '{{ gamer.storyCard }}' == 'None') {
+                                swal({
+                                    text: "선택한 그림을 제출할까요?",
+                                    content: container,
+                                    buttons: ["취소", "제출"],
+                                }).then(function(response) {
+                                    if(response != null && response != '' && response) {
+                                        storycard('{{ player_card.card.category  }},{{ player_card.card.name }}');
+                                    }
+                                });
+                            } else {
+                                swal({
+                                    content: container,
+                                    button: "확인",
+                                });
+                            }
+                        };
+                        </script>
+                    {% endfor %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+</p>
+{% endif %}
+</body>
+</html>

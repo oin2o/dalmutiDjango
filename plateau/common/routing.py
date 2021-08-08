@@ -9,4 +9,5 @@ websocket_urlpatterns = [
     url(r'dalmutid/(?P<gamename>\w+)/(?P<username>\w+)', consumers.common_consumer),
     url(r'liar/(?P<gamename>\w+)/(?P<username>\w+)', consumers.common_consumer),
     url(r'davinci/(?P<gamename>\w+)/(?P<username>\w+)', consumers.common_consumer),
+    url(r'dixit/(?P<gamename>\w+)/(?P<username>\w+)', consumers.common_consumer),
 ]
