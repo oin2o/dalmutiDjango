@@ -38,10 +38,11 @@ class Gamer(models.Model):
     storyCard = models.ForeignKey(Cards, on_delete=models.CASCADE, null=True)
     pickusername = models.CharField(default="", max_length=10, null=True)
     point = models.IntegerField(default=0, help_text="점수")
+    addpoint = models.IntegerField(default=0, help_text="획득점수")
 
     def __str__(self):
         return str(self.game) + ':' + str(self.user) + ':' + str(self.position) + ':' + str(self.status) \
-               + ':' + str(self.storyCard) + ':' + self.pickusername + ':' + str(self.point)
+               + ':' + str(self.storyCard) + ':' + self.pickusername + ':' + str(self.point) + ':' + str(self.addpoint)
 
 
 class Card(models.Model):

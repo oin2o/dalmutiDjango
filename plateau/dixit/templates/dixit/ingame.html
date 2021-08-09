@@ -171,7 +171,7 @@
     {% if gamer.game.ingameCd == 0 %}
     <p class="text-warning">대기 중인 플레이어들은 참가 혹은 관전을 선택해 주세요.</p>
     {% elif gamer.game.ingameCd == 1 %}
-    <p class="text-warning">자유롭게 설명하세요.</p>
+    <p class="text-warning">자유롭게 설명하세요. (목표:{% widthratio ready_gamers|length 1 5 %}점)</p>
     {% elif gamer.game.ingameCd == 2 %}
     <p class="text-warning">결과를 확인하세요.</p>
     {% endif %}
@@ -308,10 +308,16 @@
                 {% if ready_gamer.user.username == gamer.game.turnUser.username %}
                     술래
                 {% elif ready_gamer.pickusername %}
+                    {% if ready_gamers|length == vote_gamers|length|add:1 %}
+                    {{ ready_gamer.pickusername }}
+                    {% else %}
                     투표
+                    {% endif %}
+                {% elif ready_gamer.storyCard and ready_gamers|length != story_cards|length %}
+                    제출
                 {% endif %}
                     </td>
-                    <td class="td6c" scope="row">{{ ready_gamer.point }}</td>
+                    <td class="td6c" scope="row">{{ ready_gamer.point }}{% if ready_gamers|length == vote_gamers|length|add:1 %}(+{{ ready_gamer.addpoint }}){% endif %}</td>
                 {% if forloop.counter == 1 %}
                     <td class="td6c" scope="row" rowspan="{{ ready_gamers|length }}">
                     {% if gamer.game.keyword %}

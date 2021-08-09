@@ -164,6 +164,7 @@ class GameView(generic.ListView):
                 _player.storyCard = None
                 _player.pickusername = ''
                 _player.point = 0
+                _player.addpoint = 0
                 _player.save()
 
                 # 1번째 플레이어 저장
@@ -233,6 +234,7 @@ class GameView(generic.ListView):
                                                                    pickusername=point_player.user.username)
                             vote_point += len(vote_to_players)
                         point_player.point += add_point + vote_point
+                        point_player.addpoint = add_point + vote_point
                         point_player.save()
                 else:
                     add_point = 3
@@ -245,8 +247,10 @@ class GameView(generic.ListView):
                             vote_point += len(vote_to_players)
                         if point_player.user.username == gamer.game.turnUser.username or point_player.pickusername == gamer.game.turnUser.username:
                             point_player.point += add_point + vote_point
+                            point_player.addpoint = add_point + vote_point
                         else:
                             point_player.point += vote_point
+                            point_player.addpoint = vote_point
                         point_player.save()
 
         elif action == "endturn":
@@ -292,7 +296,7 @@ class GameView(generic.ListView):
                 ingamer.pickusername = ''
                 ingamer.save()
 
-                if ingamer.point >= 20:
+                if ingamer.point >= len(ingamers) * 5:
                     goto_result = True
 
             # 30점 초과 플레이어가 있는 경우, 게임 종료
@@ -319,6 +323,7 @@ class GameView(generic.ListView):
                 _gamer.storyCard = None
                 _gamer.pickusername = ''
                 _gamer.point = 0
+                _gamer.addpoint = 0
                 _gamer.save()
 
             # 해당 게임 카드 정보 초기화
