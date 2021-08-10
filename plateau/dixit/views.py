@@ -116,8 +116,11 @@ class GameView(generic.ListView):
         vote_gamers = Gamer.objects.filter(game=game, status=1, storyCard__isnull=False).exclude(
             pickusername='').order_by('position')
 
-        story_cards = Gamer.objects.filter(game=game, status=1, storyCard__isnull=False).order_by('position')
+        story_card_ordered = Gamer.objects.filter(game=game, status=1, storyCard__isnull=False).order_by('position')
         player_cards = Card.objects.filter(game=game, user=user, check=0).order_by('order')
+
+        story_cards = [o for o in story_card_ordered]
+        random.shuffle(story_cards)
 
         context = {
             'gamecode': gamecode,
@@ -294,12 +297,13 @@ class GameView(generic.ListView):
 
                 ingamer.storyCard = None
                 ingamer.pickusername = ''
+                ingamer.addpoint = 0
                 ingamer.save()
 
                 if ingamer.point >= len(ingamers) * 5:
                     goto_result = True
 
-            # 30점 초과 플레이어가 있는 경우, 게임 종료
+            # (플레이어수 * 5)점 초과 플레이어가 있는 경우, 게임 종료
             if goto_result:
                 gamers = Gamer.objects.filter(game=game, status=1).order_by('position')
                 for gamer in gamers:
@@ -310,6 +314,7 @@ class GameView(generic.ListView):
 
         elif action == "resultgame":
             game.ingameCd = 2
+            game.keyword = ''
             game.save()
 
             # 강제로 게임을 종료한 경우(마스터 플레이어가 버튼으로 종료한 경우, 별도 전적을 저장하지 않음)

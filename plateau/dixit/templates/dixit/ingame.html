@@ -317,7 +317,7 @@
                     제출
                 {% endif %}
                     </td>
-                    <td class="td6c" scope="row">{{ ready_gamer.point }}{% if ready_gamers|length == vote_gamers|length|add:1 %}(+{{ ready_gamer.addpoint }}){% endif %}</td>
+                    <td class="td6c" scope="row">{{ ready_gamer.point }}{% if gamer.game.ingameCd == 1 and ready_gamers|length == vote_gamers|length|add:1 %}(+{{ ready_gamer.addpoint }}){% endif %}</td>
                 {% if forloop.counter == 1 %}
                     <td class="td6c" scope="row" rowspan="{{ ready_gamers|length }}">
                     {% if gamer.game.keyword %}
@@ -327,7 +327,11 @@
                         {% if ready_gamers|length != story_cards|length %}
                         <img id="card_{{ story_card.storyCard.category }}" class="storycard" src="{% static  'dixit/images/' %}back.png"  name="dixitImg{{ story_card.storyCard.category }}" border="0">
                         {% else %}
+                            {% if ready_gamers|length == vote_gamers|length|add:1 and gamer.game.turnUser.username == story_card.user.username %}
+                        <img id="card_{{ story_card.storyCard.category }}{{ story_card.storyCard.name }}" class="storycard" src="{% static  'dixit/images/' %}{{ story_card.storyCard.category }}/{{ story_card.storyCard.name }}.png"  name="dixitImg{{ story_card.storyCard.category }}{{ story_card.storyCard.name }}" style="border-width: medium; border-style: outset; border-color: #FF0000;">
+                            {% else %}
                         <img id="card_{{ story_card.storyCard.category }}{{ story_card.storyCard.name }}" class="storycard" src="{% static  'dixit/images/' %}{{ story_card.storyCard.category }}/{{ story_card.storyCard.name }}.png"  name="dixitImg{{ story_card.storyCard.category }}{{ story_card.storyCard.name }}" border="0">
+                            {% endif %}
                         <script type="text/javascript">
                         document.querySelector('#card_{{ story_card.storyCard.category }}{{ story_card.storyCard.name }}').onclick = function(e) {
                             const container = document.createElement("div");
