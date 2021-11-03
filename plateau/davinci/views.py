@@ -401,7 +401,7 @@ class TelegramView(generic.DetailView):
 
         bot = telegram.Bot(token='1480423142:AAHkkAlgShepdoXFW2HP8TzZAiRfCN8WpHI')
         bot.sendMessage(chat_id='-413309173',
-                        text='[다빈치코드:' + game.gamecode + '](http://3.35.239.74:8000/davinci/login/' + game.gamecode + '/)',
+                        text='[다빈치코드:' + game.gamecode + '](http://34.145.3.93/:8080/davinci/login/' + game.gamecode + '/)',
                         parse_mode='Markdown', disable_web_page_preview=True)
 
         return HttpResponseRedirect(reverse('davinci:game', args=(gamecode, username,)))
