@@ -117,7 +117,7 @@ class GameView(generic.ListView):
             pickusername='').order_by('position')
 
         story_card_ordered = Gamer.objects.filter(game=game, status=1, storyCard__isnull=False).order_by('position')
-        player_cards = Card.objects.filter(game=game, user=user, flag=0).order_by('order')
+        player_cards = Card.objects.filter(game=game, user=user, check=0).order_by('order')
 
         story_cards = [o for o in story_card_ordered]
         random.shuffle(story_cards)
@@ -288,7 +288,7 @@ class GameView(generic.ListView):
 
             for ingamer in ingamers:
                 uncheck_card = Card.objects.filter(game=game, user=ingamer.user, card=ingamer.storyCard).first()
-                uncheck_card.flag = 1
+                uncheck_card.check = 1
                 uncheck_card.save()
 
                 player_card = cards.pop()

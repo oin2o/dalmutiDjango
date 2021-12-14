@@ -449,12 +449,12 @@
                         {% for players_card in players_cards %}
                             {% if ready_gamer.user.username == players_card.user.username %}
                                 {% if ready_gamer.user.username == gamer.user.username %}
-                                    {% if players_card.flag == 1 %}
+                                    {% if players_card.check == 1 %}
                         <img id="card_{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}1" class="playcard" src="{% static  'davinci/images/' %}{{ players_card.card.type }}/{{ players_card.card.number }}.jpg"  name="davinciImg{{ players_card.card.type }}{{ players_card.card.number }}" style="border-width: medium; border-style: outset; border-color: #FF0000;">
                                     {% else %}
                         <img id="card_{{ players_card.card.type }}{{ players_card.card.number }}{{ players_card.order }}0" class="playcard" src="{% static  'davinci/images/' %}{{ players_card.card.type }}/{{ players_card.card.number }}.jpg"  name="davinciImg{{ players_card.card.type }}{{ players_card.card.number }}" border="0">
                                     {% endif %}
-                                {% elif players_card.flag == 1 %}
+                                {% elif players_card.check == 1 %}
                         <img id="card_{{ players_card.card.type }}{{ players_card.card.number }}1" class="playcard" src="{% static  'davinci/images/' %}{{ players_card.card.type }}/{{ players_card.card.number }}.jpg"  name="davinciImg{{ players_card.card.type }}{{ players_card.card.number }}" border="0">
                                 {% else %}
                         <img id="card_{{ players_card.card.type }}{{ players_card.card.number }}0" class="playcard" src="{% static  'davinci/images/' %}{{ players_card.card.type }}/0.jpg"  name="davinciImg{{ players_card.card.type }}0" border="0">
