@@ -241,12 +241,12 @@ class GameView(generic.ListView):
                 tuser = User.objects.filter(username=tusername).first()
                 tcards = Cards.objects.filter(number=number, type=type).first()
                 tcard = Card.objects.filter(game=game, user=tuser, card=tcards).first()
-                tcard.check = 1
+                tcard.flag = 1
                 tcard.save()
 
                 tgamer = Gamer.objects.filter(game=game, user=tuser).first()
                 unresult_gamers = Gamer.objects.filter(game=game, status=1, result=0)
-                unchecked_cards = Card.objects.filter(game=game, user=tuser, check=0)
+                unchecked_cards = Card.objects.filter(game=game, user=tuser, flag=0)
                 if len(unchecked_cards) == 0:
                     tgamer.result = len(unresult_gamers)
                     tgamer.save()
@@ -267,17 +267,17 @@ class GameView(generic.ListView):
                 tcard = Card.objects.filter(game=game, user=user, card=gamer.lastCard).first()
 
                 if not tcard:
-                    tcards_unchecked = Card.objects.filter(game=game, user=user, check=0)
+                    tcards_unchecked = Card.objects.filter(game=game, user=user, flag=0)
                     tcards = [o for o in tcards_unchecked]
                     random.shuffle(tcards)
                     tcard = tcards.pop()
 
-                tcard.check = 1
+                tcard.flag = 1
                 tcard.save()
 
                 gamers = Gamer.objects.filter(game=game, status=1).order_by('position')
                 unresult_gamers = Gamer.objects.filter(game=game, status=1, result=0)
-                unchecked_cards = Card.objects.filter(game=game, user=user, check=0)
+                unchecked_cards = Card.objects.filter(game=game, user=user, flag=0)
 
                 if len(unchecked_cards) == 0 and len(unresult_gamers) == 2:
                     gamer.result = len(unresult_gamers)

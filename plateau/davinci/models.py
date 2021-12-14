@@ -47,11 +47,11 @@ class Card(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     card = models.ForeignKey(Cards, on_delete=models.CASCADE)
     order = models.IntegerField(default=0, help_text="순번")
-    check = models.IntegerField(default=0, help_text="0:unchecked, 1:checked")
+    flag = models.IntegerField(default=0, help_text="0:unchecked, 1:checked")
 
     def __str__(self):
         return str(self.game) + ':' + str(self.user) \
-               + ':' + str(self.card) + ':' + str(self.order) + ':' + str(self.check)
+               + ':' + str(self.card) + ':' + str(self.order) + ':' + str(self.flag)
 
 
 class Honor(models.Model):
