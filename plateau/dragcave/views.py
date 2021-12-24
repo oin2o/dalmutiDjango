@@ -67,13 +67,13 @@ class EggsView(generic.ListView):
                                 for divtag in divlist:
                                     if "alt=\"Egg\"" in str(divtag) and egg.eggdesc in str(divtag):
                                         divs.append(divtag)
+                                    elif "/register" in str(divtag):
+                                        # 세션/쿠키 사용을 위한 로그인 처리
+                                        s.post(''.join([base_url, '/login']), data=login_payload)
 
                                 # 조회된 정보 중, 하나만 사용하면 되므로 마지막 데이터만 사용
                                 if len(divs) > 0:
                                     egg_url = divs[-1].find_all("a", href=True)[0]['href']
-                                    if egg_url == "/register":
-                                        # 세션/쿠키 사용을 위한 로그인 처리
-                                        s.post(''.join([base_url, '/login']), data=login_payload)
 
                                     # 마지막 데이터의 코드를 기준으로 에그 줍기 시도
                                     s.get(''.join([base_url, egg_url]),
