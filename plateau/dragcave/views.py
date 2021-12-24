@@ -36,7 +36,6 @@ class EggsView(generic.ListView):
             locations = Location.objects.filter(useYn=True)
 
             if locations:
-
                 egg = Egg.objects.filter(useYn=True).first()
 
                 with requests.Session() as s:
@@ -57,6 +56,8 @@ class EggsView(generic.ListView):
                             r = s.get(req_url, headers=headers, cookies=s.cookies)
 
                             source = BeautifulSoup(r.content, "html.parser")
+
+                            print(s.cookies)
 
                             # 조회된 알 중, 대상 알 설명이 있는 경우만 조회
                             if egg.eggdesc in str(source):
