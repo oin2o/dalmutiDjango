@@ -44,7 +44,6 @@ class EggsView(generic.ListView):
                     s.post(''.join([base_url, '/login']), data=login_payload)
 
                     while tryCnt > 0:
-
                         #  각 개별 location 별로 에그 조회
                         for location in locations:
                             req_url = ''.join([base_url, '/locations/', location.loctnum])
@@ -71,10 +70,15 @@ class EggsView(generic.ListView):
 
                                 # 조회된 정보 중, 하나만 사용하면 되므로 마지막 데이터만 사용
                                 if len(divs) > 0:
+                                    egg_url = divs[-1].find_all("a", href=True)[0]['href']
+                                    if egg_url == "/register":
+                                        # 세션/쿠키 사용을 위한 로그인 처리
+                                        s.post(''.join([base_url, '/login']), data=login_payload)
+
                                     # 마지막 데이터의 코드를 기준으로 에그 줍기 시도
-                                    s.get(''.join([base_url, divs[-1].find_all("a", href=True)[0]['href']]),
+                                    s.get(''.join([base_url, egg_url]),
                                           headers=headers, cookies=s.cookies)
-                                    print(tryCnt, "Get Egg : ", divs[-1].find_all("a", href=True)[0]['href'])
+                                    print(tryCnt, "Get Egg : ", egg_url)
                                     tryCnt -= 1
                                     if tryCnt == 0:
                                         break
