@@ -74,6 +74,7 @@ class EggsView(generic.ListView):
                                     # 마지막 데이터의 코드를 기준으로 에그 줍기 시도
                                     s.get(''.join([base_url, divs[-1].find_all("a", href=True)[0]['href']]),
                                           headers=headers, cookies=s.cookies)
+                                    print(tryCnt, "Get Egg : ", divs[-1].find_all("a", href=True)[0]['href'])
                                     tryCnt -= 1
                                     if tryCnt == 0:
                                         break
