@@ -154,9 +154,6 @@ class AbandonedView(generic.ListView):
 
                             print(len(eggs), "Get Egg : ", egg_url)
 
-                    # 하나 처리한 경우, 2초 대기
-                    sleep(2)
-
         context = {
             'user': user
         }
