@@ -57,8 +57,6 @@ class EggsView(generic.ListView):
 
                             source = BeautifulSoup(r.content, "html.parser")
 
-                            print(s.cookies)
-
                             # 조회된 알 중, 대상 알 설명이 있는 경우만 조회
                             if egg.eggdesc in str(source):
                                 divlist = source.find_all("div")
@@ -125,8 +123,6 @@ class AbandonedView(generic.ListView):
 
                     source = BeautifulSoup(r.content, "html.parser")
 
-                    print(s.cookies, eggs)
-
                     if any(egg.eggcode in str(source) for egg in eggs):
                         divlist = source.find_all("div")
 
@@ -152,7 +148,9 @@ class AbandonedView(generic.ListView):
                                     egg.save()
                                 eggs = Abandon.objects.filter(useYn=True)
 
-                            print(len(eggs), "Get Egg : ", egg_url)
+                            print(len(eggs), eggs, "Get Egg : ", egg_url)
+                    # 하나 처리한 경우, 1초 대기
+                    sleep(1)
 
         context = {
             'user': user
