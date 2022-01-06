@@ -112,7 +112,7 @@ class AbandonedView(generic.ListView):
                 # 세션/쿠키 사용을 위한 로그인 처리
                 s.post(''.join([base_url, '/login']), data=login_payload)
 
-                while True:
+                while len(eggs) > 0:
                     req_url = ''.join([base_url, '/abandoned'])
 
                     # 알 조회 헤더 정보
@@ -154,10 +154,8 @@ class AbandonedView(generic.ListView):
 
                             print(len(eggs), "Get Egg : ", egg_url)
 
-                            if len(eggs) == 0:
-                                break
-                    else:
-                        break
+                    # 하나 처리한 경우, 2초 대기
+                    sleep(2)
 
         context = {
             'user': user
