@@ -124,7 +124,8 @@ class AbandonedView(generic.ListView):
                     source = BeautifulSoup(r.content, "html.parser")
 
                     if any(egg.eggcode in str(source) for egg in eggs):
-                        divlist = source.find_all("div")
+                        # a 태그 체크를 위해 a tag에 대해서만 조회(변수명칭등은 기존 div 태그 때 명칭 유지)
+                        divlist = source.find_all("a")
 
                         # 대상 알 관련 code 파싱 준비
                         divs = []
@@ -137,7 +138,7 @@ class AbandonedView(generic.ListView):
 
                         # 조회된 정보 중, 하나만 사용하면 되므로 마지막 데이터만 사용
                         if len(divs) > 0:
-                            egg_url = divs[-1].find_all("a", href=True)[0]['href']
+                            egg_url = divs[-1]['href']
 
                             # 마지막 데이터의 코드를 기준으로 에그 줍기 시도
                             s.get(''.join([base_url, '/', egg_url]), headers=headers, cookies=s.cookies)
