@@ -129,8 +129,9 @@ class AbandonedView(generic.ListView):
 
                         # 대상 알 관련 code 파싱 준비
                         divs = []
+
                         for divtag in divlist:
-                            if "alt=\"egg\"" in str(divtag) and any(egg.eggcode in str(divtag) for egg in eggs):
+                            if ("alt=\"egg\"" in str(divtag) or "alt=\"hatchling\"" in str(divtag)) and any(egg.eggcode in str(divtag) for egg in eggs):
                                 divs.append(divtag)
                             elif "/register" in str(divtag):
                                 # 세션/쿠키 사용을 위한 로그인 처리
