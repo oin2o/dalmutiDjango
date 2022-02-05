@@ -33,7 +33,16 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'dalmuti.apps.DalmutiConfig',   # Dalmuti 추가
     'dalmutip.apps.DalmutipConfig',   # Dalmutip 추가
-    'channels', # Websocket 추가
+    'dalmutid.apps.DalmutidConfig',   # Dalmutid 추가
+    'channels',     # Websocket 추가
+    'lotto.apps.LottoConfig',       # lotto 추가
+    'liar.apps.LiarConfig',         # liar 추가
+    'davinci.apps.DavinciConfig',   # davinci 추가
+    'dixit.apps.DixitConfig',       # dixit 추가
+    'dragcave.apps.DragcaveConfig', # dragcave 추가
+    'mongdang.apps.MongdangConfig', # mongdang 추가
+
+    'common.apps.CommonConfig',       # common 추가
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -77,7 +86,6 @@ WSGI_APPLICATION = 'plateau.wsgi.application'
 
 ASGI_APPLICATION = 'plateau.routing.application' # Websocket 추가
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -88,6 +96,7 @@ DATABASES = {
     }
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

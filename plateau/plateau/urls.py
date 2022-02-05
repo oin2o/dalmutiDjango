@@ -20,4 +20,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('dalmuti/', include('dalmuti.urls')),
     path('dalmutip/', include('dalmutip.urls')),
+    path('dalmutid/', include('dalmutid.urls')),
+    path('lotto/', include('lotto.urls')),
+    path('liar/', include('liar.urls')),
+    path('davinci/', include('davinci.urls')),
+    path('dixit/', include('dixit.urls')),
+    path('dragcave/', include('dragcave.urls')),
+    path('mongdang/', include('mongdang.urls')),
 ]
