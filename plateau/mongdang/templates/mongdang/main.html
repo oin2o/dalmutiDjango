@@ -38,6 +38,9 @@
         if (navigator.geolocation) {
             // GeoLocation을 이용해서 접속 위치를 얻어옵니다.
             navigator.geolocation.getCurrentPosition(success, error);
+            swal("현재 위치 조회 중~⏳", {
+                buttons: false,
+            });
         } else {
             swal("GPS 사용 불가~☠", {
                 buttons: false,
