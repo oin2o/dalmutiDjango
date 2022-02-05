@@ -10,6 +10,13 @@
         id_username.value = username;
         id_action.value = "login";
 
+        function seoulnstower() {
+            id_latitude.value = 37.551411; // 위도
+            id_longitude.value = 126.988274; // 경도
+
+            document.forms['mainform'].submit();
+        };
+
         function success(position) {
             id_latitude.value = position.coords.latitude; // 위도
             id_longitude.value = position.coords.longitude; // 경도
@@ -22,10 +29,7 @@
                 buttons: false,
                 timer: 1000,
             }).then(function(response) {
-                id_latitude.value = 37.551411; // 위도
-                id_longitude.value = 126.988274; // 경도
-
-                document.forms['mainform'].submit();
+                seoulnstower();
             });
         };
 
@@ -38,10 +42,7 @@
                 buttons: false,
                 timer: 1000,
             }).then(function(response) {
-                id_latitude.value = 37.551411; // 위도
-                id_longitude.value = 126.988274; // 경도
-
-                document.forms['mainform'].submit();
+                seoulnstower();
             });
         };
     }
