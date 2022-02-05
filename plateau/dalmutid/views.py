@@ -768,7 +768,7 @@ class TelegramView(generic.DetailView):
 
         bot = telegram.Bot(token='1480423142:AAHkkAlgShepdoXFW2HP8TzZAiRfCN8WpHI')
         bot.sendMessage(chat_id='-413309173',
-                        text='[게임코드(달무티팀):' + game.gamecode + '](http://54.180.29.111:8000/dalmutid/telegram/login/' + game.gamename + '/' + game.gamecode + '/)',
+                        text='[게임코드(달무티팀):' + game.gamecode + '](https://35.230.124.241:8443/dalmutid/telegram/login/' + game.gamename + '/' + game.gamecode + '/)',
                         parse_mode='Markdown', disable_web_page_preview=True)
 
         return HttpResponseRedirect(reverse('dalmutid:ingame', args=(gamename, username,)))

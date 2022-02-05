@@ -409,7 +409,7 @@ class TelegramView(generic.DetailView):
 
         bot = telegram.Bot(token='1480423142:AAHkkAlgShepdoXFW2HP8TzZAiRfCN8WpHI')
         bot.sendMessage(chat_id='-413309173',
-                        text='[딕싯:' + game.gamecode + '](http://35.230.124.241:8080/dixit/login/' + game.gamecode + '/)',
+                        text='[딕싯:' + game.gamecode + '](https://35.230.124.241:8443/dixit/login/' + game.gamecode + '/)',
                         parse_mode='Markdown', disable_web_page_preview=True)
 
         return HttpResponseRedirect(reverse('dixit:game', args=(gamecode, username,)))
