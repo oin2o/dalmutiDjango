@@ -1,0 +1,78 @@
+{# login.html #}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>달무티 온라인</title>
+    <style>
+        .game{
+            width: 83px;
+            height: 125px;
+            border-color: #9d9d00;
+            background-color: #9d9d9d;
+            vertical-align: middle;
+            line-height: 100px;
+            margin: 5px auto 5px auto;
+        }
+        .tdh6{
+            font-size: 0.67em;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+
+    <script type="text/javascript">
+    </script>
+
+</head>
+<body>
+{% include "./menu.html" %}
+{% load static %}
+{% if message %}
+<script type="text/javascript">
+    alert("{{ message }}")
+</script>
+{% endif %}
+<p style="text-indent: 0.5em;">
+    <a href="{% url 'dalmutid:main' user.username %}"><button type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">새로고침</button></a>
+    <a href="{% url 'dalmutid:newgame' user.username %}"><button type="button" class="btn btn-outline-secondary" style="height:30px;padding-top:initial;padding-bottom:initial;">새게임</button></a>
+</p>
+<form action="{% url 'dalmutid:private' 'private' user.username %}" method="post">
+{% csrf_token %}
+    <p style="text-indent: 0.5em;">
+        <input type="text" name="gamecode" maxlength="6" width="100%" placeholder="게임코드"/>
+        <button type="submit" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">참가</button>
+    </p>
+</form>
+
+<table style="margin-left: auto;margin-right: auto;">
+    <tbody>
+        <tr>
+        {% for game in game_list %}
+            <td class="tdh6" scope="row">
+                {% if game.round == 13 and game.ingameCd == 4 %}
+                Game Over
+                <br>
+                <a href="{% url 'dalmutid:ingame' game.gamename user.username %}">
+                    <img class="game" src="{% static  'dalmutid/images/' %}gameover.jpg"  name="gameImg{{ game.round }}" border="0">
+                </a>
+                {% else %}
+                {{ game.gamecode }}
+                <br>
+                <a href="{% url 'dalmutid:ingame' game.gamename user.username %}">
+                    <img class="game" src="{% static  'dalmutid/images/' %}0/{{ game.round }}.jpg"  name="gameImg{{ game.round }}" border="0">
+                </a>
+                {% endif %}
+            </td>
+            {% if forloop.counter|divisibleby:4 != 0 %}
+         </tr><tr>
+            {% endif %}
+        {% endfor %}
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>

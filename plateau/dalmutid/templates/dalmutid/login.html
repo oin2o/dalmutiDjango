@@ -1,0 +1,26 @@
+{% extends 'dalmutid/base.html' %}
+
+{% block body %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'dalmutid/css/bootstrap.min.css' %}">
+<div class="alert alert-dismissible alert-light">
+  <strong><em>Das Leben ist <a href="{% url 'dalmuti:login' %}" style="text-decoration:none;color:3E3F3A;">ungerecht</a>.</em></strong>
+</div>
+<form action="{% url 'dalmutid:main' 'main' %}" method="post">
+    {% csrf_token %}
+    <p style="text-indent: 0.5em;">
+        <input type="text" name="username" maxlength="6" width="100%" placeholder="플레이어"/>
+        <button type="submit" class="btn btn-outline-primary" style="height:30px;padding-top:initial;padding-bottom:initial;">로그인</button>
+    </p>
+</form>
+{% if user_list %}
+<p style="text-indent: 0.5em;">
+    {% for user in user_list %}
+    <a href="{% url 'dalmutid:main' username=user.username %}"><button type="button" class="btn btn-outline-secondary">{{ user.username }}</button></a>
+        {% if forloop.counter|divisibleby:4 != 0 %}
+    </p><p style="text-indent: 0.5em;">
+        {% endif %}
+    {% endfor %}
+</p>
+{% endif %}
+{% endblock body %}

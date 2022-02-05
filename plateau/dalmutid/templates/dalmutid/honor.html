@@ -1,0 +1,137 @@
+{# login.html #}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>달무티 온라인</title>
+    <style>
+        table{
+            width: 100%;
+        }
+        .tdh6c{
+            text-align:center;
+            font-size: 0.67em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+    </style>
+
+    <script type="text/javascript">
+    </script>
+
+</head>
+<body>
+{% include "./menu.html" %}
+{% load static %}
+<p>
+<table style="margin-left: auto;margin-right: auto;">
+    <thead>
+        <tr>
+            <td class="tdh6c" style="text-align:left;" colspan="4">👑 Born to be Dalmuti</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="tdh6c">이름</td>
+            <td class="tdh6c">총게임</td>
+            <td class="tdh6c">달무티</td>
+            <td class="tdh6c">승률<td>
+        </tr>
+    {% for honor in honor_by_king %}
+        {% if honor.king_count != None %}
+        <tr>
+            <td class="tdh6c">{{ honor.username }}</td>
+            <td class="tdh6c">{{ honor.tot_count }}</td>
+            <td class="tdh6c">{{ honor.king_count }}</td>
+            <td class="tdh6c">{{ honor.king_per|floatformat:2 }}%</td>
+        </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+</p>
+<p>
+<table style="margin-left: auto;margin-right: auto;">
+    <thead>
+        <tr>
+            <td class="tdh6c" style="text-align:left;" colspan="4">👻 Born to be 노비</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="tdh6c">이름</td>
+            <td class="tdh6c">총게임</td>
+            <td class="tdh6c">노비</td>
+            <td class="tdh6c">노비율</td>
+        </tr>
+    {% for honor in honor_by_slave %}
+        {% if honor.slave_count != None %}
+        <tr>
+            <td class="tdh6c">{{ honor.username }}</td>
+            <td class="tdh6c">{{ honor.tot_count }}</td>
+            <td class="tdh6c">{{ honor.slave_count }}</td>
+            <td class="tdh6c">{{ honor.slave_per|floatformat:2 }}%</td>
+        </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+</p>
+<p>
+<table style="margin-left: auto;margin-right: auto;">
+    <thead>
+        <tr>
+            <td class="tdh6c" style="text-align:left;" colspan="4">😁 Born to be 금손</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="tdh6c">이름</td>
+            <td class="tdh6c">뽑기</td>
+            <td class="tdh6c">달무티</td>
+            <td class="tdh6c">금손</td>
+        </tr>
+    {% for honor in pick_by_king %}
+        {% if honor.king_count != None %}
+        <tr>
+            <td class="tdh6c">{{ honor.username }}</td>
+            <td class="tdh6c">{{ honor.tot_count }}</td>
+            <td class="tdh6c">{{ honor.king_count }}</td>
+            <td class="tdh6c">{{ honor.king_per|floatformat:2 }}%</td>
+        </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+</p>
+<p>
+<table style="margin-left: auto;margin-right: auto;">
+    <thead>
+        <tr>
+            <td class="tdh6c" style="text-align:left;" colspan="4">😱 Born to be 꽝손</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="tdh6c">이름</td>
+            <td class="tdh6c">뽑기</td>
+            <td class="tdh6c">노비</td>
+            <td class="tdh6c">꽝손</td>
+        </tr>
+    {% for honor in pick_by_slave %}
+        {% if honor.slave_count != None %}
+        <tr>
+            <td class="tdh6c">{{ honor.username }}</td>
+            <td class="tdh6c">{{ honor.tot_count }}</td>
+            <td class="tdh6c">{{ honor.slave_count }}</td>
+            <td class="tdh6c">{{ honor.slave_per|floatformat:2 }}%</td>
+        </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+</p>
+</body>
+</html>

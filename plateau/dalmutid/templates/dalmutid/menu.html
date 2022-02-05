@@ -1,0 +1,12 @@
+{# login.html #}
+{% load static %}
+<link rel="stylesheet" href="{% static 'dalmutid/css/bootstrap.min.css' %}">
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">{{ user.username }}</li>
+    <li class="breadcrumb-item active"><a href="{% url 'dalmutid:main' user.username %}">게임참가</a></li>
+    <li class="breadcrumb-item active"><a href="{% url 'dalmutid:rank' user.username %}">랭킹</a></li>
+    <li class="breadcrumb-item active"><a href="{% url 'dalmutid:honor' user.username %}">전적</a></li>
+    <li class="breadcrumb-item active"><a href="{% url 'dalmutid:rule' user.username %}">규칙</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'dalmutid:login' %}">사용자</a></li>
+</ol>
+<p></p>
