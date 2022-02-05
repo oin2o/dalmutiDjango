@@ -64,9 +64,13 @@ class PencilView(generic.ListView):
         longitude = request.POST.get('longitude')
         contents = request.POST.get('contents')
 
+        now = datetime.datetime.now()
+        now_plus_10 = now + datetime.timedelta(minutes=10)
+
+        notes = Note.objects.filter(endtime__gt=now)
+
         if action == "addnote":
-            now = datetime.datetime.now()
-            now_plus_10 = now + datetime.timedelta(minutes=10)
+            notes = Note.objects.filter(endtime__gt=now)
 
             value, created = Note.objects.get_or_create(
                 user=user,
@@ -84,6 +88,7 @@ class PencilView(generic.ListView):
             'user': user,
             'latitude': latitude,
             'longitude': longitude,
+            'notes': notes,
         }
 
         return render(request, self.template_name, context)
