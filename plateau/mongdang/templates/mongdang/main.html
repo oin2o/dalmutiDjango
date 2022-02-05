@@ -25,12 +25,12 @@
         };
 
         function error(error) {
-            console.log(error);
             swal("현재 위치 조회 불가~☠", {
                 buttons: false,
                 timer: 1000,
             }).then(function(response) {
-                seoulnstower();
+                console.log(error);
+                //seoulnstower();
             });
         };
 
