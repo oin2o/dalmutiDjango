@@ -24,7 +24,8 @@
             document.forms['mainform'].submit();
         };
 
-        function error() {
+        function error(error) {
+            console.log(error);
             swal("현재 위치 조회 불가~☠", {
                 buttons: false,
                 timer: 1000,
@@ -38,13 +39,13 @@
             // GeoLocation을 이용해서 접속 위치를 얻어옵니다.
             navigator.geolocation.getCurrentPosition(success, error);
         } else {
-            swal("GeoLocation 사용 불가~☠", {
+            swal("GPS 사용 불가~☠", {
                 buttons: false,
                 timer: 1000,
             }).then(function(response) {
                 seoulnstower();
             });
-        };
+        }
     }
 </script>
 <body>
