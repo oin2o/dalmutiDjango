@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'davinci.apps.DavinciConfig',   # davinci 추가
     'dixit.apps.DixitConfig',       # dixit 추가
     'dragcave.apps.DragcaveConfig', # dragcave 추가
-    'mongdang.apps.MongdangConfig', # mongdang 추가
 
     'common.apps.CommonConfig',       # common 추가
 

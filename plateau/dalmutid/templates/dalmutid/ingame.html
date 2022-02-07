@@ -107,7 +107,7 @@
 
     // 클라이언트와 서버의 웹소켓 통신을 가능하도록 연결시켜주는 부분이다.
     // router.py에서의 url과 일치하도록 해 주어야한다.
-    var web_socket = new WebSocket('ws://' + window.location.host + '/dalmutid/' + {{ gamer.game.gamename }} + '/' + '{{ user.username }}');
+    let web_socket = new WebSocket('ws://' + window.location.host + '/dalmutid/' + {{ gamer.game.gamename }} + '/' + '{{ user.username }}');
 
     // onmessage는 counsumers에서 보내는 메세지를 받는 부분이다.
     web_socket.onmessage = function(e) {

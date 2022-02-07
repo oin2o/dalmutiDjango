@@ -26,5 +26,4 @@ urlpatterns = [
     path('davinci/', include('davinci.urls')),
     path('dixit/', include('dixit.urls')),
     path('dragcave/', include('dragcave.urls')),
-    path('mongdang/', include('mongdang.urls')),
 ]
