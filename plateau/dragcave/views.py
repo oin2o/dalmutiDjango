@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from django.shortcuts import render
 from django.views import generic
 
-from .models import User, Location, Egg, Abandon, EggLocation
+from .models import User, Egg, Abandon, EggLocation
 
 
 # 기본 링크
