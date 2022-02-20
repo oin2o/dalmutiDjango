@@ -28,6 +28,15 @@ class Egg(models.Model):
         return self.eggname + ':' + self.eggdesc + ':' + str(self.useYn)
 
 
+class EggLocation(models.Model):
+    egg = models.ForeignKey(Egg, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    useYn = models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.egg) + ':' + str(self.location) + ':' + str(self.useYn)
+
+
 class Abandon(models.Model):
     eggcode = models.CharField(max_length=10, unique=True)
     useYn = models.BooleanField(default=False)

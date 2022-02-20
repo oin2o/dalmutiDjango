@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from django.shortcuts import render
 from django.views import generic
 
-from .models import User, Location, Egg, Abandon
+from .models import User, Location, Egg, Abandon, EggLocation
 
 
 # 기본 링크
@@ -33,55 +33,58 @@ class EggsView(generic.ListView):
                 "submit": "",
             }
 
-            locations = Location.objects.filter(useYn=True)
+            eggs = Egg.objects.filter(useYn=True)
+
+            locations = EggLocation.objects.filter(egg__in=eggs, useYn=True)
 
             if locations:
-                egg = Egg.objects.filter(useYn=True).first()
-
                 with requests.Session() as s:
                     # 세션/쿠키 사용을 위한 로그인 처리
                     s.post(''.join([base_url, '/login']), data=login_payload)
 
                     while tryCnt > 0:
-                        #  각 개별 location 별로 에그 조회
-                        for location in locations:
-                            req_url = ''.join([base_url, '/locations/', location.loctnum])
+                        #  각 egg 별 location 별로 조회
+                        for egg in eggs:
+                            egglocations = locations.filter(egg=egg)
 
-                            # 알 조회 헤더 정보
-                            headers = {
-                                'referer': req_url,
-                                'User-Agent': user_agent,
-                            }
+                            for location in egglocations:
+                                req_url = ''.join([base_url, '/locations/', location.location.loctnum])
 
-                            r = s.get(req_url, headers=headers, cookies=s.cookies)
+                                # 알 조회 헤더 정보
+                                headers = {
+                                    'referer': req_url,
+                                    'User-Agent': user_agent,
+                                }
 
-                            source = BeautifulSoup(r.content, "html.parser")
+                                r = s.get(req_url, headers=headers, cookies=s.cookies)
 
-                            # 조회된 알 중, 대상 알 설명이 있는 경우만 조회
-                            if egg.eggdesc in str(source):
-                                divlist = source.find_all("div")
+                                source = BeautifulSoup(r.content, "html.parser")
 
-                                # 대상 알 관련 code 파싱 준비
-                                divs = []
-                                for divtag in divlist:
-                                    if "alt=\"Egg\"" in str(divtag) and egg.eggdesc in str(divtag):
-                                        divs.append(divtag)
-                                    elif "/register" in str(divtag):
-                                        # 세션/쿠키 사용을 위한 로그인 처리
-                                        s.post(''.join([base_url, '/login']), data=login_payload)
+                                # 조회된 알 중, 대상 알 설명이 있는 경우만 조회
+                                if egg.eggdesc in str(source):
+                                    divlist = source.find_all("div")
 
-                                # 조회된 정보 중, 하나만 사용하면 되므로 마지막 데이터만 사용
-                                if len(divs) > 0:
-                                    egg_url = divs[-1].find_all("a", href=True)[0]['href']
+                                    # 대상 알 관련 code 파싱 준비
+                                    divs = []
+                                    for divtag in divlist:
+                                        if "alt=\"Egg\"" in str(divtag) and egg.eggdesc in str(divtag):
+                                            divs.append(divtag)
+                                        elif "/register" in str(divtag):
+                                            # 세션/쿠키 사용을 위한 로그인 처리
+                                            s.post(''.join([base_url, '/login']), data=login_payload)
 
-                                    # 마지막 데이터의 코드를 기준으로 에그 줍기 시도
-                                    s.get(''.join([base_url, egg_url]), headers=headers, cookies=s.cookies)
-                                    print(tryCnt, "Get Egg : ", egg_url)
-                                    tryCnt -= 1
-                                    if tryCnt == 0:
-                                        break
-                        # 하나 처리한 경우, 10초 대기
-                        sleep(10)
+                                    # 조회된 정보 중, 하나만 사용하면 되므로 마지막 데이터만 사용
+                                    if len(divs) > 0:
+                                        egg_url = divs[-1].find_all("a", href=True)[0]['href']
+
+                                        # 마지막 데이터의 코드를 기준으로 에그 줍기 시도
+                                        s.get(''.join([base_url, egg_url]), headers=headers, cookies=s.cookies)
+                                        print(tryCnt, "Get Egg : ", egg_url)
+                                        tryCnt -= 1
+                                        if tryCnt == 0:
+                                            break
+                            # 하나 처리한 경우, 10초 대기
+                            sleep(10)
         context = {
             'user': user
         }
