@@ -15,7 +15,7 @@ class EggAdmin(admin.ModelAdmin):
 
 
 class EggLocationAdmin(admin.ModelAdmin):
-    ordering = ['egg', 'location']
+    ordering = ['egg__eggname', 'location__loctnum']
 
 
 admin.site.register(User, UserAdmin)
