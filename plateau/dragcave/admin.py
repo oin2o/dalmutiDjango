@@ -2,8 +2,24 @@ from django.contrib import admin
 from .models import User, Location, Egg, Abandon, EggLocation
 
 
-admin.site.register(User)
-admin.site.register(Location)
-admin.site.register(Egg)
+class UserAdmin(admin.ModelAdmin):
+    ordering = ['username']
+
+
+class LocationAdmin(admin.ModelAdmin):
+    ordering = ['loctnum']
+
+
+class EggAdmin(admin.ModelAdmin):
+    ordering = ['eggname']
+
+
+class EggLocationAdmin(admin.ModelAdmin):
+    ordering = ['egg', 'location']
+
+
+admin.site.register(User, UserAdmin)
+admin.site.register(Location, LocationAdmin)
+admin.site.register(Egg, EggAdmin)
+admin.site.register(EggLocation, EggLocationAdmin)
 admin.site.register(Abandon)
-admin.site.register(EggLocation)
