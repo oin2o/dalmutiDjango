@@ -3,7 +3,7 @@ from .models import User, Location, Egg, Abandon, EggLocation
 
 
 class UserAdmin(admin.ModelAdmin):
-    ordering = ['username']
+    ordering = ['-useYn', 'username']
 
 
 class LocationAdmin(admin.ModelAdmin):
@@ -11,7 +11,7 @@ class LocationAdmin(admin.ModelAdmin):
 
 
 class EggAdmin(admin.ModelAdmin):
-    ordering = ['eggname']
+    ordering = ['-useYn', 'eggname']
 
 
 class EggLocationAdmin(admin.ModelAdmin):
