@@ -3,7 +3,8 @@ import datetime
 import discord
 from discord.ext import commands
 
-from const import TOKEN, ROLES, QUESTS, COMMANDS, EXPLAIN, EMOJI_PREFIX, CARD_PREFIX
+from token import TOKEN
+from const import ROLES, QUESTS, COMMANDS, EXPLAIN, EMOJI_PREFIX, CARD_PREFIX
 from data import emojis, games, roles
 from game import Game
 from util import directmsg, message, is_open, get_emoji, get_explain, get_status
