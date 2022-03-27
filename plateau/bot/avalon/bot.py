@@ -1,4 +1,6 @@
+import os
 import datetime
+from dotenv import load_dotenv
 
 import discord
 from discord.ext import commands
@@ -7,6 +9,8 @@ from const import ROLES, QUESTS, COMMANDS, EXPLAIN, EMOJI_PREFIX, CARD_PREFIX
 from data import emojis, games, roles
 from game import Game
 from util import directmsg, message, is_open, get_emoji, get_explain, get_status
+
+load_dotenv(verbose=True)
 
 bot = commands.Bot(command_prefix='?')
 http = bot.http
@@ -148,4 +152,4 @@ async def on_command_error(msg, error):
     print(f"inigame - {datetime.datetime.now()} : <Error> {msg.channel.id}, error: {error}")
 
 
-bot.run("OTU3MTQ1MTgwMTc4MzcwNTgw.Yj6g6Q.IaUbxIBAk8RZvOHOgk9c2Dhg2WQ")
+bot.run(os.getenv('TOKEN'))
