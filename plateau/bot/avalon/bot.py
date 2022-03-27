@@ -3,7 +3,7 @@ import datetime
 import discord
 from discord.ext import commands
 
-from token import TOKEN
+from discordbot import TOKEN
 from const import ROLES, QUESTS, COMMANDS, EXPLAIN, EMOJI_PREFIX, CARD_PREFIX
 from data import emojis, games, roles
 from game import Game
