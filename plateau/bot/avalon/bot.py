@@ -3,7 +3,6 @@ import datetime
 import discord
 from discord.ext import commands
 
-from discordbot import TOKEN
 from const import ROLES, QUESTS, COMMANDS, EXPLAIN, EMOJI_PREFIX, CARD_PREFIX
 from data import emojis, games, roles
 from game import Game
@@ -149,4 +148,4 @@ async def on_command_error(msg, error):
     print(f"inigame - {datetime.datetime.now()} : <Error> {msg.channel.id}, error: {error}")
 
 
-bot.run(TOKEN)  # 보안을 위해 다른 코드(const.py)에서 TOKEN 값을 가져옴.
+bot.run("OTU3MTQ1MTgwMTc4MzcwNTgw.Yj6g6Q.IaUbxIBAk8RZvOHOgk9c2Dhg2WQ")
