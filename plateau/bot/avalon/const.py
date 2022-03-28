@@ -1,3 +1,19 @@
+# 상태
+STATUS = {
+    "EXIST_GAME": "EXIST_GAME",
+    "RECRUIT_OK": "RECRUIT_OK",
+    "NO_RECRUIT": "NO_RECRUIT",
+    "ALREADY_START": "ALREADY_START",
+    "MIN_MEMBER": "MIN_MEMBER",
+    "MAX_MEMBER": "MAX_MEMBER",
+    "NO_GAME": "NO_GAME",
+    "APPLY_OK": "APPLY_OK",
+    "APPLY_CANCEL": "APPLY_CANCEL",
+    "START": "START",
+    "END": "END",
+    "GET_STATUS": "GET_STATUS",
+}
+
 # 역할자
 ROLES = {
     "merlin": "멀린",
@@ -34,7 +50,7 @@ COMMANDS = '''
 ?설명 : 게임 룰에 대한 설명을 DM으로 받습니다.
 ?상태 : 원정의 상태를 표시합니다.
 ?모집 : 원정대를 공개 모집합니다.
-?참가 : 모집 중인 원정에 참가합니다.
+?참가 : 모집 중인 원정에 참가/취소합니다.
 ?마감 : 모집을 마감하고 원정을 준비합니다.
 ?시작 : 모집된 원정대로 원정을 시작합니다.
 ?종료 : 진행 중인 원정을 종료합니다.

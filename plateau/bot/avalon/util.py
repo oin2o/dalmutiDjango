@@ -1,8 +1,8 @@
 import discord
 from discord.http import Route
 
-from const import EMOJI_PREFIX, CARD_PREFIX
-from data import games
+from const import STATUS, EMOJI_PREFIX
+from data import emojis, games, roles
 
 # 파일 참조를 위한 기본 경로
 file_path = './bot/avalon/images/'
@@ -37,23 +37,31 @@ async def message(msg, scope, title, description, color, file):
             await msg.channel.send(embed=discord.Embed(title=title, description=description, color=color))
 
 
-async def is_open(msg, step):
-    # 명령 처리 전, 단계 처리 가능여부 처리를 위한 validation
-    if step >= 1:
-        if msg.channel.id not in games:
-            await message(msg, 'send', "", "모집 중인 원정이 존재하지 않습니다.", discord.Colour.dark_red(), None)
-            return
-        else:
-            current_game = games[msg.channel.id]['game']
-            if step >= 2:
-                if not current_game.join:
-                    await message(msg, 'send', "", "원정 참가가 이미 마감 되었습니다.", discord.Colour.dark_red(), None)
-                    return
-                elif step >= 3:
-                    if len(current_game.members) >= 10:
-                        await message(msg, 'send', "", "제한 인원(10명)을 초과 하였습니다.", discord.Colour.dark_red(), None)
-                        return
-    return current_game
+async def status_message(msg, result):
+    if result == STATUS['EXIST_GAME']:
+        await message(msg, 'reply', '', f"{msg.guild.name}/{msg.channel.name}에서 원정이 진행 중 입니다.", discord.Colour.dark_blue(), None)
+    elif result == STATUS['RECRUIT_OK']:
+        await message(msg, 'send', "원정대 모집이 시작되었습니다!", "원정에 참여할 플레이어는 &참가를 입력하세요.", discord.Colour.dark_blue(), None)
+    elif result == STATUS['NO_RECRUIT']:
+        await message(msg, 'send', "", "모집(진행) 중인 원정이 존재하지 않습니다.", discord.Colour.dark_red(), None)
+    elif result == STATUS['NO_GAME']:
+        await message(msg, 'send', "", "원정이 존재하지 않습니다.", discord.Colour.dark_red(), None)
+    elif result == STATUS['ALREADY_START']:
+        await message(msg, 'send', "", "원정 참가가 이미 마감 되었습니다.", discord.Colour.dark_red(), None)
+    elif result == STATUS['MIN_MEMBER']:
+        await message(msg, 'send', "", "최소 인원(5명)이 모자랍니다.", discord.Colour.dark_red(), None)
+    elif result == STATUS['MAX_MEMBER']:
+        await message(msg, 'send', "", "제한 인원(10명)을 초과 하였습니다.", discord.Colour.dark_red(), None)
+    elif result == STATUS['APPLY_OK']:
+        await message(msg, 'send', '', f"{msg.message.author.name}님이 참가하였습니다. 현재 원정대 {len(games[msg.channel.id]['game'].members)}명", discord.Colour.dark_blue(), None)
+    elif result == STATUS['APPLY_CANCEL']:
+        await message(msg, 'send', '', f"{msg.message.author.name}님이 참가 취소하였습니다. 현재 원정대 {len(games[msg.channel.id]['game'].members)}명", discord.Colour.dark_red(), None)
+    elif result == STATUS['START']:
+        await message(msg, 'send', "원정이 시작되었습니다!", "역할을 확인하고, 원정을 수행하세요.", discord.Colour.dark_blue(), None)
+    elif result == STATUS['END']:
+        await message(msg, 'send', "원정이 초기화되었습니다!", "&시작을 입력하여 새로운 원정을 시작하세요.", discord.Colour.dark_blue(), None)
+    elif result == STATUS['GET_STATUS']:
+        await message(msg, 'send', f"{msg.guild.name}원정대", get_status(msg, games[msg.channel.id]['game'], roles, emojis), discord.Colour.dark_blue(), None)
 
 
 def get_emoji(msg, role_kr, roles, emojis):
