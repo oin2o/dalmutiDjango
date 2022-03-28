@@ -25,7 +25,7 @@ def apply(msg, games):
     if not current_game:
         return STATUS['NO_GAME']
     # 원정 시작여부 점검(미시작 중에는 모집)
-    elif current_game.start:
+    elif current_game.expedition:
         return STATUS['ALREADY_START']
     # 총 참가인원(10명 이하) 점검
     elif len(current_game.members) >= 10:
@@ -44,7 +44,7 @@ def apply(msg, games):
     return STATUS['APPLY_OK']
 
 
-def start(msg, games):
+def expedition(msg, games):
     # 채널에 시작된 원정이 있는지 점검
     if msg.channel.id not in games:
         return STATUS['NO_RECRUIT']
@@ -53,7 +53,7 @@ def start(msg, games):
     if not current_game:
         return STATUS['NO_GAME']
     # 원정 시작여부 점검(미시작 중에는 모집)
-    elif current_game.start:
+    elif current_game.expedition:
         return STATUS['ALREADY_START']
     # 총 참가인원(5명 이상 ~ 10명 이하) 점검
     elif len(current_game.members) < 5:
@@ -61,7 +61,7 @@ def start(msg, games):
     elif len(current_game.members) > 10:
         return STATUS['MAX_MEMBER']
     # 원정 시작 상태 값 변경
-    current_game.start = True
+    current_game.expedition = True
     # 멤버들 원정순서 랜덤 처리
     # 멤버수에 맞춰서 역할 객체 조정
     # 멤버별 직업 랜덤 처리

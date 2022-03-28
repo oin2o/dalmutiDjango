@@ -7,7 +7,7 @@ from discord.ext import commands
 
 from const import ROLES, COMMANDS, EXPLAIN, EMOJI_PREFIX, CARD_PREFIX
 from data import emojis, games, roles
-from service import recruit, apply, start, end, status
+from service import recruit, apply, expedition, end, status
 from util import directmsg, message, status_message, get_explain
 
 load_dotenv(verbose=True)
@@ -63,7 +63,7 @@ async def 참가(msg: discord.Message):
 
 @bot.command()
 async def 시작(msg: discord.Message):
-    await status_message(msg, start(msg, games))
+    await status_message(msg, expedition(msg, games))
 
 
 @bot.command()

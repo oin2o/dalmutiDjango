@@ -9,13 +9,13 @@ class Game:
             'evil': [ROLES["assassin"], ROLES["minion1"]],
         }
         self._members = []
-        self._start = False
+        self._rounds = 0
+        self._deny = 0
+        self._expedition = False
         self._anonymous = False
         self._percival = False
         self._mordred = False
         self._oberon = False
-        self._rounds = 0
-        self._deny = 0
 
     @property
     def channel(self):
@@ -42,12 +42,28 @@ class Game:
         self._members = members
 
     @property
-    def start(self):
-        return self._start
+    def rounds(self):
+        return self._rounds
 
-    @start.setter
-    def start(self, start):
-        self._start = start
+    @rounds.setter
+    def rounds(self, rounds):
+        self._rounds = rounds
+
+    @property
+    def deny(self):
+        return self._deny
+
+    @deny.setter
+    def deny(self, deny):
+        self._deny = deny
+
+    @property
+    def expedition(self):
+        return self._expedition
+
+    @expedition.setter
+    def expedition(self, expedition):
+        self._expedition = expedition
 
     @property
     def anonymous(self):
@@ -80,22 +96,6 @@ class Game:
     @oberon.setter
     def oberon(self, oberon):
         self._oberon = oberon
-
-    @property
-    def rounds(self):
-        return self._rounds
-
-    @rounds.setter
-    def rounds(self, rounds):
-        self._rounds = rounds
-
-    @property
-    def deny(self):
-        return self._deny
-
-    @deny.setter
-    def deny(self, deny):
-        self._deny = deny
 
     def add_member(self, member):
         self._members.append(member)

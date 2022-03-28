@@ -47,7 +47,7 @@ async def status_message(msg, result):
     elif result == STATUS['NO_GAME']:
         await message(msg, 'send', "", "원정이 존재하지 않습니다.", discord.Colour.dark_red(), None)
     elif result == STATUS['ALREADY_START']:
-        await message(msg, 'send', "", "원정 참가가 이미 마감 되었습니다.", discord.Colour.dark_red(), None)
+        await message(msg, 'send', "", "원정이 이미 시작되었습니다.", discord.Colour.dark_red(), None)
     elif result == STATUS['MIN_MEMBER']:
         await message(msg, 'send', "", "최소 인원(5명)이 모자랍니다.", discord.Colour.dark_red(), None)
     elif result == STATUS['MAX_MEMBER']:
@@ -97,7 +97,7 @@ def get_status(msg, current_game, roles, emojis):
     name = []
     desc = []
     for member in current_game.members:
-        name.append(member.name)
+        name.append(member.author.name)
     desc.append(': '.join(["원정대", ','.join(name)]))
     loyal_emoji = []
     evil_emoji = []
@@ -107,6 +107,6 @@ def get_status(msg, current_game, roles, emojis):
         evil_emoji.append(get_emoji(msg, role_kr, roles, emojis))
     desc.append(': '.join(["선", ' '.join(loyal_emoji)]))
     desc.append(': '.join(["악", ' '.join(evil_emoji)]))
-    desc.append(': '.join(["상태", "원정중" if current_game.start else "모집중" if current_game.join else "원정준비"]))
+    desc.append(': '.join(["상태", "원정중" if current_game.expedition else "모집중"]))
 
     return '\n'.join(desc)

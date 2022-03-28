@@ -5,6 +5,14 @@ class Member:
         self._leader = False
 
     @property
+    def author(self):
+        return self._author
+
+    @author.setter
+    def author(self, author):
+        self._author = author
+
+    @property
     def role(self):
         return self._role
 
