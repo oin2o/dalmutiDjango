@@ -5,10 +5,10 @@ from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 
-from const import ROLES, COMMANDS, EXPLAIN, EMOJI_PREFIX, CARD_PREFIX
-from data import emojis, games, roles
-from service import recruit, apply, expedition, end, status, component_response
-from util import directmsg, message, status_message, button_message, get_explain
+from const import ROLES, STATUS, EMOJI_PREFIX
+from data import emojis, roles
+from service import component_response
+from util import message, button_message, button_response
 
 load_dotenv(verbose=True)
 
@@ -23,7 +23,7 @@ async def on_ready():
     for guild in bot.guilds:
         guild_emojis = {}
         for role, role_kr in ROLES.items():
-            roles[role_kr] = role
+            roles[role_kr["name"]] = role
             emojiname = ''.join([EMOJI_PREFIX, role])
             emoji = discord.utils.get(guild.emojis, name=emojiname)
             if emoji:
@@ -36,46 +36,24 @@ async def on_ready():
 @bot.command(aliases=["?"])
 async def 명령(msg: discord.Message):
     # 전체 command 리스트를 표시
-    await message(msg, 'reply', '', COMMANDS, discord.Colour.default(), None)
+    await button_message(msg, http, None, STATUS['COMMANDS'])
 
 
 @bot.command()
-async def 설명(msg: discord.Message):
-    # 요청 유저에게 DM으로 설명 전송
-    await message(msg, 'dm', '', '\n'.join([EXPLAIN, "", get_explain(msg, roles, emojis)]), discord.Colour.default(), None)
-    await message(msg, 'reply', '', f"{msg.author.name}님에게 메세지를 발송하였습니다.", discord.Colour.default(), None)
-
-
-@bot.command()
-async def 상태(msg: discord.Message):
-    await status_message(msg, http, status(msg, games))
-
-
-@bot.command()
-async def 모집(msg: discord.Message):
-    await status_message(msg, http, recruit(msg, games))
-
-
-@bot.command()
-async def 참가(msg: discord.Message):
-    await status_message(msg, http, apply(msg, games))
-
-
-@bot.command()
-async def 시작(msg: discord.Message):
-    await status_message(msg, http, expedition(msg, games))
-
-
-@bot.command()
-async def 종료(msg: discord.Message):
-    await status_message(msg, http, end(msg, games))
+async def 설정(msg: discord.Message):
+    await button_message(msg, http, None, STATUS['AVALON'])
 
 
 @bot.event
 async def on_socket_response(payload):
     t = payload.get("t")
     if t == "INTERACTION_CREATE":
-        await button_message(http, payload.get("d", {}), component_response(payload.get("d", {})))
+        datas = payload.get("d", {})
+        if datas.get('message').get('type') == 0:
+            msg = await bot.get_channel(int(datas.get('message').get('channel_id'))).fetch_message(int(datas.get('message').get('id')))
+        else:
+            msg = await bot.get_channel(int(datas.get('message').get('message_reference').get('channel_id'))).fetch_message(int(datas.get('message').get('message_reference').get('message_id')))
+        await button_response(msg, http, datas, component_response(datas))
 
 
 @bot.event
@@ -86,7 +64,7 @@ async def on_command_error(msg, error):
     elif isinstance(error, commands.BotMissingPermissions):
         await message(msg, 'reply', '', "메세지 발송 권한이 없습니다. 설정 > 개인정보 보호 및 보안 > 서버 멤버가 보내는 다이렉트 메세지 허용하기 가 켜져있는지 확인해주세요.", discord.Colour.dark_red(), None)
         return
-    await message(msg, 'reply', '', "오류가 발생했습니다. &종료를 통해 원정을 종료하세요.", discord.Colour.dark_red(), None)
+    await message(msg, 'reply', '', "오류가 발생했습니다. 아발론 > 해산 버튼을 클릭하여 원정을 종료하세요.", discord.Colour.dark_red(), None)
     print(f"inigame - {datetime.datetime.now()} : <Error> {msg.channel.id}, error: {error}")
 
 

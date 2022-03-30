@@ -10,7 +10,7 @@ def recruit(msg, games):
     # 원정 처리를 위한 게임 데이터 저장소 생성
     current_game = {'game': Game(msg.channel)}
     # 게임 멤버에 현재 사용자 추가
-    current_game['game'].add_member(Member(msg.message.author))
+    current_game['game'].add_member(Member(msg.author))
     # 전체 게임 객체에 현재 게임 추가
     games[msg.channel.id] = current_game
     return STATUS['RECRUIT_OK']
@@ -94,12 +94,6 @@ def status(msg, games):
 
 def component_response(datas):
     if datas.get("type") == 3:
-        custom_id = datas.get("data", {}).get("custom_id")
-        if "참가" == datas.get("data", {}).get("custom_id"):
-            return STATUS['APPLY_BUTTON']
-        elif "시작" == datas.get("data", {}).get("custom_id"):
-            return STATUS['START_BUTTON']
-        elif "종료" == datas.get("data", {}).get("custom_id"):
-            return STATUS['END_BUTTON']
-        elif "상태" == datas.get("data", {}).get("custom_id"):
-            return STATUS['STATUS_BUTTON']
+        for key, value in STATUS.items():
+            if datas.get("data", {}).get("custom_id") == value:
+                return STATUS[key]

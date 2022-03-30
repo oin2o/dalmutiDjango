@@ -1,7 +1,8 @@
 import discord
 from discord.http import Route
 
-from const import STATUS, EMOJI_PREFIX
+from service import recruit, apply, expedition, end, status, component_response
+from const import STATUS, BUTTONS, INTERACTION_SCOPE, COMMANDS, EXPLAIN, EMOJI_PREFIX
 from data import emojis, games, roles
 
 # 파일 참조를 위한 기본 경로
@@ -15,6 +16,21 @@ async def directmsg(msg, http, title, description, color, components):
     payload = {
         "embed": discord.Embed(title=title, description=description, color=color).to_dict(),
         "components": components
+    }
+    await http.request(r, json=payload)
+
+
+async def interactmsg(http, datas, description, components, flags):
+    # http 직접 메시지 전송을 위한 route 설정
+    r = Route('POST', '/interactions/{interaction_id}/{interaction_token}/callback', interaction_id=datas.get("id"), interaction_token=datas.get("token"))
+    # post 전달 데이터 payload
+    payload = {
+        "type": 4,
+        "data": {
+            "content": description,
+            "components": components,
+            "flags": flags
+        }
     }
     await http.request(r, json=payload)
 
@@ -38,101 +54,24 @@ async def message(msg, scope, title, description, color, file):
             await msg.channel.send(embed=discord.Embed(title=title, description=description, color=color))
 
 
-async def status_message(msg, http, result):
-    if result == STATUS['EXIST_GAME']:
-        await message(msg, 'reply', '', f"{msg.guild.name}/{msg.channel.name}에서 원정이 진행 중 입니다.", discord.Colour.dark_blue(), None)
-    elif result == STATUS['RECRUIT_OK']:
-        components = [
-            {
-                "type": 1,
-                "components": [
-                    {
-                        "type": 2,
-                        "label": "참가",
-                        "style": 1,
-                        "custom_id": "참가",
-                        "disabled": False
-                    }, {
-                        "type": 2,
-                        "label": "시작",
-                        "style": 2,
-                        "custom_id": "시작",
-                        "disabled": False
-                    }, {
-                        "type": 2,
-                        "label": "상태",
-                        "style": 3,
-                        "custom_id": "상태",
-                        "disabled": False
-                    }, {
-                        "type": 2,
-                        "label": "종료",
-                        "style": 4,
-                        "custom_id": "종료",
-                        "disabled": True
-                    }
-                ]
-
-            }
-        ]
-        await directmsg(msg, http, "원정대 모집이 시작되었습니다!", "원정에 참여할 플레이어는 &참가를 입력하세요.", discord.Colour.dark_blue(), components)
-    elif result == STATUS['NO_RECRUIT']:
-        await message(msg, 'send', "", "모집(진행) 중인 원정이 존재하지 않습니다.", discord.Colour.dark_red(), None)
-    elif result == STATUS['NO_GAME']:
-        await message(msg, 'send', "", "원정이 존재하지 않습니다.", discord.Colour.dark_red(), None)
-    elif result == STATUS['ALREADY_START']:
-        await message(msg, 'send', "", "원정이 이미 시작되었습니다.", discord.Colour.dark_red(), None)
-    elif result == STATUS['MIN_MEMBER']:
-        await message(msg, 'send', "", "최소 인원(5명)이 모자랍니다.", discord.Colour.dark_red(), None)
-    elif result == STATUS['MAX_MEMBER']:
-        await message(msg, 'send', "", "제한 인원(10명)을 초과 하였습니다.", discord.Colour.dark_red(), None)
-    elif result == STATUS['APPLY_OK']:
-        await message(msg, 'send', '', f"{msg.message.author.name}님이 참가하였습니다. 현재 원정대 {len(games[msg.channel.id]['game'].members)}명", discord.Colour.dark_blue(), None)
-    elif result == STATUS['APPLY_CANCEL']:
-        await message(msg, 'send', '', f"{msg.message.author.name}님이 참가 취소하였습니다. 현재 원정대 {len(games[msg.channel.id]['game'].members)}명", discord.Colour.dark_red(), None)
-    elif result == STATUS['START']:
-        await message(msg, 'send', "원정이 시작되었습니다!", "역할을 확인하고, 원정을 수행하세요.", discord.Colour.dark_blue(), None)
-    elif result == STATUS['END']:
-        await message(msg, 'send', "원정이 초기화되었습니다!", "&시작을 입력하여 새로운 원정을 시작하세요.", discord.Colour.dark_blue(), None)
-    elif result == STATUS['GET_STATUS']:
-        await message(msg, 'send', f"{msg.guild.name}원정대", get_status(msg, games[msg.channel.id]['game'], roles, emojis), discord.Colour.dark_blue(), None)
+async def button_message(msg, http, datas, result):
+    if result == STATUS['COMMANDS']:
+        components = [{"type": 1, "components": [BUTTONS[STATUS["AVALON"]]]}]
+        await directmsg(msg, http, "", COMMANDS, discord.Colour.default(), components)
+    elif result == STATUS['AVALON']:
+        components = [{"type": 1, "components": [BUTTONS[STATUS["EXPLAIN"]], BUTTONS[STATUS["STATUS"]], BUTTONS[STATUS["RECRUIT_DISABLE"]] if msg.channel.id in games else BUTTONS[STATUS["RECRUIT"]], BUTTONS[STATUS["DISMISSION"]]]}]
+        await interactmsg(http, datas, "아발론에 오신걸 환영합니다!", components, INTERACTION_SCOPE["개인"])
+    elif result == STATUS['EXPLAIN']:
+        await interactmsg(http, datas, '\n'.join([EXPLAIN, "", get_explain(msg, roles, emojis)]), None, INTERACTION_SCOPE["개인"])
 
 
-async def button_message(http, datas, result):
-    interaction_id = datas.get("id")
-    interaction_token = datas.get("token")
-    if result == STATUS['APPLY_BUTTON']:
-        await http.request(
-            Route("POST", f"/interactions/{datas.get('id')}/{datas.get('token')}/callback"),
-            json={"type": 4, "data": {
-                "content": "참가버튼을 클릭하였습니다.",
-                "flags": 64
-            }},
-        )
-    elif result == STATUS['START_BUTTON']:
-        await http.request(
-            Route("POST", f"/interactions/{datas.get('id')}/{datas.get('token')}/callback"),
-            json={"type": 4, "data": {
-                "content": "시작버튼을 클릭하였습니다.",
-                "flags": 64
-            }},
-        )
-    elif result == STATUS['END_BUTTON']:
-        await http.request(
-            Route("POST", f"/interactions/{datas.get('id')}/{datas.get('token')}/callback"),
-            json={"type": 4, "data": {
-                "content": "종료버튼을 클릭하였습니다.",
-                "flags": 64
-            }},
-        )
-    elif result == STATUS['STATUS_BUTTON']:
-        await http.request(
-            Route("POST", f"/interactions/{datas.get('id')}/{datas.get('token')}/callback"),
-            json={"type": 4, "data": {
-                "content": "상태버튼을 클릭하였습니다.",
-                "flags": 64
-            }},
-        )
+async def button_response(msg, http, datas, result):
+    if result == STATUS['AVALON']:
+        await button_message(msg, http, datas, result)
+    elif result == STATUS['EXPLAIN']:
+        await button_message(msg, http, datas, result)
+    elif result == STATUS['STATUS']:
+        await button_message(msg, http, datas, result)
 
 
 def get_emoji(msg, role_kr, roles, emojis):

@@ -1,5 +1,15 @@
 # 상태
 STATUS = {
+    "COMMANDS": "명령",
+    "AVALON": "아발론",
+    "EXPLAIN": "설명",
+    "STATUS": "상태",
+    "RECRUIT": "모집",
+    "RECRUIT_DISABLE": "모집_비활성",
+    "DISMISSION": "해산",
+
+
+
     "EXIST_GAME": "EXIST_GAME",
     "RECRUIT_OK": "RECRUIT_OK",
     "NO_RECRUIT": "NO_RECRUIT",
@@ -18,24 +28,40 @@ STATUS = {
     "STATUS_BUTTON": "STATUS_BUTTON",
 }
 
+# 버튼
+BUTTONS = {
+    STATUS["AVALON"]: {"type": 2, "label": STATUS["AVALON"], "style": 1, "custom_id": STATUS["AVALON"], "disabled": False},
+    STATUS["EXPLAIN"]: {"type": 2, "label": STATUS["EXPLAIN"], "style": 2, "custom_id": STATUS["EXPLAIN"], "disabled": False},
+    STATUS["STATUS"]: {"type": 2, "label": STATUS["STATUS"], "style": 3, "custom_id": STATUS["STATUS"], "disabled": False},
+    STATUS["RECRUIT"]: {"type": 2, "label": STATUS["RECRUIT"], "style": 1, "custom_id": STATUS["RECRUIT"], "disabled": False},
+    STATUS["RECRUIT_DISABLE"]: {"type": 2, "label": STATUS["RECRUIT"], "style": 1, "custom_id": STATUS["RECRUIT_DISABLE"], "disabled": True},
+    STATUS["DISMISSION"]: {"type": 2, "label": STATUS["DISMISSION"], "style": 4, "custom_id": STATUS["DISMISSION"], "disabled": False},
+}
+
+# 역할자
+INTERACTION_SCOPE = {
+    "공개": 0,
+    "개인": 64,
+}
+
 # 역할자
 ROLES = {
-    "merlin": "멀린",
-    "assassin": "암살자",
-    "percival": "퍼시발",
-    "mordred": "모드레드",
-    "morgana": "모르가나",
-    "oberon": "오베론",
-    "lancelot_loyal": "랜슬롯(선)",
-    "lancelot_evil": "랜슬롯(악)",
-    "servant1": "선의 세력1",
-    "servant2": "선의 세력2",
-    "servant3": "선의 세력3",
-    "servant4": "선의 세력4",
-    "servant5": "선의 세력5",
-    "minion1": "악의 하수인1",
-    "minion2": "악의 하수인2",
-    "minion3": "악의 하수인3"
+    "merlin": {"name": "멀린", "order": 1},
+    "percival": {"name": "퍼시발", "order": 2},
+    "assassin": {"name": "암살자", "order": 1},
+    "morgana": {"name": "모르가나", "order": 2},
+    "mordred": {"name": "모드레드", "order": 4},
+    "oberon": {"name": "오베론", "order": 5},
+    "lancelot_loyal": {"name": "랜슬롯(선)", "order": 3},
+    "lancelot_evil": {"name": "랜슬롯(악)", "order": 3},
+    "servant1": {"name": "선의 세력1", "order": 4},
+    "servant2": {"name": "선의 세력2", "order": 5},
+    "servant3": {"name": "선의 세력3", "order": 6},
+    "servant4": {"name": "선의 세력4", "order": 7},
+    "servant5": {"name": "선의 세력5", "order": 8},
+    "minion1": {"name": "악의 하수인1", "order": 6},
+    "minion2": {"name": "악의 하수인2", "order": 7},
+    "minion3": {"name": "악의 하수인3", "order": 8},
 }
 
 # 플레이어 수에 따른 라운드별 원정대원 수
@@ -50,14 +76,8 @@ QUESTS = {
 
 # 명령
 COMMANDS = '''
-?명령 : 가능한 모든 명령을 출력합니다.
-?설명 : 게임 룰에 대한 설명을 DM으로 받습니다.
-?상태 : 원정의 상태를 표시합니다.
-?모집 : 원정대를 공개 모집합니다.
-?참가 : 모집 중인 원정에 참가/취소합니다.
-?마감 : 모집을 마감하고 원정을 준비합니다.
-?시작 : 모집된 원정대로 원정을 시작합니다.
-?종료 : 진행 중인 원정을 종료합니다.
+=명령 : 가능한 모든 명령을 출력합니다.
+=설정 : 필요한 이모지를 디스코드 서버에 등록(1회)합니다.
 '''
 
 # 설명
