@@ -90,3 +90,16 @@ def status(msg, games):
     if not current_game:
         return STATUS['NO_GAME']
     return STATUS['GET_STATUS']
+
+
+def component_response(datas):
+    if datas.get("type") == 3:
+        custom_id = datas.get("data", {}).get("custom_id")
+        if "참가" == datas.get("data", {}).get("custom_id"):
+            return STATUS['APPLY_BUTTON']
+        elif "시작" == datas.get("data", {}).get("custom_id"):
+            return STATUS['START_BUTTON']
+        elif "종료" == datas.get("data", {}).get("custom_id"):
+            return STATUS['END_BUTTON']
+        elif "상태" == datas.get("data", {}).get("custom_id"):
+            return STATUS['STATUS_BUTTON']

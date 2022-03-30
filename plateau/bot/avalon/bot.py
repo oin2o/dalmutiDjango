@@ -7,12 +7,12 @@ from discord.ext import commands
 
 from const import ROLES, COMMANDS, EXPLAIN, EMOJI_PREFIX, CARD_PREFIX
 from data import emojis, games, roles
-from service import recruit, apply, expedition, end, status
-from util import directmsg, message, status_message, get_explain
+from service import recruit, apply, expedition, end, status, component_response
+from util import directmsg, message, status_message, button_message, get_explain
 
 load_dotenv(verbose=True)
 
-bot = commands.Bot(command_prefix='?')
+bot = commands.Bot(command_prefix='=')
 http = bot.http
 
 
@@ -33,7 +33,7 @@ async def on_ready():
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="게임"))   # 온라인
 
 
-@bot.command()
+@bot.command(aliases=["?"])
 async def 명령(msg: discord.Message):
     # 전체 command 리스트를 표시
     await message(msg, 'reply', '', COMMANDS, discord.Colour.default(), None)
@@ -48,33 +48,34 @@ async def 설명(msg: discord.Message):
 
 @bot.command()
 async def 상태(msg: discord.Message):
-    await status_message(msg, status(msg, games))
+    await status_message(msg, http, status(msg, games))
 
 
 @bot.command()
 async def 모집(msg: discord.Message):
-    await status_message(msg, recruit(msg, games))
+    await status_message(msg, http, recruit(msg, games))
 
 
 @bot.command()
 async def 참가(msg: discord.Message):
-    await status_message(msg, apply(msg, games))
+    await status_message(msg, http, apply(msg, games))
 
 
 @bot.command()
 async def 시작(msg: discord.Message):
-    await status_message(msg, expedition(msg, games))
+    await status_message(msg, http, expedition(msg, games))
 
 
 @bot.command()
 async def 종료(msg: discord.Message):
-    await status_message(msg, end(msg, games))
+    await status_message(msg, http, end(msg, games))
 
 
-@bot.command()
-async def 테스트(msg: discord.Message):
-    await message(msg, 'dm', '', '\n'.join([EXPLAIN, "", get_explain(msg, roles, emojis)]), discord.Colour.default(), ''.join([CARD_PREFIX, "servant5.png"]))
-    await directmsg(msg, http, discord.Embed(description=COMMANDS, colour=discord.Colour.default()))
+@bot.event
+async def on_socket_response(payload):
+    t = payload.get("t")
+    if t == "INTERACTION_CREATE":
+        await button_message(http, payload.get("d", {}), component_response(payload.get("d", {})))
 
 
 @bot.event
