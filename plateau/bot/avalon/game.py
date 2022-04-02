@@ -100,9 +100,10 @@ class Game:
     def add_member(self, member):
         self._members.append(member)
 
-    def remove_member(self, member):
-        if self._members.index(member):
-            self._members.remove(member)
+    def remove_member(self, user_id):
+        for member in self._members:
+            if member.user_id == user_id:
+                self._members.remove(member)
 
     def clear_game(self):
         self._roles = {

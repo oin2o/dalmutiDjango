@@ -5,18 +5,22 @@ STATUS = {
     "EXPLAIN": "설명",
     "STATUS": "상태",
     "RECRUIT": "모집",
-    "RECRUIT_DISABLE": "모집_비활성",
     "DISMISSION": "해산",
+    "APPLY": "참가",
+    "OPTION": "옵션",
+    "COMMENCE": "시작",
+    "INITIAL": "초기화",
 
 
-
+    "NO_RECRUIT": "원정_미존재",
+    "NO_GAME": "아발론_미존재",
     "EXIST_GAME": "EXIST_GAME",
-    "RECRUIT_OK": "RECRUIT_OK",
-    "NO_RECRUIT": "NO_RECRUIT",
     "ALREADY_START": "ALREADY_START",
-    "MIN_MEMBER": "MIN_MEMBER",
     "MAX_MEMBER": "MAX_MEMBER",
-    "NO_GAME": "NO_GAME",
+    "APPLY_CANCEL": "APPLY_CANCEL",
+
+    "RECRUIT_OK": "RECRUIT_OK",
+    "MIN_MEMBER": "MIN_MEMBER",
     "APPLY_OK": "APPLY_OK",
     "APPLY_CANCEL": "APPLY_CANCEL",
     "START": "START",
@@ -34,14 +38,23 @@ BUTTONS = {
     STATUS["EXPLAIN"]: {"type": 2, "label": STATUS["EXPLAIN"], "style": 2, "custom_id": STATUS["EXPLAIN"], "disabled": False},
     STATUS["STATUS"]: {"type": 2, "label": STATUS["STATUS"], "style": 3, "custom_id": STATUS["STATUS"], "disabled": False},
     STATUS["RECRUIT"]: {"type": 2, "label": STATUS["RECRUIT"], "style": 1, "custom_id": STATUS["RECRUIT"], "disabled": False},
-    STATUS["RECRUIT_DISABLE"]: {"type": 2, "label": STATUS["RECRUIT"], "style": 1, "custom_id": STATUS["RECRUIT_DISABLE"], "disabled": True},
     STATUS["DISMISSION"]: {"type": 2, "label": STATUS["DISMISSION"], "style": 4, "custom_id": STATUS["DISMISSION"], "disabled": False},
+    STATUS["APPLY"]: {"type": 2, "label": STATUS["APPLY"], "style": 3, "custom_id": STATUS["APPLY"], "disabled": False},
+    STATUS["OPTION"]: {"type": 2, "label": STATUS["OPTION"], "style": 2, "custom_id": STATUS["OPTION"], "disabled": False},
+    STATUS["COMMENCE"]: {"type": 2, "label": STATUS["COMMENCE"], "style": 1, "custom_id": STATUS["COMMENCE"], "disabled": False},
+    STATUS["INITIAL"]: {"type": 2, "label": STATUS["INITIAL"], "style": 4, "custom_id": STATUS["INITIAL"], "disabled": False},
 }
 
-# 역할자
+# 봇 응답 범위
 INTERACTION_SCOPE = {
     "공개": 0,
     "개인": 64,
+}
+
+# 봇 응답 유형
+INTERACTION_CALLBACK = {
+    "응답": 4,
+    "ACK": 7,
 }
 
 # 역할자
@@ -62,6 +75,25 @@ ROLES = {
     "minion1": {"name": "악의 하수인1", "order": 6},
     "minion2": {"name": "악의 하수인2", "order": 7},
     "minion3": {"name": "악의 하수인3", "order": 8},
+}
+
+ROLES_REVERSE = {
+    ROLES['merlin']['name']: 'merlin',
+    ROLES['percival']['name']: 'percival',
+    ROLES['assassin']['name']: 'assassin',
+    ROLES['morgana']['name']: 'morgana',
+    ROLES['mordred']['name']: 'mordred',
+    ROLES['oberon']['name']: 'oberon',
+    ROLES['lancelot_loyal']['name']: 'lancelot_loyal',
+    ROLES['lancelot_evil']['name']: 'lancelot_evil',
+    ROLES['servant1']['name']: 'servant1',
+    ROLES['servant2']['name']: 'servant2',
+    ROLES['servant3']['name']: 'servant3',
+    ROLES['servant4']['name']: 'servant4',
+    ROLES['servant5']['name']: 'servant5',
+    ROLES['minion1']['name']: 'minion1',
+    ROLES['minion2']['name']: 'minion2',
+    ROLES['minion3']['name']: 'minion3'
 }
 
 # 플레이어 수에 따른 라운드별 원정대원 수

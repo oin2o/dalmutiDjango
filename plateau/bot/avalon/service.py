@@ -3,20 +3,43 @@ from member import Member
 from const import STATUS
 
 
-def recruit(msg, games):
-    # 채널에 미리 시작된 원정이 있는 경우는 추가 모집하지 않음
+def component_response(datas):
+    if datas.get("type") == 3:
+        for key, value in STATUS.items():
+            if datas.get("data", {}).get("custom_id") == value:
+                return STATUS[key]
+
+
+def status(msg, games):
+    # 채널에 시작된 원정이 있는지 점검
+    if msg.channel.id not in games:
+        return STATUS['NO_RECRUIT']
+    current_game = games[msg.channel.id]['game']
+    # 게임의 객체 정상여부 점검
+    if not current_game:
+        return STATUS['NO_GAME']
+    return STATUS['STATUS']
+
+
+def recruit(msg, games, user):
+    if msg.channel.id not in games:
+        # 원정 처리를 위한 게임 데이터 저장소 생성
+        current_game = {'game': Game(msg.channel)}
+        # 게임 멤버에 현재 사용자 추가
+        current_game['game'].add_member(Member(user["id"], user["username"]))
+        # 전체 게임 객체에 현재 게임 추가
+        games[msg.channel.id] = current_game
+    return STATUS['RECRUIT']
+
+
+def dismission(msg, games):
     if msg.channel.id in games:
-        return STATUS['EXIST_GAME']
-    # 원정 처리를 위한 게임 데이터 저장소 생성
-    current_game = {'game': Game(msg.channel)}
-    # 게임 멤버에 현재 사용자 추가
-    current_game['game'].add_member(Member(msg.author))
-    # 전체 게임 객체에 현재 게임 추가
-    games[msg.channel.id] = current_game
-    return STATUS['RECRUIT_OK']
+        # 해당 채널 게임 데이터 삭제
+        games.pop(msg.channel.id)
+    return STATUS['DISMISSION']
 
 
-def apply(msg, games):
+def apply(msg, games, user):
     # 채널에 시작된 원정이 있는지 점검
     if msg.channel.id not in games:
         return STATUS['NO_RECRUIT']
@@ -32,16 +55,20 @@ def apply(msg, games):
         return STATUS['MAX_MEMBER']
     '''
     # 플레이어가 미참가인 경우, 해당 원정에 참가시킴
-    if msg.message.author not in current_game.members:
-        current_game.add_member(Member(msg.message.author))
+    if user not in current_game.members:
+        current_game.add_member(Member(user["id"], user["username"]))
         return STATUS['APPLY_OK']
     # 플레이어가 이미 참가상태인 경우, 해당 원정에서 제외
     else:
-        current_game.remove_member(Member(msg.message.author))
+        current_game.remove_member(user["id"])
         return STATUS['APPLY_CANCEL']
     '''
-    current_game.add_member(Member(msg.message.author))
-    return STATUS['APPLY_OK']
+    current_game.add_member(Member(user["id"], user["username"]))
+    # 참가자 인원에 맞춰서 games의 역할자 추가
+    return STATUS['APPLY']
+
+
+
 
 
 def expedition(msg, games):
@@ -79,21 +106,3 @@ def end(msg, games):
     # 원정의 정보를 초기화(역할, 시작여부, 라운드, 부결회수)
     current_game.clear_game()
     return STATUS['END']
-
-
-def status(msg, games):
-    # 채널에 시작된 원정이 있는지 점검
-    if msg.channel.id not in games:
-        return STATUS['NO_RECRUIT']
-    current_game = games[msg.channel.id]['game']
-    # 게임의 객체 정상여부 점검
-    if not current_game:
-        return STATUS['NO_GAME']
-    return STATUS['GET_STATUS']
-
-
-def component_response(datas):
-    if datas.get("type") == 3:
-        for key, value in STATUS.items():
-            if datas.get("data", {}).get("custom_id") == value:
-                return STATUS[key]
