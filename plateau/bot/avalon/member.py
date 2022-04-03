@@ -1,25 +1,16 @@
 class Member:
-    def __init__(self, user_id, user_name) -> None:
-        self._user_id = user_id
-        self._user_name = user_name
-        self._role = ''
-        self._leader = False
+    def __init__(self, user) -> None:
+        self._user = user
+        self._role = None
+        self._viviane = False
 
     @property
-    def user_id(self):
-        return self._user_id
+    def user(self):
+        return self._user
 
-    @user_id.setter
-    def user_id(self, user_id):
-        self._user_id = user_id
-
-    @property
-    def user_name(self):
-        return self._user_name
-
-    @user_name.setter
-    def user_name(self, user_name):
-        self._user_name = user_name
+    @user.setter
+    def user(self, user):
+        self._user = user
 
     @property
     def role(self):
@@ -30,9 +21,9 @@ class Member:
         self._role = role
 
     @property
-    def leader(self):
-        return self._leader
+    def viviane(self):
+        return self._viviane
 
-    @leader.setter
-    def leader(self, leader):
-        self._leader = leader
+    @viviane.setter
+    def viviane(self, viviane):
+        self._viviane = viviane

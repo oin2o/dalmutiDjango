@@ -10,39 +10,34 @@ STATUS = {
     "OPTION": "옵션",
     "COMMENCE": "시작",
     "INITIAL": "초기화",
-
-
+    "PERCIVAL_MORGANA": "퍼/모",
+    "MORDRED": "모드레드",
+    "OBERON": "오베론",
+    "ANONYMOUS": "익명",
     "NO_RECRUIT": "원정_미존재",
     "NO_GAME": "아발론_미존재",
-    "EXIST_GAME": "EXIST_GAME",
-    "ALREADY_START": "ALREADY_START",
-    "MAX_MEMBER": "MAX_MEMBER",
-    "APPLY_CANCEL": "APPLY_CANCEL",
-
-    "RECRUIT_OK": "RECRUIT_OK",
-    "MIN_MEMBER": "MIN_MEMBER",
-    "APPLY_OK": "APPLY_OK",
-    "APPLY_CANCEL": "APPLY_CANCEL",
-    "START": "START",
-    "END": "END",
-    "GET_STATUS": "GET_STATUS",
-    "APPLY_BUTTON": "APPLY_BUTTON",
-    "START_BUTTON": "START_BUTTON",
-    "END_BUTTON": "END_BUTTON",
-    "STATUS_BUTTON": "STATUS_BUTTON",
+    "ALREADY_START": "이미_시작됨",
+    "MAX_MEMBER": "멤버초과",
+    "MIN_MEMBER": "멤버미만",
+    "APPLY_CANCEL": "참가취소",
 }
 
 # 버튼
 BUTTONS = {
-    STATUS["AVALON"]: {"type": 2, "label": STATUS["AVALON"], "style": 1, "custom_id": STATUS["AVALON"], "disabled": False},
-    STATUS["EXPLAIN"]: {"type": 2, "label": STATUS["EXPLAIN"], "style": 2, "custom_id": STATUS["EXPLAIN"], "disabled": False},
-    STATUS["STATUS"]: {"type": 2, "label": STATUS["STATUS"], "style": 3, "custom_id": STATUS["STATUS"], "disabled": False},
-    STATUS["RECRUIT"]: {"type": 2, "label": STATUS["RECRUIT"], "style": 1, "custom_id": STATUS["RECRUIT"], "disabled": False},
-    STATUS["DISMISSION"]: {"type": 2, "label": STATUS["DISMISSION"], "style": 4, "custom_id": STATUS["DISMISSION"], "disabled": False},
-    STATUS["APPLY"]: {"type": 2, "label": STATUS["APPLY"], "style": 3, "custom_id": STATUS["APPLY"], "disabled": False},
-    STATUS["OPTION"]: {"type": 2, "label": STATUS["OPTION"], "style": 2, "custom_id": STATUS["OPTION"], "disabled": False},
-    STATUS["COMMENCE"]: {"type": 2, "label": STATUS["COMMENCE"], "style": 1, "custom_id": STATUS["COMMENCE"], "disabled": False},
-    STATUS["INITIAL"]: {"type": 2, "label": STATUS["INITIAL"], "style": 4, "custom_id": STATUS["INITIAL"], "disabled": False},
+    STATUS["AVALON"]: {"type": 2, "label": STATUS["AVALON"], "style": 1, "custom_id": STATUS["AVALON"]},
+    STATUS["EXPLAIN"]: {"type": 2, "label": STATUS["EXPLAIN"], "style": 2, "custom_id": STATUS["EXPLAIN"]},
+    STATUS["STATUS"]: {"type": 2, "label": STATUS["STATUS"], "style": 3, "custom_id": STATUS["STATUS"]},
+    STATUS["RECRUIT"]: {"type": 2, "label": STATUS["RECRUIT"], "style": 1, "custom_id": STATUS["RECRUIT"]},
+    STATUS["DISMISSION"]: {"type": 2, "label": STATUS["DISMISSION"], "style": 4, "custom_id": STATUS["DISMISSION"]},
+    STATUS["APPLY"]: {"type": 2, "label": STATUS["APPLY"], "style": 3, "custom_id": STATUS["APPLY"]},
+    STATUS["OPTION"]: {"type": 2, "label": STATUS["OPTION"], "style": 2, "custom_id": STATUS["OPTION"]},
+    STATUS["COMMENCE"]: {"type": 2, "label": STATUS["COMMENCE"], "style": 1, "custom_id": STATUS["COMMENCE"]},
+    STATUS["INITIAL"]: {"type": 2, "label": STATUS["INITIAL"], "style": 4, "custom_id": STATUS["INITIAL"]},
+    STATUS["PERCIVAL_MORGANA"]: {"type": 2, "label": STATUS["PERCIVAL_MORGANA"], "style": 1,
+                                 "custom_id": STATUS["PERCIVAL_MORGANA"]},
+    STATUS["MORDRED"]: {"type": 2, "label": STATUS["MORDRED"], "style": 3, "custom_id": STATUS["MORDRED"]},
+    STATUS["OBERON"]: {"type": 2, "label": STATUS["OBERON"], "style": 2, "custom_id": STATUS["OBERON"]},
+    STATUS["ANONYMOUS"]: {"type": 2, "label": STATUS["ANONYMOUS"], "style": 4, "custom_id": STATUS["ANONYMOUS"]},
 }
 
 # 봇 응답 범위
@@ -59,61 +54,100 @@ INTERACTION_CALLBACK = {
 
 # 역할자
 ROLES = {
-    "merlin": {"name": "멀린", "order": 1},
-    "percival": {"name": "퍼시발", "order": 2},
-    "assassin": {"name": "암살자", "order": 1},
-    "morgana": {"name": "모르가나", "order": 2},
-    "mordred": {"name": "모드레드", "order": 4},
-    "oberon": {"name": "오베론", "order": 5},
-    "lancelot_loyal": {"name": "랜슬롯(선)", "order": 3},
-    "lancelot_evil": {"name": "랜슬롯(악)", "order": 3},
-    "servant1": {"name": "선의 세력1", "order": 4},
-    "servant2": {"name": "선의 세력2", "order": 5},
-    "servant3": {"name": "선의 세력3", "order": 6},
-    "servant4": {"name": "선의 세력4", "order": 7},
-    "servant5": {"name": "선의 세력5", "order": 8},
-    "minion1": {"name": "악의 하수인1", "order": 6},
-    "minion2": {"name": "악의 하수인2", "order": 7},
-    "minion3": {"name": "악의 하수인3", "order": 8},
+    "merlin": {"name": "멀린", "lawful": "loyal", "order": 1},
+    "percival": {"name": "퍼시발", "lawful": "loyal", "order": 2},
+    "assassin": {"name": "암살자", "lawful": "evil", "order": 1},
+    "morgana": {"name": "모르가나", "lawful": "evil", "order": 2},
+    "mordred": {"name": "모드레드", "lawful": "evil", "order": 4},
+    "oberon": {"name": "오베론", "lawful": "evil", "order": 5},
+    "lancelot_loyal": {"name": "랜슬롯(선)", "lawful": "loyal", "order": 3},
+    "lancelot_evil": {"name": "랜슬롯(악)", "lawful": "evil", "order": 3},
+    "guinevere": {"name": "기네비어", "lawful": "loyal", "order": 4},
+    "servant1": {"name": "선의 세력1", "lawful": "loyal", "order": 5},
+    "servant2": {"name": "선의 세력2", "lawful": "loyal", "order": 6},
+    "servant3": {"name": "선의 세력3", "lawful": "loyal", "order": 7},
+    "servant4": {"name": "선의 세력4", "lawful": "loyal", "order": 8},
+    "minion1": {"name": "악의 하수인1", "lawful": "evil", "order": 6},
+    "minion2": {"name": "악의 하수인2", "lawful": "evil", "order": 7},
+    "minion3": {"name": "악의 하수인3", "lawful": "evil", "order": 8},
 }
 
 ROLES_REVERSE = {
-    ROLES['merlin']['name']: 'merlin',
-    ROLES['percival']['name']: 'percival',
-    ROLES['assassin']['name']: 'assassin',
-    ROLES['morgana']['name']: 'morgana',
-    ROLES['mordred']['name']: 'mordred',
-    ROLES['oberon']['name']: 'oberon',
-    ROLES['lancelot_loyal']['name']: 'lancelot_loyal',
-    ROLES['lancelot_evil']['name']: 'lancelot_evil',
-    ROLES['servant1']['name']: 'servant1',
-    ROLES['servant2']['name']: 'servant2',
-    ROLES['servant3']['name']: 'servant3',
-    ROLES['servant4']['name']: 'servant4',
-    ROLES['servant5']['name']: 'servant5',
-    ROLES['minion1']['name']: 'minion1',
-    ROLES['minion2']['name']: 'minion2',
-    ROLES['minion3']['name']: 'minion3'
+    ROLES["merlin"]["name"]: "merlin",
+    ROLES["percival"]["name"]: "percival",
+    ROLES["assassin"]["name"]: "assassin",
+    ROLES["morgana"]["name"]: "morgana",
+    ROLES["mordred"]["name"]: "mordred",
+    ROLES["oberon"]["name"]: "oberon",
+    ROLES["lancelot_loyal"]["name"]: "lancelot_loyal",
+    ROLES["lancelot_evil"]["name"]: "lancelot_evil",
+    ROLES["guinevere"]["name"]: "guinevere",
+    ROLES["servant1"]["name"]: "servant1",
+    ROLES["servant2"]["name"]: "servant2",
+    ROLES["servant3"]["name"]: "servant3",
+    ROLES["servant4"]["name"]: "servant4",
+    ROLES["minion1"]["name"]: "minion1",
+    ROLES["minion2"]["name"]: "minion2",
+    ROLES["minion3"]["name"]: "minion3"
+}
+
+# 역할자
+CHIPS = {
+    "avalon_card_fail": "avalon_card_fail",
+    "avalon_card_success": "avalon_card_success",
+    "avalon_chip_5_1": "avalon_chip_5_1",
+    "avalon_chip_5_2": "avalon_chip_5_2",
+    "avalon_chip_5_3": "avalon_chip_5_3",
+    "avalon_chip_5_4": "avalon_chip_5_4",
+    "avalon_chip_5_5": "avalon_chip_5_5",
+    "avalon_chip_6_1": "avalon_chip_6_1",
+    "avalon_chip_6_2": "avalon_chip_6_2",
+    "avalon_chip_6_3": "avalon_chip_6_3",
+    "avalon_chip_6_4": "avalon_chip_6_4",
+    "avalon_chip_6_5": "avalon_chip_6_5",
+    "avalon_chip_7_1": "avalon_chip_7_1",
+    "avalon_chip_7_2": "avalon_chip_7_2",
+    "avalon_chip_7_3": "avalon_chip_7_3",
+    "avalon_chip_7_4": "avalon_chip_7_4",
+    "avalon_chip_7_5": "avalon_chip_7_5",
+    "avalon_chip_8_1": "avalon_chip_8_1",
+    "avalon_chip_8_2": "avalon_chip_8_2",
+    "avalon_chip_8_3": "avalon_chip_8_3",
+    "avalon_chip_8_4": "avalon_chip_8_4",
+    "avalon_chip_8_5": "avalon_chip_8_5",
+    "avalon_chip_approve": "avalon_chip_approve",
+    "avalon_chip_deny": "avalon_chip_deny",
+    "avalon_chip_fail": "avalon_chip_fail",
+    "avalon_chip_reject": "avalon_chip_reject",
+    "avalon_chip_success": "avalon_chip_success",
 }
 
 # 플레이어 수에 따른 라운드별 원정대원 수
 QUESTS = {
-    5: [2, 3, 2, 3, 3],
-    6: [2, 3, 4, 3, 4],
-    7: [2, 3, 3, 4, 4],
-    8: [3, 4, 4, 5, 5],
-    9: [3, 4, 4, 5, 5],
-    10: [3, 4, 4, 5, 5]
+    5: {"round": [2, 3, 2, 3, 3], "evil": 2},
+    6: {"round": [2, 3, 4, 3, 4], "evil": 2},
+    7: {"round": [2, 3, 3, 4, 4], "evil": 3},
+    8: {"round": [3, 4, 4, 5, 5], "evil": 3},
+    9: {"round": [3, 4, 4, 5, 5], "evil": 3},
+    10: {"round": [3, 4, 4, 5, 5], "evil": 4}
 }
 
 # 명령
-COMMANDS = '''
-=명령 : 가능한 모든 명령을 출력합니다.
-=설정 : 필요한 이모지를 디스코드 서버에 등록(1회)합니다.
-'''
+COMMANDS = """
+=아발론 : 가능한 모든 명령을 보여줍니다.
+=이모지 : 필요한 이모지를 디스코드 서버에 등록(1회)합니다.
+"""
+
+# 아발론
+AVALONS = """
+설명 : 아발론 설명을 보여줍니다.
+상태 : 현재 원정 상태를 보여줍니다.
+원정 : 원정준비를 시작합니다.
+해산 : 모집된 원정을 해산시킵니다.
+"""
 
 # 설명
-EXPLAIN = '''
+EXPLAIN = """
 아발론은 마피아 장르의 보드게임입니다.
 플레이어는 멀린/모드레드 팀으로 나뉘어 아서왕을 위한 원정대를 꾸리게 됩니다.
 총 5번의 원정 기회가 있으며 세번의 원정을 성공/실패 시키는 팀이 승리하게 됩니다.
@@ -124,10 +158,26 @@ EXPLAIN = '''
 5번 연속으로 원정대 구성이 실패하는 경우는 모드레드팀이 최종승리하게 됩니다.
 과반수가 찬성하는 경우, 원정을 수행하며, 원정대원들은 원정의 성공/실패를 선택합니다.
 이때, 모드레드팀은 원정 실패를 시킬 수 있습니다.
-'''
+"""
+
+# 모집
+RECRUITS = """
+참가 : 원정에 참가 신청/취소 합니다.
+옵션 : 원정대 구성 옵션을 설정합니다.
+시작 : 현재 참가원으로 원정을 시작합니다.
+초기화 : 원정의 정보를 초기화합니다.
+"""
+
+# 옵션
+OPTIONS = """
+퍼/모 : 퍼시발/모르가나를 추가/제외
+모드레드 : 모드레드/호수의 여신을 추가/제외
+오베론 : 오베론을 추가/제외
+익명 : 투표 결과를 익명처리
+"""
 
 # 이모지 이름 prefix
-EMOJI_PREFIX = 'avalon_chip_'
+EMOJI_PREFIX = "avalon_chip_"
 
 # 카드 이미지 prefix
-CARD_PREFIX = 'avalon_card_'
+CARD_PREFIX = "avalon_card_"
