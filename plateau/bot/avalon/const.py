@@ -20,6 +20,26 @@ STATUS = {
     "MAX_MEMBER": "멤버초과",
     "MIN_MEMBER": "멤버미만",
     "APPLY_CANCEL": "참가취소",
+    "ORGANIZE": "원정구성",
+    "PROPOSAL": "원정제안",
+    "NO_PERMISSION": "권한없음",
+    "MAX_ORGANIZE": "원정대초과",
+    "MIN_ORGANIZE": "원정대미만",
+    "APPROVE": "찬성",
+    "REJECT": "반대",
+    "NO_MEMBER": "멤버아님",
+    "EXPEDITION_ROUND": "원정라운드",
+    "ORGANIZE_ROUND": "원정재구성",
+    "TERMINATE_LOYAL": "원정종료(선승리)",
+    "TERMINATE_EVIL": "원정종료(악승리)",
+    "ASSASSIN": "암살자",
+    "ASSASSIN_FAIL": "암살실패",
+    "QUEST_SUCCESS": "성공",
+    "QUEST_FAIL": "실패",
+    "ALREADY_RESULT": "제출완료",
+    "LOYAL_FAIL": "LOYAL_FAIL",
+    "VIVIANE": "VIVIANE",
+    "ORGANIZE_QUEST": "ORGANIZE_QUEST",
 }
 
 # 버튼
@@ -38,6 +58,12 @@ BUTTONS = {
     STATUS["MORDRED"]: {"type": 2, "label": STATUS["MORDRED"], "style": 3, "custom_id": STATUS["MORDRED"]},
     STATUS["OBERON"]: {"type": 2, "label": STATUS["OBERON"], "style": 2, "custom_id": STATUS["OBERON"]},
     STATUS["ANONYMOUS"]: {"type": 2, "label": STATUS["ANONYMOUS"], "style": 4, "custom_id": STATUS["ANONYMOUS"]},
+    STATUS["PROPOSAL"]: {"type": 2, "label": STATUS["PROPOSAL"], "style": 1, "custom_id": STATUS["PROPOSAL"]},
+    STATUS["APPROVE"]: {"type": 2, "label": STATUS["APPROVE"], "style": 1, "custom_id": STATUS["APPROVE"]},
+    STATUS["REJECT"]: {"type": 2, "label": STATUS["REJECT"], "style": 4, "custom_id": STATUS["REJECT"]},
+    STATUS["QUEST_SUCCESS"]: {"type": 2, "label": STATUS["QUEST_SUCCESS"], "style": 1,
+                              "custom_id": STATUS["QUEST_SUCCESS"]},
+    STATUS["QUEST_FAIL"]: {"type": 2, "label": STATUS["QUEST_FAIL"], "style": 4, "custom_id": STATUS["QUEST_FAIL"]},
 }
 
 # 봇 응답 범위
@@ -93,8 +119,6 @@ ROLES_REVERSE = {
 
 # 역할자
 CHIPS = {
-    "avalon_card_fail": "avalon_card_fail",
-    "avalon_card_success": "avalon_card_success",
     "avalon_chip_5_1": "avalon_chip_5_1",
     "avalon_chip_5_2": "avalon_chip_5_2",
     "avalon_chip_5_3": "avalon_chip_5_3",
@@ -118,6 +142,8 @@ CHIPS = {
     "avalon_chip_approve": "avalon_chip_approve",
     "avalon_chip_deny": "avalon_chip_deny",
     "avalon_chip_fail": "avalon_chip_fail",
+    "avalon_chip_quest_fail": "avalon_chip_quest_fail",
+    "avalon_chip_quest_success": "avalon_chip_quest_success",
     "avalon_chip_reject": "avalon_chip_reject",
     "avalon_chip_success": "avalon_chip_success",
 }
@@ -171,9 +197,10 @@ RECRUITS = """
 # 옵션
 OPTIONS = """
 퍼/모 : 퍼시발/모르가나를 추가/제외
-모드레드 : 모드레드/호수의 여신을 추가/제외
+모드레드 : 모드레드을 추가/제외
 오베론 : 오베론을 추가/제외
 익명 : 투표 결과를 익명처리
+‣ 모드레드/오베론이 있으면, 호수의 여신 포함
 """
 
 # 이모지 이름 prefix

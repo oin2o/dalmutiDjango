@@ -7,7 +7,7 @@ from discord.ext import commands
 
 from const import ROLES, CHIPS, STATUS, EMOJI_PREFIX
 from data import emojis
-from util import message, button_message, button_response, decompress_message
+from util import reply_message, button_message, button_response, decompress_message
 from service import component_response
 
 
@@ -56,7 +56,7 @@ async def emoticon(msg: discord.Message):
             with open(''.join([emoji_path, emoji_file]), 'rb') as fd:
                 emoji = await msg.guild.create_custom_emoji(name=emoji_file.replace(".png", ''), image=fd.read())
                 emojis[msg.guild.id][emoji_file.replace(".png", '')] = emoji.id
-    await message(msg, "reply", "아발론을 위한 이모지가 서버에 등록 되었습니다.")
+    await reply_message(msg, "아발론을 위한 이모지가 서버에 등록 되었습니다.")
 
 
 @bot.event
@@ -72,22 +72,26 @@ async def on_socket_raw_receive(msg):
                     int(datas["message"]["message_reference"]["message_id"]))
             user = await bot.fetch_user(datas.get("member").get("user")["id"])
             await button_response(msg, http, datas, user, component_response(datas))
+    elif msg["t"] == "MESSAGE_REACTION_ADD":
+        return
+    elif msg["t"] == "MESSAGE_REACTION_REMOVE":
+        return
 
 
 @bot.event
 async def on_command_error(msg, error):
     if isinstance(error, commands.CommandNotFound):
-        await message(msg, "reply", f"{msg.message.content}는 존재하지 않는 명령어입니다.", discord.Colour.dark_red())
+        await reply_message(msg, f"{msg.message.content}는 존재하지 않는 명령어입니다.", discord.Colour.dark_red())
         return
     elif isinstance(error, commands.BotMissingPermissions):
-        await message(msg, "reply", "메세지 발송 권한이 없습니다. 설정 > 개인정보 보호 및 보안 > 서버 멤버가 보내는 다이렉트 메세지 허용하기가 켜져있는지 확인해주세요.",
-                      discord.Colour.dark_red())
+        await reply_message(msg, "메세지 발송 권한이 없습니다. 설정 > 개인정보 보호 및 보안 > 서버 멤버가 보내는 다이렉트 메세지 허용하기가 켜져있는지 확인해주세요.",
+                            discord.Colour.dark_red())
         return
     elif isinstance(error, commands.CommandInvokeError):
-        await message(msg, "reply", "이모지 등록 권한이 없습니다. 서버 설정 > 역할 > 권한 > 이모티콘 및 스티커 관리가 켜져있는지 확인해주세요.",
-                      discord.Colour.dark_red())
+        await reply_message(msg, "이모지 등록 권한이 없습니다. 서버 설정 > 역할 > 권한 > 이모티콘 및 스티커 관리가 켜져있는지 확인해주세요.",
+                            discord.Colour.dark_red())
         return
-    await message(msg, "reply", "오류가 발생했습니다. 아발론 > 해산 버튼을 클릭하여 원정을 종료하세요.", discord.Colour.dark_red())
+    await reply_message(msg, "오류가 발생했습니다. 아발론 > 해산 버튼을 클릭하여 원정을 종료하세요.", discord.Colour.dark_red())
     print(f"inigame - {datetime.datetime.now()} : <Error> {msg.channel.id}, error: {error}")
 
 

@@ -2,13 +2,13 @@ from const import ROLES, ROLES_REVERSE, CHIPS, EMOJI_PREFIX
 from data import emojis
 
 
-def get_emoji(msg, role_kr, scope="roles"):
+def get_emoji(msg, role_name, scope="roles"):
     # 이모지 표기 문자열 추가(디스코드 서버에 파일명과 동일하게 추가 필요)
     if scope == "roles":
-        return ''.join(["<:", ROLES_REVERSE[role_kr["name"]], ":", str(emojis[msg.guild.id][''.join(
-            [EMOJI_PREFIX, ROLES_REVERSE[role_kr["name"]]])]), ">"])
+        return ''.join(["<:", ROLES_REVERSE[role_name["name"]], ":", str(emojis[msg.guild.id][''.join(
+            [EMOJI_PREFIX, ROLES_REVERSE[role_name["name"]]])]), ">"])
     else:
-        return ''.join(["<:", CHIPS[role_kr], ":", str(emojis[msg.guild.id][CHIPS[role_kr]]), ">"])
+        return ''.join(["<:", CHIPS[role_name], ":", str(emojis[msg.guild.id][CHIPS[role_name]]), ">"])
 
 
 def get_explain(msg):
@@ -31,7 +31,8 @@ def get_explain(msg):
              get_emoji(msg, ROLES["minion3"]), "악의 하수인 : 원정을 실패 시키십시오."]),
         "",
         "‣ 제3세력",
-        "▪️ 랜슬롯 : 선/악 모두 존재하며, 원정 중, 팀을 배신할 수 있습니다."
+        "▪️ 랜슬롯 : 선/악 모두 존재하며, 원정 중, 팀을 배신할 수 있습니다.",
+        "▪️ 비비안 : 원정대원의 선/악을 알려줍니다.",
     ])
 
 
@@ -57,4 +58,58 @@ def get_status(msg, current_game):
             current_game.members) < 5 else 8 if len(current_game.members) > 8 else len(current_game.members)),
                                                                       str(_round)])]), "chips"))
     desc.append(": ".join(["••• 라운드", ' '.join(rounds)]))
+    deny_emoji = []
+    if current_game.quest_round > 0:
+        for _ in range(current_game.rounds[current_game.quest_round]["deny"]):
+            deny_emoji.append(get_emoji(msg, CHIPS["avalon_chip_deny"], "chips"))
+        desc.append(": ".join(["••• 부결", ' '.join(deny_emoji)]))
+    return '\n'.join(desc)
+
+
+def get_role(current_game, member):
+    desc = []
+    if member.role == ROLES["merlin"]:
+        desc.append("모드레드를 제외한 악의 하수인들을 알고 있지만, 암살자를 조심하세요.")
+        desc.append("‣ 모드레드를 제외한 악의 하수인" if current_game.mordred else "‣ 악의 하수인")
+        for evils in current_game.members:
+            if "evil" == evils.role["lawful"] and evils.role["name"] not in "모드레드":
+                desc.append(''.join(["••• ", evils.user.name]))
+    elif member.role == ROLES["percival"]:
+        desc.append("악의 하수인에게 속지 말고, 멀린을 찾아 원정을 성공 시키십시오.")
+        desc.append("‣ 멀린 혹은 모르가나")
+        for merlins in current_game.members:
+            if merlins.role in (ROLES["merlin"], ROLES["morgana"]):
+                desc.append(''.join(["••• ", merlins.user.name]))
+    elif member.role == ROLES["assassin"]:
+        desc.append("선의 세력을 속여 원정을 실패 시키십시오. 원정이 성공하는 경우, 멀린을 암살하여 악의 세력을 승리 시키십시오.")
+        desc.append("‣ 오베론을 제외한 악의 하수인" if current_game.oberon else "‣ 악의 하수인")
+        for evils in current_game.members:
+            if "evil" == evils.role["lawful"] and evils.role["name"] not in "오베론":
+                desc.append(''.join(["••• ", evils.user.name]))
+    elif member.role == ROLES["morgana"]:
+        desc.append("퍼시발에게 멀린으로 위장하였습니다. 퍼시발을 현혹시키고 원정을 실패 시키십시오.")
+        desc.append("‣ 오베론을 제외한 악의 하수인" if current_game.oberon else "‣ 악의 하수인")
+        for evils in current_game.members:
+            if "evil" == evils.role["lawful"] and evils.role["name"] not in "오베론":
+                desc.append(''.join(["••• ", evils.user.name]))
+    elif member.role == ROLES["mordred"]:
+        desc.append("멀린에게 정체를 들키지 않았습니다. 선의 세력 사이에 숨어 원정을 실패 시키십시오.")
+        desc.append("‣ 오베론을 제외한 악의 하수인" if current_game.oberon else "‣ 악의 하수인")
+        for evils in current_game.members:
+            if "evil" == evils.role["lawful"] and evils.role["name"] not in "오베론":
+                desc.append(''.join(["••• ", evils.user.name]))
+    elif member.role == ROLES["oberon"]:
+        desc.append("다른 악을 알 수 없습니다. 악의 하수인을 찾고, 선의 세력을 속여 원정을 실패 시키십시오.")
+    elif member.role in (ROLES["lancelot_loyal"], ROLES["lancelot_evil"]):
+        desc.append("선/악 모두 될 수 있습니다. 배신의 기회를 노리세요.")
+        if member.role == ROLES["lancelot_evil"]:
+            desc.append("‣ 오베론을 제외한 악의 하수인" if current_game.oberon else "‣ 악의 하수인")
+            for evils in current_game.members:
+                if "evil" == evils.role["lawful"] and evils.role["name"] not in "오베론":
+                    desc.append(''.join(["••• ", evils.user.name]))
+    elif member.role in (ROLES["guinevere"], ROLES["servant1"], ROLES["servant2"], ROLES["servant3"],
+                         ROLES["servant4"]):
+        desc.append("악의 하수인에게 속지 말고 원정을 성공 시키십시오.")
+    elif member.role in (ROLES["minion1"], ROLES["minion2"], ROLES["minion3"]):
+        desc.append("선의 세력을 속여 원정을 실패 시키십시오.")
     return '\n'.join(desc)

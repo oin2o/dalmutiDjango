@@ -13,16 +13,17 @@ class Game:
         self._leader = None
         self._rounds = {
             1: {"players": QUESTS[5]["round"][0], "members": [], "deny": 0, "vote": {"approval": [], "reject": []},
-                "result": [], "terminate": False},
+                "result": {"success": [], "fail": []}, "terminate": False},
             2: {"players": QUESTS[5]["round"][1], "members": [], "deny": 0, "vote": {"approval": [], "reject": []},
-                "result": [], "terminate": False},
+                "result": {"success": [], "fail": []}, "terminate": False},
             3: {"players": QUESTS[5]["round"][2], "members": [], "deny": 0, "vote": {"approval": [], "reject": []},
-                "result": [], "terminate": False},
+                "result": {"success": [], "fail": []}, "terminate": False},
             4: {"players": QUESTS[5]["round"][3], "members": [], "deny": 0, "vote": {"approval": [], "reject": []},
-                "result": [], "terminate": False},
+                "result": {"success": [], "fail": []}, "terminate": False},
             5: {"players": QUESTS[5]["round"][4], "members": [], "deny": 0, "vote": {"approval": [], "reject": []},
-                "result": [], "terminate": False},
+                "result": {"success": [], "fail": []}, "terminate": False},
         }
+        self._quest_round = 0
         self._fourth_round = False
         self._expedition = False
         self._anonymous = False
@@ -137,6 +138,14 @@ class Game:
     @rounds.setter
     def rounds(self, rounds):
         self._rounds = rounds
+
+    @property
+    def quest_round(self):
+        return self._quest_round
+
+    @quest_round.setter
+    def quest_round(self, quest_round):
+        self._quest_round = quest_round
 
     @property
     def fourth_round(self):

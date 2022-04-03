@@ -3,6 +3,7 @@ class Member:
         self._user = user
         self._role = None
         self._viviane = False
+        self._can_viviane = True
 
     @property
     def user(self):
