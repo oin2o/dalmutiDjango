@@ -54,15 +54,26 @@ def get_status(msg, current_game):
     desc.append(": ".join(["••• 모드레드팀", ' '.join(evil_emoji)]))
     rounds = []
     for _round in current_game.rounds:
-        rounds.append(get_emoji(msg, ''.join([EMOJI_PREFIX, '_'.join([str(5 if len(
-            current_game.members) < 5 else 8 if len(current_game.members) > 8 else len(current_game.members)),
-                                                                      str(_round)])]), "chips"))
+        # 해당 라운드가 종료된 경우, 결과 이모지를 추가하고, 그 외에는 라운드별 인원수를 표기
+        if current_game.rounds[_round]["terminate"]:
+            if len(current_game.rounds[_round]["result"]["fail"]) > 0:
+                rounds.append(get_emoji(msg, ''.join([EMOJI_PREFIX, "fail"]), "chips"))
+            else:
+                rounds.append(get_emoji(msg, ''.join([EMOJI_PREFIX, "success"]), "chips"))
+        else:
+            rounds.append(get_emoji(msg,
+                                    ''.join([EMOJI_PREFIX,
+                                             '_'.join([str(5 if len(current_game.members) < 5 else
+                                                           8 if len(current_game.members) > 8 else
+                                                           len(current_game.members)),
+                                                       str(_round)])]), "chips"))
     desc.append(": ".join(["••• 라운드", ' '.join(rounds)]))
     deny_emoji = []
     if current_game.quest_round > 0:
         for _ in range(current_game.rounds[current_game.quest_round]["deny"]):
             deny_emoji.append(get_emoji(msg, CHIPS["avalon_chip_deny"], "chips"))
-        desc.append(": ".join(["••• 부결", ' '.join(deny_emoji)]))
+        if len(deny_emoji) > 0:
+            desc.append(": ".join(["••• 부결", ' '.join(deny_emoji)]))
     return '\n'.join(desc)
 
 
@@ -112,4 +123,8 @@ def get_role(current_game, member):
         desc.append("악의 하수인에게 속지 말고 원정을 성공 시키십시오.")
     elif member.role in (ROLES["minion1"], ROLES["minion2"], ROLES["minion3"]):
         desc.append("선의 세력을 속여 원정을 실패 시키십시오.")
+        desc.append("‣ 오베론을 제외한 악의 하수인" if current_game.oberon else "‣ 악의 하수인")
+        for evils in current_game.members:
+            if "evil" == evils.role["lawful"] and evils.role["name"] not in "오베론":
+                desc.append(''.join(["••• ", evils.user.name]))
     return '\n'.join(desc)

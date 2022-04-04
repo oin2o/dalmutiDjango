@@ -90,15 +90,15 @@ class Game:
         # 멤버 수에 맞게 라운드별 플레이어수 변경
         self._rounds = {
             1: {"players": QUESTS[roles]["round"][0], "members": [], "deny": 0, "vote": {"approval": [], "reject": []},
-                "result": [], "terminate": False},
+                "result": {"success": [], "fail": []}, "terminate": False},
             2: {"players": QUESTS[roles]["round"][1], "members": [], "deny": 0, "vote": {"approval": [], "reject": []},
-                "result": [], "terminate": False},
+                "result": {"success": [], "fail": []}, "terminate": False},
             3: {"players": QUESTS[roles]["round"][2], "members": [], "deny": 0, "vote": {"approval": [], "reject": []},
-                "result": [], "terminate": False},
+                "result": {"success": [], "fail": []}, "terminate": False},
             4: {"players": QUESTS[roles]["round"][3], "members": [], "deny": 0, "vote": {"approval": [], "reject": []},
-                "result": [], "terminate": False},
+                "result": {"success": [], "fail": []}, "terminate": False},
             5: {"players": QUESTS[roles]["round"][4], "members": [], "deny": 0, "vote": {"approval": [], "reject": []},
-                "result": [], "terminate": False},
+                "result": {"success": [], "fail": []}, "terminate": False},
         }
 
         # 멤버 수가 7명 이상인 경우, 4라운드 실패 2장 필요
@@ -213,6 +213,23 @@ class Game:
                 break
 
     def clear_game(self):
+        self._viviane = []
         self._leader = None
-        self._rounds = 0
+
+        5 if len(self._members) < 5 else len(self._members)
+        # 멤버 수에 맞게 라운드별 플레이어수 변경
+        member_count = 5 if len(self._members) < 5 else len(self._members)
+        self._rounds = {
+            1: {"players": QUESTS[member_count]["round"][0], "members": [], "deny": 0,
+                "vote": {"approval": [], "reject": []}, "result": {"success": [], "fail": []}, "terminate": False},
+            2: {"players": QUESTS[member_count]["round"][1], "members": [], "deny": 0,
+                "vote": {"approval": [], "reject": []}, "result": {"success": [], "fail": []}, "terminate": False},
+            3: {"players": QUESTS[member_count]["round"][2], "members": [], "deny": 0,
+                "vote": {"approval": [], "reject": []}, "result": {"success": [], "fail": []}, "terminate": False},
+            4: {"players": QUESTS[member_count]["round"][3], "members": [], "deny": 0,
+                "vote": {"approval": [], "reject": []}, "result": {"success": [], "fail": []}, "terminate": False},
+            5: {"players": QUESTS[member_count]["round"][4], "members": [], "deny": 0,
+                "vote": {"approval": [], "reject": []}, "result": {"success": [], "fail": []}, "terminate": False},
+        }
+        self._quest_round = 0
         self._expedition = False

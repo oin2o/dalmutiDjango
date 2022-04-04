@@ -37,9 +37,11 @@ STATUS = {
     "QUEST_SUCCESS": "성공",
     "QUEST_FAIL": "실패",
     "ALREADY_RESULT": "제출완료",
-    "LOYAL_FAIL": "LOYAL_FAIL",
-    "VIVIANE": "VIVIANE",
-    "ORGANIZE_QUEST": "ORGANIZE_QUEST",
+    "LOYAL_FAIL": "선실패불가",
+    "VIVIANE": "호수의여신",
+    "ORGANIZE_QUEST": "원정결과",
+    "VIVIANE_LOYAL": "호수의여신(선)",
+    "VIVIANE_EVIL": "호수의여신(악)",
 }
 
 # 버튼

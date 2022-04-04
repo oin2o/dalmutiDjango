@@ -28,3 +28,11 @@ class Member:
     @viviane.setter
     def viviane(self, viviane):
         self._viviane = viviane
+
+    @property
+    def can_viviane(self):
+        return self._can_viviane
+
+    @can_viviane.setter
+    def can_viviane(self, can_viviane):
+        self._can_viviane = can_viviane

@@ -44,7 +44,7 @@ async def on_ready():
 @bot.command(aliases=["?", "명령", "아발론"])
 async def avalon(msg: discord.Message):
     # 전체 command 리스트를 표시
-    await button_message(msg, http, None, STATUS["COMMANDS"])
+    await button_message(msg, http, None, None, STATUS["COMMANDS"])
 
 
 @bot.command(aliases=["설정", "이모지"])

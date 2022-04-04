@@ -91,7 +91,7 @@ def psercival_morgana(msg, games):
     return STATUS["STATUS"]
 
 
-def modred(msg, games):
+def mordred(msg, games):
     current_game = check_game(msg, games)
     if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
         return current_game
@@ -151,6 +151,8 @@ def commence(msg, games):
     elif len(current_game.members) > 10:
         return STATUS["MAX_MEMBER"]
 
+    # 원정 시작 전 기본 데이터 초기화
+    current_game.clear_game()
     # 원정 시작 상태 값 변경
     current_game.expedition = True
     # 멤버들 원정 순서 랜덤 처리 및 직업 배정
@@ -159,6 +161,8 @@ def commence(msg, games):
     random.shuffle(roles)
     for member in current_game.members:
         member.role = roles.pop()
+        member.viviane = False
+        member.can_viviane = True
     current_game.quest_round = 1
     current_game.leader = current_game.members[0]
     current_game.members[-1].viviane = True
@@ -302,17 +306,40 @@ def assassin(msg, games, datas, user):
             if member.role != ROLES["assassin"]:
                 return STATUS["NO_PERMISSION"]
 
-    # 암살자인 경우, 현재까지 설정된 원정대원이 해당 라운드의 대원수보다 적은 경우에 원정대원에 추가
+    # 암살자인 경우, 암살 대상이 멀린인 경우 암살 성공, 그 외는 암살 실패
     username = datas.get("data", {}).get("custom_id").split('_')[-1]
-    is_assassin = False
     for member in current_game.members:
         if username == member.user.name:
             if member.role == ROLES["merlin"]:
-                is_assassin = True
                 return STATUS["ASSASSIN"]
-    if not is_assassin:
-        return STATUS["ASSASSIN_FAIL"]
+    return STATUS["ASSASSIN_FAIL"]
 
+
+def viviane(msg, games, datas, user):
+    current_game = check_game(msg, games)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+        return current_game
+
+    # 호수의 여신이 없는 경우, 권한없음 메시지 출력
+    for member in current_game.members:
+        if user == member.user:
+            if not member.viviane:
+                return STATUS["NO_PERMISSION"]
+
+    # 호수의 여신으로 선택한 멤버의 선/악에 따라 응답
+    username = datas.get("data", {}).get("custom_id").split('_')[-1]
+    for member in current_game.members:
+        if user == member.user:
+            # 현재 호수의 여신 원정대원의 상태 변경
+            member.viviane = False
+        if username == member.user.name:
+            # 정체 확인 원정대원의 상태 변경
+            member.viviane = True
+            member.can_viviane = False
+            if member.role in (current_game.roles["loyal"]):
+                return STATUS["VIVIANE_LOYAL"]
+            else:
+                return STATUS["VIVIANE_EVIL"]
     return STATUS["NO_MEMBER"]
 
 
@@ -327,11 +354,7 @@ def check_game(msg, games):
     return current_game
 
 
-def check_vote(msg, games):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
-        return current_game
-
+def check_vote(current_game):
     # 멤버 전체가 투표한 경우,
     total_member = len(current_game.members)
     approval_member = len(current_game.rounds[current_game.quest_round]["vote"]["approval"])
@@ -345,7 +368,9 @@ def check_vote(msg, games):
             # deny 건수 + 1
             current_game.rounds[current_game.quest_round]["deny"] = \
                 current_game.rounds[current_game.quest_round]["deny"] + 1
-            chk_endgame = check_endgame(msg, games)
+            # 라운드의 원정멤버 구성 초기화
+            current_game.rounds[current_game.quest_round]["members"] = []
+            chk_endgame = check_endgame(current_game)
             if chk_endgame == STATUS["TERMINATE_LOYAL"]:
                 return STATUS["TERMINATE_LOYAL"]
             elif chk_endgame == STATUS["TERMINATE_EVIL"]:
@@ -354,27 +379,17 @@ def check_vote(msg, games):
                 return STATUS["ORGANIZE_ROUND"]
 
 
-def next_vote(msg, games):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
-        return current_game
-
+def next_vote(current_game):
     total_member = len(current_game.members)
 
-    # 라운드의 원정멤버 구성 초기화
-    current_game.rounds[current_game.quest_round]["members"] = []
     # 라운드의 투표 결과 초기화
-    current_game.rounds[current_game.quest_round]["vote"] = []
+    current_game.rounds[current_game.quest_round]["vote"] = {"approval": [], "reject": []}
     # 원정대장 변경
     current_game.leader = \
         current_game.members[(current_game.members.index(current_game.leader) + 1) % total_member]
 
 
-def check_quest(msg, games):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
-        return current_game
-
+def check_quest(current_game):
     # 라운드의 원정 멤버 전체가 투표한 경우,
     total_member = len(current_game.rounds[current_game.quest_round]["members"])
     success_member = len(current_game.rounds[current_game.quest_round]["result"]["success"])
@@ -382,9 +397,11 @@ def check_quest(msg, games):
     if total_member == success_member + fail_member:
         # 원정대장 변경
         current_game.leader = \
-            current_game.members[(current_game.members.index(current_game.leader) + 1) % total_member]
+            current_game.members[(current_game.members.index(current_game.leader) + 1) % len(current_game.members)]
+        # 해당 라운드 종료 처리
+        current_game.rounds[current_game.quest_round]["terminate"] = True
         # 투표결과 게임이 종료 여부에 대한 점검
-        chk_endgame = check_endgame(msg, games)
+        chk_endgame = check_endgame(current_game)
         if chk_endgame == STATUS["TERMINATE_LOYAL"]:
             return STATUS["TERMINATE_LOYAL"]
         elif chk_endgame == STATUS["TERMINATE_EVIL"]:
@@ -392,17 +409,13 @@ def check_quest(msg, games):
         else:
             # 게임이 종료되지 않으면 다음 라운드로 진행
             current_game.quest_round += 1
-            # 호수의 여신(비비안)이 있고(모드레드/오베론 있는 경우), 2라운드 이상인 경우, 호수의 여신 처리
-            if current_game.quest_round > 2 and (current_game.mordred or current_game.mordred):
+            # 호수의 여신(비비안)이 있고(모드레드/오베론 있는 경우), 2라운드 이상인 경우, 호수의 여신 처리(5라운드 제외)
+            if 2 < current_game.quest_round <= 5 and (current_game.mordred or current_game.oberon):
                 return STATUS["VIVIANE"]
             return STATUS["ORGANIZE_QUEST"]
 
 
-def check_endgame(msg, games):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
-        return current_game
-
+def check_endgame(current_game):
     # 게임 원정 부결건수가 5회 이상인 라운드 점검
     if current_game.rounds[current_game.quest_round]["deny"] >= 5:
         return STATUS["TERMINATE_EVIL"]
