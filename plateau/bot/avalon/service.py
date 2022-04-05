@@ -281,16 +281,27 @@ def quest(msg, games, user, result):
         if user == member.user:
             if not result and member.role in current_game.roles["loyal"]:
                 return STATUS["LOYAL_FAIL"]
-            if member in current_game.rounds[current_game.quest_round]["result"]["success"]:
-                return STATUS["ALREADY_RESULT"]
-            elif member in current_game.rounds[current_game.quest_round]["result"]["fail"]:
-                return STATUS["ALREADY_RESULT"]
-            if result:
-                current_game.rounds[current_game.quest_round]["result"]["success"].append(member)
-                return STATUS["QUEST_SUCCESS"]
+            # 이미 제출했으나, 상호작용 실패로 최종 결과가 되지 않은 경우 처리를 위해
+            total_member = current_game.rounds[current_game.quest_round]["members"]
+            success_member = current_game.rounds[current_game.quest_round]["result"]["success"]
+            fail_member = current_game.rounds[current_game.quest_round]["result"]["fail"]
+            # 기 제출된 성공/실패 건수가 해당 라운드의 원정대원 수와 같으면 결과 처리
+            if len(total_member) == len(success_member) + len(fail_member):
+                if result:
+                    return STATUS["QUEST_SUCCESS"]
+                else:
+                    return STATUS["QUEST_FAIL"]
             else:
-                current_game.rounds[current_game.quest_round]["result"]["fail"].append(member)
-                return STATUS["QUEST_FAIL"]
+                if member in current_game.rounds[current_game.quest_round]["result"]["success"]:
+                    return STATUS["ALREADY_RESULT"]
+                elif member in current_game.rounds[current_game.quest_round]["result"]["fail"]:
+                    return STATUS["ALREADY_RESULT"]
+                if result:
+                    current_game.rounds[current_game.quest_round]["result"]["success"].append(member)
+                    return STATUS["QUEST_SUCCESS"]
+                else:
+                    current_game.rounds[current_game.quest_round]["result"]["fail"].append(member)
+                    return STATUS["QUEST_FAIL"]
 
     return STATUS["NO_MEMBER"]
 
