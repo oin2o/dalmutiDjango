@@ -88,7 +88,11 @@ async def button_message(msg, http, datas, user, result):
                                                  BUTTONS[STATUS["RECRUIT"]], BUTTONS[STATUS["DISMISSION"]]]}]
         await interact_message(msg, http, datas, AVALONS, discord.Colour.default(), components, "아발론에 오신걸 환영합니다!")
     elif result == STATUS["EXPLAIN"]:
-        await interact_message(msg, http, datas, '\n'.join([EXPLAIN, "", get_explain(msg)]))
+        # await interact_message(msg, http, datas, '\n'.join([EXPLAIN, "", get_explain(msg)]))
+        # 상호작용 종료를 위한 단순 ACK처리
+        await interact_message(msg, http, datas, None, discord.Colour.default(), None, "", INTERACTION_SCOPE["개인"],
+                               INTERACTION_CALLBACK["ACK"])
+        await dm_message(user, '\n'.join([EXPLAIN, "", get_explain(msg)]), discord.Colour.dark_purple())
     elif result == STATUS["STATUS"]:
         await interact_message(msg, http, datas, get_status(msg, games[msg.channel.id]["game"]),
                                discord.Colour.default(), None, "", INTERACTION_SCOPE["공개"])
