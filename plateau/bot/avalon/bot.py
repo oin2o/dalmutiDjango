@@ -60,6 +60,21 @@ async def emoticon(msg: discord.Message):
 
 
 @bot.event
+async def on_socket_response(payload):
+    if payload.get("t", "") == "INTERACTION_CREATE":
+        datas = payload.get("d", {})
+        if datas["type"] == 3:
+            if datas.get("message").get("type") == 0:
+                msg = await bot.get_channel(int(datas["channel_id"])).fetch_message(int(datas["message"]["id"]))
+            else:
+                msg = await bot.get_channel(int(datas["channel_id"])).fetch_message(
+                    int(datas["message"]["message_reference"]["message_id"]))
+            user = await bot.fetch_user(datas.get("member").get("user")["id"])
+            await button_response(msg, http, datas, user, component_response(datas))
+
+
+'''
+@bot.event
 async def on_socket_raw_receive(msg):
     msg = await decompress_message(msg)
     if msg["t"] == "INTERACTION_CREATE":
@@ -72,10 +87,7 @@ async def on_socket_raw_receive(msg):
                     int(datas["message"]["message_reference"]["message_id"]))
             user = await bot.fetch_user(datas.get("member").get("user")["id"])
             await button_response(msg, http, datas, user, component_response(datas))
-    elif msg["t"] == "MESSAGE_REACTION_ADD":
-        return
-    elif msg["t"] == "MESSAGE_REACTION_REMOVE":
-        return
+'''
 
 
 @bot.event
