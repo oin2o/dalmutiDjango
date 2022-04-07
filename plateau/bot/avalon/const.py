@@ -42,6 +42,7 @@ STATUS = {
     "ORGANIZE_QUEST": "원정결과",
     "VIVIANE_LOYAL": "호수의여신(선)",
     "VIVIANE_EVIL": "호수의여신(악)",
+    "LOCK_GAME": "명령처리",
 }
 
 # 버튼

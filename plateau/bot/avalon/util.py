@@ -5,13 +5,13 @@ import datetime
 import discord
 from discord.http import Route
 
-from service import status, recruit, dismission, apply, option, psercival_morgana, mordred, oberon, anonymous
+from service import status, recruit, dismission, apply, option, percival_morgana, mordred, oberon, anonymous
 from service import commence, initial, organize, proposal
 from service import vote, check_vote, assassin, quest, check_quest, next_vote, viviane
 from const import STATUS, BUTTONS, INTERACTION_SCOPE, INTERACTION_CALLBACK, ROLES_REVERSE, CARD_PREFIX
-from const import ROLES, COMMANDS, AVALONS, EXPLAIN, RECRUITS, OPTIONS
+from const import ROLES, COMMANDS, AVALONS, EXPLAIN, RECRUITS, OPTIONS, EMOJI_PREFIX, CHIPS
 from data import games
-from strutil import get_explain, get_status, get_role
+from strutil import get_explain, get_status, get_role, get_emoji
 
 # 파일 참조를 위한 기본 경로
 file_path = "./bot/avalon/images/"
@@ -90,7 +90,7 @@ async def button_message(msg, http, datas, user, result):
         await interact_message(msg, http, datas, AVALONS, discord.Colour.default(), components, "아발론에 오신걸 환영합니다!")
     elif result == STATUS["EXPLAIN"]:
         # await interact_message(msg, http, datas, '\n'.join([EXPLAIN, "", get_explain(msg)]))
-        # 상호작용 종료를 위한 단순 ACK처리
+        # 상호 작용 종료를 위한 단순 ACK처리
         await interact_message(msg, http, datas, None, discord.Colour.default(), None, "", INTERACTION_SCOPE["개인"],
                                INTERACTION_CALLBACK["ACK"])
         await dm_message(user, '\n'.join([EXPLAIN, "", get_explain(msg)]), discord.Colour.dark_purple())
@@ -102,14 +102,20 @@ async def button_message(msg, http, datas, user, result):
                                                  BUTTONS[STATUS["COMMENCE"]], BUTTONS[STATUS["INITIAL"]]]}]
         await interact_message(msg, http, datas, RECRUITS, discord.Colour.default(), components, "원정을 준비하세요!",
                                INTERACTION_SCOPE["개인"], INTERACTION_CALLBACK["ACK"])
-        # 모집시에 아발론 명령어 메시지 삭제(설명 상태 모집 해산은 개인 상호작용 메시지라 삭제 안함)
-        #await msg.delete()
+        # 참가 인원에 대한 정보 출력
+        await direct_message(msg, http,
+                             ''.join([user.name, "님 참가(현재 ", str(len(games[msg.channel.id]["game"].members)), "명)"]))
+        # 모집 시에 아발론 명령어 메시지 삭제(설명 상태 모집 해산은 개인 상호 작용 메시지로 삭제 안함)
+        # await msg.delete()
     elif result == STATUS["DISMISSION"]:
         await interact_message(msg, http, datas, "모집된 원정이 해산되었습니다.", discord.Colour.dark_red(), None, "",
                                INTERACTION_SCOPE["공개"])
     elif result == STATUS["APPLY"]:
         await interact_message(msg, http, datas, '\n'.join(["원정대에 참가하였습니다.", get_status(
             msg, games[msg.channel.id]["game"])]))
+        # 참가 인원에 대한 정보 출력
+        await direct_message(msg, http,
+                             ''.join([user.name, "님 참가(현재 ", str(len(games[msg.channel.id]["game"].members)), "명)"]))
     elif result == STATUS["NO_GAME"] or result == STATUS["NO_RECRUIT"] or result == STATUS["ALREADY_START"] \
             or result == STATUS["APPLY_CANCEL"] or result == STATUS["MAX_MEMBER"] or result == STATUS["MIN_MEMBER"]:
         await interact_message(msg, http, datas,
@@ -119,6 +125,16 @@ async def button_message(msg, http, datas, user, result):
                                else "원정대 참가를 취소하였습니다." if result == STATUS["APPLY_CANCEL"]
                                else "제한 인원(10명)을 초과하였습니다." if result == STATUS["MAX_MEMBER"]
                                else "최소 인원(5명)이 모자랍니다.", discord.Colour.dark_red())
+        if result == STATUS["APPLY_CANCEL"]:
+            # 참가 인원에 대한 정보 출력
+            await direct_message(msg, http,
+                                 ''.join([user.name, "님 참가 취소(현재 ",
+                                          str(len(games[msg.channel.id]["game"].members)), "명)"]))
+    elif result == STATUS["LOCK_GAME"]:
+        # 행동 잠금에 대한 정보 출력
+        await interact_message(msg, http, datas,
+                               ''.join([games[msg.channel.id]["game"].lock_member.user.name, "님 명령을 처리 중 입니다."]),
+                               discord.Colour.dark_red())
     elif result == STATUS["OPTION"]:
         components = [{"type": 1, "components": [BUTTONS[STATUS["PERCIVAL_MORGANA"]], BUTTONS[STATUS["MORDRED"]],
                                                  BUTTONS[STATUS["OBERON"]], BUTTONS[STATUS["ANONYMOUS"]]]}]
@@ -134,6 +150,8 @@ async def button_message(msg, http, datas, user, result):
         await game_message(msg, http, games[msg.channel.id]["game"], STATUS["ORGANIZE"])
         # 시작시에 참가 옵션 시작 초기화 명령어 메시지 삭제
         await msg.delete()
+        # 시작 처리 완료 되면 Lock 해제
+        games[msg.channel.id]["game"].lock_member = None
     elif result == STATUS["INITIAL"]:
         await interact_message(msg, http, datas, "새로운 원정을 준비하세요.", discord.Colour.dark_red(), None, "원정이 초기화되었습니다!")
     elif result == STATUS["NO_PERMISSION"] or result == STATUS["NO_MEMBER"] \
@@ -144,6 +162,8 @@ async def button_message(msg, http, datas, user, result):
                                else "선택한 멤버가 원정에 포함된 인원이 아닙니다." if result == STATUS["NO_MEMBER"]
                                else "원정대원을 모두 선택하셨습니다." if result == STATUS["MAX_ORGANIZE"]
                                else "원정대원이 모자랍니다.", discord.Colour.dark_red())
+        # 처리 완료 되면 Lock 해제
+        games[msg.channel.id]["game"].lock_member = None
     elif result == STATUS["ORGANIZE"]:
         desc = [''.join(["‣ 원정구성(총 ", str(games[msg.channel.id]["game"].rounds[
                                               games[msg.channel.id]["game"].quest_round]["players"]), "명)"])]
@@ -165,34 +185,9 @@ async def button_message(msg, http, datas, user, result):
 
         # 원정대 구성 메시지 삭제하기
         await msg.delete()
-        '''
-        reply_msg = await reply_message(msg, '\n'.join(desc), discord.Colour.default(), None,
-                                        ''.join([current_game.leader.user.name, "님이 ",
-                                                 str(current_game.quest_round), "라운드 ",
-                                                 str(current_game.rounds[current_game.quest_round]["deny"] + 1),
-                                                 "번째 원정대를 제안하였습니다."]))
-        
-        # 찬성/반대 이모지로 리액션 처리를 위한 객체 생성
-        approve_emoji = discord.utils.get(msg.guild.emojis, name="avalon_chip_approve")
-        reject_emoji = discord.utils.get(msg.guild.emojis, name="avalon_chip_reject")
-        await reply_msg.add_reaction(approve_emoji)
-        await reply_msg.add_reaction(reject_emoji)
-
-        # 원정대 구성 메시지 삭제하기
-        await msg.delete()
-        # 리액션에 대해 일정시간(60초) 대기하며 처리
-        try:
-            reaction, reaction_user = await avalon_bot.wait_for('reaction_add', timeout=60)
-            if reaction.emoji == approve_emoji:
-                # 찬성버튼을 클릭한 경우, 현재 게임 라운드의 투표내용에 등록
-                await direct_message(msg, http, "원정 구성을 찬성하였습니다.", discord.Colour.dark_blue())
-            elif reaction.emoji == reject_emoji:
-                await direct_message(msg, http, "원정 구성을 반대하였습니다.", discord.Colour.dark_red())
-        except asyncio.TimeoutError:
-            await direct_message(msg, http, "정해진 시간내 투표하지 않아 찬성처리 하였습니다.", discord.Colour.dark_red())
-        '''
     elif result == STATUS["APPROVE"] or result == STATUS["REJECT"]:
-        current_round = games[msg.channel.id]["game"].rounds[games[msg.channel.id]["game"].quest_round]
+        current_game = games[msg.channel.id]["game"]
+        current_round = current_game.rounds[current_game.quest_round]
         total_vote = len(current_round["vote"]["approval"]) + len(current_round["vote"]["reject"])
         await interact_message(msg, http, datas, '\n'.join(["원정대 구성에 찬성하셨습니다." if result == STATUS["APPROVE"]
                                                             else "원정대 구성에 반대하셨습니다.",
@@ -201,8 +196,19 @@ async def button_message(msg, http, datas, user, result):
                                                                      "명 중 ", str(total_vote), "명이 투표했습니다."]),
                                                             "마지막 투표 결과만 반영됩니다."]),
                                discord.Colour.dark_blue() if result == STATUS["APPROVE"] else discord.Colour.dark_red())
+        # 투표 인원에 대한 정보 출력
+        total_member = len(current_game.members)
+        approval_member = len(current_game.rounds[current_game.quest_round]["vote"]["approval"])
+        reject_member = len(current_game.rounds[current_game.quest_round]["vote"]["reject"])
+        await direct_message(msg, http,
+                             ''.join([user.name, "님 투표(총 ",
+                                      str(total_member), "명 중 ",
+                                      str(approval_member + reject_member), "명 완료)"]))
         # 투표 후처리
         await button_message(msg, http, datas, user, check_vote(games[msg.channel.id]["game"]))
+
+        # 투표 처리 완료 되면 Lock 해제
+        games[msg.channel.id]["game"].lock_member = None
     elif result == STATUS["EXPEDITION_ROUND"]:
         # 라운드의 원정대원들에게 성공/실패 투표 REPLY 전송
         current_game = games[msg.channel.id]["game"]
@@ -216,16 +222,27 @@ async def button_message(msg, http, datas, user, result):
                     approve.append(member.user.name)
                 if member in current_game.rounds[current_game.quest_round]["vote"]["reject"]:
                     reject.append(member.user.name)
-            desc.append(''.join(["••• 찬성(", str(len(current_game.rounds[current_game.quest_round]["vote"]["approval"])),
-                                 "명) : ", ", ".join(approve)]))
-            desc.append(''.join(["••• 반대(", str(len(current_game.rounds[current_game.quest_round]["vote"]["reject"])),
-                                 "명) : ", ", ".join(reject)]))
+            if len(approve) > 0:
+                desc.append(''.join([
+                    ''.join([get_emoji(msg, CHIPS[''.join([EMOJI_PREFIX, "approve"])], "chips"), "찬성("]),
+                    str(len(current_game.rounds[current_game.quest_round]["vote"]["approval"])), "명) : ",
+                    ", ".join(approve)]))
+            if len(reject) > 0:
+                desc.append(''.join([
+                    ''.join([get_emoji(msg, CHIPS[''.join([EMOJI_PREFIX, "reject"])], "chips"), "반대("]),
+                    str(len(current_game.rounds[current_game.quest_round]["vote"]["reject"])), "명) : ",
+                    ", ".join(reject)]))
         else:
-            desc.append(''.join(["••• 찬성(", str(len(current_game.rounds[current_game.quest_round]["vote"]["approval"])),
-                                 "명)"]))
-            desc.append(''.join(["••• 반대(", str(len(current_game.rounds[current_game.quest_round]["vote"]["reject"])),
-                                 "명)"]))
+            if len(current_game.rounds[current_game.quest_round]["vote"]["approval"]) > 0:
+                desc.append(''.join([
+                    ''.join([get_emoji(msg, CHIPS[''.join([EMOJI_PREFIX, "approve"])], "chips"), "찬성("]),
+                    str(len(current_game.rounds[current_game.quest_round]["vote"]["approval"])), "명)"]))
+            if len(current_game.rounds[current_game.quest_round]["vote"]["reject"]) > 0:
+                desc.append(''.join([
+                    ''.join([get_emoji(msg, CHIPS[''.join([EMOJI_PREFIX, "reject"])], "chips"), "반대("]),
+                    str(len(current_game.rounds[current_game.quest_round]["vote"]["reject"])), "명)"]))
         # 라운드의 원정대원에게 투표 문자 보내기
+        desc.append("")
         desc.append("‣ 원정구성")
         for member in current_game.rounds[current_game.quest_round]["members"]:
             desc.append(''.join(["••• ", member.user.name]))
@@ -236,23 +253,33 @@ async def button_message(msg, http, datas, user, result):
                                       "번째 원정대의 결과를 선택해 주세요."]))
         # 찬성 반대 투표메시지 삭제하기
         await msg.delete()
+        # 처리 완료 되면 Lock 해제
+        games[msg.channel.id]["game"].lock_member = None
     elif result == STATUS["LOYAL_FAIL"] or result == STATUS["ALREADY_RESULT"]:
         await interact_message(msg, http, datas,
                                "선의 세력은 성공만 투표 가능합니다." if result == STATUS["LOYAL_FAIL"]
                                else "이미 원정 결과를 제출했습니다.", discord.Colour.dark_red())
+        # 처리 완료 되면 Lock 해제
+        games[msg.channel.id]["game"].lock_member = None
     elif result == STATUS["QUEST_SUCCESS"] or result == STATUS["QUEST_FAIL"]:
+        current_game = games[msg.channel.id]["game"]
         await interact_message(msg, http, datas,
                                "원정 성공에 한표 제출하였습니다." if result == STATUS["QUEST_SUCCESS"]
                                else "원정 실패에 한 표 제출하였습니다.",
                                discord.Colour.dark_blue() if result == STATUS["QUEST_SUCCESS"]
                                else discord.Colour.dark_red())
-        # 투표 후처리
+        # 원정 인원에 대한 정보 출력
+        total_member = len(current_game.rounds[current_game.quest_round]["members"])
+        success_member = len(current_game.rounds[current_game.quest_round]["result"]["success"])
+        fail_member = len(current_game.rounds[current_game.quest_round]["result"]["fail"])
+        await direct_message(msg, http,
+                             ''.join([user.name, "님 제출(총 ",
+                                      str(total_member), "명 중 ",
+                                      str(success_member + fail_member), "명 완료)"]))
+        # 원정 후처리
         await button_message(msg, http, datas, user, check_quest(games[msg.channel.id]["game"]))
-    elif result == STATUS["VIVIANE"]:
-        # 호수의 여신(비비안)을 사용 전달
-        await game_message(msg, http, games[msg.channel.id]["game"], STATUS["VIVIANE"])
-        # 라운드 성공/실패 선택 후, 호수의 여신(비비안) 단계 진행시 이전 라운드 결과 메시지 삭제
-        await msg.delete()
+        # 처리 완료 되면 Lock 해제
+        games[msg.channel.id]["game"].lock_member = None
     elif result == STATUS["ORGANIZE_ROUND"]:
         # 부결결과 전송 및 다음 리더로 변경
         # 라운드의 원정대원들에게 성공/실패 투표 REPLY 전송
@@ -267,15 +294,26 @@ async def button_message(msg, http, datas, user, result):
                     approve.append(member.user.name)
                 if member in current_game.rounds[current_game.quest_round]["vote"]["reject"]:
                     reject.append(member.user.name)
-            desc.append(''.join(["••• 찬성(", str(len(current_game.rounds[current_game.quest_round]["vote"]["approval"])),
-                                 "명) : ", ", ".join(approve)]))
-            desc.append(''.join(["••• 반대(", str(len(current_game.rounds[current_game.quest_round]["vote"]["reject"])),
-                                 "명) : ", ", ".join(reject)]))
+            if len(approve) > 0:
+                desc.append(''.join([
+                    ''.join([get_emoji(msg, CHIPS[''.join([EMOJI_PREFIX, "approve"])], "chips"), "찬성("]),
+                    str(len(current_game.rounds[current_game.quest_round]["vote"]["approval"])), "명) : ",
+                    ", ".join(approve)]))
+            if len(reject) > 0:
+                desc.append(''.join([
+                    ''.join([get_emoji(msg, CHIPS[''.join([EMOJI_PREFIX, "reject"])], "chips"), "반대("]),
+                    str(len(current_game.rounds[current_game.quest_round]["vote"]["reject"])), "명) : ",
+                    ", ".join(reject)]))
         else:
-            desc.append(''.join(["••• 찬성(", str(len(current_game.rounds[current_game.quest_round]["vote"]["approval"])),
-                                 "명)"]))
-            desc.append(''.join(["••• 반대(", str(len(current_game.rounds[current_game.quest_round]["vote"]["reject"])),
-                                 "명)"]))
+            if len(current_game.rounds[current_game.quest_round]["vote"]["approval"]) > 0:
+                desc.append(''.join([
+                    ''.join([get_emoji(msg, CHIPS[''.join([EMOJI_PREFIX, "approve"])], "chips"), "찬성("]),
+                    str(len(current_game.rounds[current_game.quest_round]["vote"]["approval"])), "명)"]))
+            if len(current_game.rounds[current_game.quest_round]["vote"]["reject"]) > 0:
+                desc.append(''.join([
+                    ''.join([get_emoji(msg, CHIPS[''.join([EMOJI_PREFIX, "reject"])], "chips"), "반대("]),
+                    str(len(current_game.rounds[current_game.quest_round]["vote"]["reject"])), "명)"]))
+        desc.append("")
         desc.append("다음 원정을 준비하세요.")
         desc.append(''.join([current_game.leader.user.name, "님이 현재 원정대장입니다."]))
         await direct_message(msg, http, '\n'.join(desc), discord.Colour.dark_blue(), None, "원정대 구성이 부결되었습니다!")
@@ -285,27 +323,23 @@ async def button_message(msg, http, datas, user, result):
         await game_message(msg, http, current_game, STATUS["ORGANIZE"])
         # 찬성 반대 투표메시지 삭제하기
         await msg.delete()
-    elif result == STATUS["ORGANIZE_QUEST"]:
+        # 처리 완료 되면 Lock 해제
+        games[msg.channel.id]["game"].lock_member = None
+    elif result == STATUS["ORGANIZE_QUEST"] or result == STATUS["VIVIANE"]:
         current_game = games[msg.channel.id]["game"]
-        # 라운드에 맞는 실패 장수에 따라 실패여부 확인
-        fail_count = len(current_game.rounds[current_game.quest_round - 1]["result"]["fail"])
-        is_fail = False
-        if fail_count > 0:
-            if current_game.fourth_round and current_game.quest_round - 1 == 4:
-                if fail_count >= 2:
-                    is_fail = True
-            else:
-                is_fail = True
-        desc = ''.join(["‣ 원정결과: ",
-                        ''.join(["실패 ", str(fail_count), "장"]) if is_fail else ''.join(["성공(실패 ", str(fail_count), "장"])
-                        if current_game.fourth_round and current_game.quest_round - 1 == 4 else "성공"])
         # 결과 전송 및 다음 리더로 변경
-        await direct_message(msg, http, '\n'.join([desc, get_status(msg, current_game)]), discord.Colour.default(),
+        await direct_message(msg, http, get_status(msg, current_game), discord.Colour.default(),
                              None, "원정대 원정 결과!")
-        # 원정대장에게 구성 메시지 발송
-        await game_message(msg, http, current_game, STATUS["ORGANIZE"])
+        if result == STATUS["VIVIANE"]:
+            # 호수의 여신(비비안)을 사용 전달
+            await game_message(msg, http, games[msg.channel.id]["game"], STATUS["VIVIANE"])
+        else:
+            # 원정대장에게 구성 메시지 발송
+            await game_message(msg, http, current_game, STATUS["ORGANIZE"])
         # 라운드 성공/실패 선택 후, 다음 라운드 진행 시 이전 라운드 결과 메시지 삭제
         await msg.delete()
+        # 처리 완료 되면 Lock 해제
+        games[msg.channel.id]["game"].lock_member = None
     elif result == STATUS["TERMINATE_LOYAL"] or result == STATUS["TERMINATE_EVIL"]:
         # 선의 승리인 경우, 결과 공지 및 암살자에게 선택권 제공
         # 악의 승리인 경우, 결과 공지 및 종료
@@ -318,6 +352,8 @@ async def button_message(msg, http, datas, user, result):
             await game_message(msg, http, games[msg.channel.id]["game"], STATUS["ASSASSIN"])
         # 찬성 반대 투표메시지 삭제하기
         await msg.delete()
+        # 처리 완료 되면 Lock 해제
+        games[msg.channel.id]["game"].lock_member = None
         # 실패 종료인 경우, 게임 초기화
         if result == STATUS["TERMINATE_EVIL"]:
             games[msg.channel.id]["game"].clear_game()
@@ -344,14 +380,21 @@ async def button_message(msg, http, datas, user, result):
                                         "님은 아서왕의 충성스러운 수하입니다." if result_viviane else "님은 악의 하수인입니다."]),
                          discord.Colour.dark_blue() if result_viviane else discord.Colour.dark_red(),
                          ''.join([CARD_PREFIX, "viviane", ".png"]), "호수의 여신(비비안)!")
+        # 호수의 여신 사용 정보 출력
+        await direct_message(msg, http, ''.join([user.name,
+                                                 " > 호수의 여신(비비안) >",
+                                                 datas.get("data", {}).get("custom_id").split('_')[-1]]))
         # 호수의 여신 메시지 삭제하기
         await msg.delete()
+
+        # 원정대장에게 구성 메시지 발송
+        await game_message(msg, http, games[msg.channel.id]["game"], STATUS["ORGANIZE"])
 
 
 async def button_response(msg, http, datas, user, result):
     if result == STATUS["STATUS"]:
         print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=상태")
-        result = status(msg, games)
+        result = status(msg, games, user)
     elif result == STATUS["RECRUIT"]:
         print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=모집")
         result = recruit(msg, games, user)
@@ -363,25 +406,25 @@ async def button_response(msg, http, datas, user, result):
         result = apply(msg, games, user)
     elif result == STATUS["OPTION"]:
         print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=옵션")
-        result = option(msg, games)
+        result = option(msg, games, user)
     elif result == STATUS["PERCIVAL_MORGANA"]:
         print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=퍼/모")
-        result = psercival_morgana(msg, games)
+        result = percival_morgana(msg, games, user)
     elif result == STATUS["MORDRED"]:
         print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=모드레드")
-        result = mordred(msg, games)
+        result = mordred(msg, games, user)
     elif result == STATUS["OBERON"]:
         print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=오베론")
-        result = oberon(msg, games)
+        result = oberon(msg, games, user)
     elif result == STATUS["ANONYMOUS"]:
         print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=익명")
-        result = anonymous(msg, games)
+        result = anonymous(msg, games, user)
     elif result == STATUS["COMMENCE"]:
         print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=시작")
-        result = commence(msg, games)
+        result = commence(msg, games, user)
     elif result == STATUS["INITIAL"]:
         print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=초기화")
-        result = initial(msg, games)
+        result = initial(msg, games, user)
     elif result == STATUS["ORGANIZE"]:
         print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=원정구성")
         result = organize(msg, games, datas, user)
@@ -470,10 +513,8 @@ async def game_message(msg, http, current_game, scope):
     elif scope == STATUS["VIVIANE"]:
         components = [{"type": 1, "components": []}]
         # 호수의 여신 사용을 위해 가능한 원정대원에 대한 컴포넌트 설정
-        viviane_name = ""
+        viviane_name = current_game.viviane[-1].user.name
         for member in current_game.members:
-            if member.viviane:
-                viviane_name = member.user.name
             if member.can_viviane:
                 components[-1]["components"].append({"type": 2, "label": member.user.name, "style": 3,
                                                      "custom_id": '_'.join([STATUS["VIVIANE"], member.user.name])})

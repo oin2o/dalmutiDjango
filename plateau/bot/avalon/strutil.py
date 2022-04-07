@@ -41,9 +41,17 @@ def get_status(msg, current_game):
     desc = [": ".join(["‣ 원정상태", "원정중" if current_game.expedition else "모집중"])]
     for member in current_game.members:
         name.append(member.user.name)
-    desc.append(": ".join(["‣ 원정투표", "익명" if current_game.anonymous else "공개"]))
-    desc.append(''.join(["‣ 원정구성", "(4라운드 실패 2장 필요)" if current_game.fourth_round else ""]))
-    desc.append("  ".join(["••• ", ", ".join(name)]))
+    desc.append("\n‣ 원정설정")
+    desc.append(": ".join(["••• 투표결과", "익명" if current_game.anonymous else "공개"]))
+    if current_game.percival or current_game.mordred or current_game.oberon or current_game.lancelot:
+        desc.append(": ".join(["••• 특수", " ".join(["퍼시발/모르가나" if current_game.percival else "",
+                                                   "모드레드" if current_game.mordred else "",
+                                                   "오베론" if current_game.oberon else "",
+                                                   "랜슬롯" if current_game.lancelot else ""])]))
+    if current_game.mordred or current_game.oberon:
+        desc.append("••• 호수의 여신(비비안) 포함")
+    desc.append(''.join(["\n‣ 원정구성", "(4라운드 실패 2장 필요)" if current_game.fourth_round else ""]))
+    desc.append(''.join(["••• ", ", ".join(name)]))
     loyal_emoji = []
     evil_emoji = []
     for role_kr in current_game.roles["loyal"]:
@@ -71,9 +79,38 @@ def get_status(msg, current_game):
     deny_emoji = []
     if current_game.quest_round > 0:
         for _ in range(current_game.rounds[current_game.quest_round]["deny"]):
-            deny_emoji.append(get_emoji(msg, CHIPS["avalon_chip_deny"], "chips"))
+            deny_emoji.append(get_emoji(msg, CHIPS[''.join([EMOJI_PREFIX, "deny"])], "chips"))
         if len(deny_emoji) > 0:
             desc.append(": ".join(["••• 부결", ' '.join(deny_emoji)]))
+        if current_game.quest_round > 1:
+            if current_game.quest_round > 2 and (current_game.mordred or current_game.oberon):
+                desc.append("\n‣ 호수의 여신")
+                viviane_desc = []
+                for member in current_game.viviane:
+                    viviane_desc.append(member.user.name)
+                desc.append(''.join(["••• ", " > ".join(viviane_desc)]))
+            desc.append("\n‣ 원정결과")
+            for i in range(1, 6):
+                if current_game.rounds[i]["terminate"]:
+                    success_count = len(current_game.rounds[i]["result"]["success"])
+                    fail_count = len(current_game.rounds[i]["result"]["fail"])
+                    round_desc = []
+                    for j in range(success_count + fail_count):
+                        if j < fail_count:
+                            round_desc.append(get_emoji(msg, CHIPS[''.join([EMOJI_PREFIX, "quest_fail"])], "chips"))
+                        else:
+                            round_desc.append(get_emoji(msg, CHIPS[''.join([EMOJI_PREFIX, "quest_success"])], "chips"))
+                    for member in current_game.rounds[i]["members"]:
+                        round_desc.append(''.join([" ", member.user.name]))
+                    desc.append(''.join([''.join(["••• ", str(i), "라운드: "]), ''.join(round_desc)]))
+                else:
+                    break
+    if not current_game.expedition and current_game.quest_round > 0:
+        desc.append("\n‣ 원정대 역할")
+        member_roles = []
+        for member in current_game.members:
+            member_roles.append(": ".join([''.join(["••• ", member.user.name]), get_emoji(msg, member.role)]))
+        desc.append('\n'.join(member_roles))
     return '\n'.join(desc)
 
 

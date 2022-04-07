@@ -31,6 +31,7 @@ class Game:
         self._mordred = False
         self._oberon = False
         self._lancelot = False
+        self._lock_member = None
 
     @property
     def channel(self):
@@ -203,6 +204,14 @@ class Game:
     def lancelot(self, lancelot):
         self._lancelot = lancelot
 
+    @property
+    def lock_member(self):
+        return self._lock_member
+
+    @lock_member.setter
+    def lock_member(self, lock_member):
+        self._lock_member = lock_member
+
     def add_member(self, member):
         self._members.append(member)
 
@@ -215,8 +224,6 @@ class Game:
     def clear_game(self):
         self._viviane = []
         self._leader = None
-
-        5 if len(self._members) < 5 else len(self._members)
         # 멤버 수에 맞게 라운드별 플레이어수 변경
         member_count = 5 if len(self._members) < 5 else len(self._members)
         self._rounds = {
@@ -233,3 +240,4 @@ class Game:
         }
         self._quest_round = 0
         self._expedition = False
+        self._lock_member = None

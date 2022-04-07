@@ -11,9 +11,9 @@ def component_response(datas):
             return STATUS[key]
 
 
-def status(msg, games):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+def status(msg, games, user):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     return STATUS["STATUS"]
@@ -37,16 +37,16 @@ def dismission(msg, games):
     return STATUS["DISMISSION"]
 
 
-def option(msg, games):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+def option(msg, games, user):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
     return STATUS["OPTION"]
 
 
 def apply(msg, games, user):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 원정 시작여부 점검(미시작 중에는 모집)
@@ -75,9 +75,9 @@ def apply(msg, games, user):
         return STATUS["APPLY_CANCEL"]
 
 
-def psercival_morgana(msg, games):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+def percival_morgana(msg, games, user):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 원정 시작여부 점검(미시작 중에는 모집)
@@ -91,9 +91,9 @@ def psercival_morgana(msg, games):
     return STATUS["STATUS"]
 
 
-def mordred(msg, games):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+def mordred(msg, games, user):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 원정 시작여부 점검(미시작 중에는 모집)
@@ -107,9 +107,9 @@ def mordred(msg, games):
     return STATUS["STATUS"]
 
 
-def oberon(msg, games):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+def oberon(msg, games, user):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 원정 시작여부 점검(미시작 중에는 모집)
@@ -123,9 +123,9 @@ def oberon(msg, games):
     return STATUS["STATUS"]
 
 
-def anonymous(msg, games):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+def anonymous(msg, games, user):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 원정 시작여부 점검(미시작 중에는 모집)
@@ -137,9 +137,9 @@ def anonymous(msg, games):
     return STATUS["STATUS"]
 
 
-def commence(msg, games):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+def commence(msg, games, user):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 원정 시작여부 점검(미시작 중에는 모집)
@@ -150,6 +150,11 @@ def commence(msg, games):
         return STATUS["MIN_MEMBER"]
     elif len(current_game.members) > 10:
         return STATUS["MAX_MEMBER"]
+
+    # 시작 전, Lock 처리
+    for member in current_game.members:
+        if user.name == member.user.name:
+            current_game.lock_member = member
 
     # 원정 시작 전 기본 데이터 초기화
     current_game.clear_game()
@@ -168,13 +173,13 @@ def commence(msg, games):
     current_game.members[-1].viviane = True
     current_game.members[-1].can_viviane = False
     # 호수의 여인(비비안) 사용을 위해 게임의 비비안 사용 가능 멤버 추가
-    current_game.viviane = current_game.members[:-1]
+    current_game.viviane.append(current_game.members[-1])
     return STATUS["COMMENCE"]
 
 
-def initial(msg, games):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+def initial(msg, games, user):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 원정의 정보를 초기화(역할, 시작여부, 라운드, 부결회수)
@@ -183,8 +188,8 @@ def initial(msg, games):
 
 
 def organize(msg, games, datas, user):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 원정대장이 아닌 경우, 권한없음 메시지 출력
@@ -211,8 +216,8 @@ def organize(msg, games, datas, user):
 
 
 def proposal(msg, games, user):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 원정대장이 아닌 경우, 권한없음 메시지 출력
@@ -228,8 +233,8 @@ def proposal(msg, games, user):
 
 
 def vote(msg, games, user, result):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 원정멤버가 아닌 경우, 권한없음 메시지 출력
@@ -237,6 +242,8 @@ def vote(msg, games, user, result):
     for member in current_game.members:
         if user == member.user:
             is_member = True
+            # 원정결과 전, Lock 처리
+            current_game.lock_member = member
             break
     if not is_member:
         return STATUS["NO_PERMISSION"]
@@ -263,8 +270,8 @@ def vote(msg, games, user, result):
 
 
 def quest(msg, games, user, result):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 원정멤버가 아닌 경우, 권한없음 메시지 출력
@@ -272,6 +279,8 @@ def quest(msg, games, user, result):
     for member in current_game.rounds[current_game.quest_round]["members"]:
         if user == member.user:
             is_member = True
+            # 원정결과 전, Lock 처리
+            current_game.lock_member = member
             break
     if not is_member:
         return STATUS["NO_PERMISSION"]
@@ -307,8 +316,8 @@ def quest(msg, games, user, result):
 
 
 def assassin(msg, games, datas, user):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 암살자가 아닌 경우, 권한없음 메시지 출력
@@ -319,6 +328,8 @@ def assassin(msg, games, datas, user):
 
     # 암살자인 경우, 암살 대상이 멀린인 경우 암살 성공, 그 외는 암살 실패
     username = datas.get("data", {}).get("custom_id").split('_')[-1]
+    # 원정 시작 상태 값 변경
+    current_game.expedition = False
     for member in current_game.members:
         if username == member.user.name:
             if member.role == ROLES["merlin"]:
@@ -327,8 +338,8 @@ def assassin(msg, games, datas, user):
 
 
 def viviane(msg, games, datas, user):
-    current_game = check_game(msg, games)
-    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"]):
+    current_game = check_game(msg, games, user)
+    if current_game in (STATUS["NO_RECRUIT"], STATUS["NO_GAME"], STATUS["LOCK_GAME"]):
         return current_game
 
     # 호수의 여신이 없는 경우, 권한없음 메시지 출력
@@ -347,6 +358,7 @@ def viviane(msg, games, datas, user):
             # 정체 확인 원정대원의 상태 변경
             member.viviane = True
             member.can_viviane = False
+            current_game.viviane.append(member)
             if member.role in (current_game.roles["loyal"]):
                 return STATUS["VIVIANE_LOYAL"]
             else:
@@ -354,7 +366,7 @@ def viviane(msg, games, datas, user):
     return STATUS["NO_MEMBER"]
 
 
-def check_game(msg, games):
+def check_game(msg, games, user):
     # 채널에 시작된 원정이 있는지 점검
     if msg.channel.id not in games:
         return STATUS["NO_RECRUIT"]
@@ -362,6 +374,10 @@ def check_game(msg, games):
     # 게임의 객체 정상여부 점검
     if not current_game:
         return STATUS["NO_GAME"]
+    # 게임의 Lock 여부 점검
+    if current_game.lock_member:
+        if user.name != current_game.lock_member.user.name:
+            return STATUS["LOCK_GAME"]
     return current_game
 
 
@@ -448,6 +464,8 @@ def check_endgame(current_game):
                 elif len(current_game.rounds[_round + 1]["result"]["success"]) > 0:
                     success_round += 1
         if fail_round >= 3:
+            # 원정 시작 상태 값 변경
+            current_game.expedition = False
             return STATUS["TERMINATE_EVIL"]
         if success_round >= 3:
             return STATUS["TERMINATE_LOYAL"]
