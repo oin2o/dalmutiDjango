@@ -1,5 +1,6 @@
 import zlib
 import json
+import datetime
 
 import discord
 from discord.http import Route
@@ -349,42 +350,61 @@ async def button_message(msg, http, datas, user, result):
 
 async def button_response(msg, http, datas, user, result):
     if result == STATUS["STATUS"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=상태")
         result = status(msg, games)
     elif result == STATUS["RECRUIT"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=모집")
         result = recruit(msg, games, user)
     elif result == STATUS["DISMISSION"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=해산")
         result = dismission(msg, games)
     elif result == STATUS["APPLY"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=참가")
         result = apply(msg, games, user)
     elif result == STATUS["OPTION"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=옵션")
         result = option(msg, games)
     elif result == STATUS["PERCIVAL_MORGANA"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=퍼/모")
         result = psercival_morgana(msg, games)
     elif result == STATUS["MORDRED"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=모드레드")
         result = mordred(msg, games)
     elif result == STATUS["OBERON"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=오베론")
         result = oberon(msg, games)
     elif result == STATUS["ANONYMOUS"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=익명")
         result = anonymous(msg, games)
     elif result == STATUS["COMMENCE"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=시작")
         result = commence(msg, games)
     elif result == STATUS["INITIAL"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=초기화")
         result = initial(msg, games)
     elif result == STATUS["ORGANIZE"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=원정구성")
         result = organize(msg, games, datas, user)
     elif result == STATUS["PROPOSAL"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=원정제안")
         result = proposal(msg, games, user)
     elif result == STATUS["APPROVE"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=찬성")
         result = vote(msg, games, user, True)
     elif result == STATUS["REJECT"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=반대")
         result = vote(msg, games, user, False)
     elif result == STATUS["ASSASSIN"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=암살")
         result = assassin(msg, games, datas, user)
     elif result == STATUS["QUEST_SUCCESS"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=성공")
         result = quest(msg, games, user, True)
     elif result == STATUS["QUEST_FAIL"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=실패")
         result = quest(msg, games, user, False)
     elif result == STATUS["VIVIANE"]:
+        print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=호수의 여신")
         result = viviane(msg, games, datas, user)
 
     await button_message(msg, http, datas, user, result)

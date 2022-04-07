@@ -23,6 +23,7 @@ emoji_path = "./bot/avalon/emojis/"
 @bot.event
 async def on_ready():
     print(f"현재시각={datetime.datetime.now()}, 봇={bot.user.name} 연결 시작")
+    print(f"현재시각={datetime.datetime.now()}, 봇={bot.user.name} 이모지 로딩 시작")
     # 해당 봇이 포함된 전체 서버의 custom emoji id를 저장
     for guild in bot.guilds:
         guild_emojis = {}
@@ -38,6 +39,7 @@ async def on_ready():
 
         emojis[guild.id] = guild_emojis
     print(f"현재시각={datetime.datetime.now()}, 봇={bot.user.name} 이모지 로딩 완료")
+    print(f"현재시각={datetime.datetime.now()}, 봇={bot.user.name} 연결 완료")
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="게임"))   # 온라인
 
 
@@ -50,12 +52,14 @@ async def avalon(msg: discord.Message):
 @bot.command(aliases=["설정", "이모지"])
 async def emoticon(msg: discord.Message):
     emoji_list = os.listdir(emoji_path)
+    print(f"현재시각={datetime.datetime.now()}, 서버={msg.guild.name} 이모지 등록 시작")
     for emoji_file in emoji_list:
         emoji = discord.utils.get(msg.guild.emojis, name=emoji_file.replace(".png", ''))
         if not emoji:
             with open(''.join([emoji_path, emoji_file]), 'rb') as fd:
                 emoji = await msg.guild.create_custom_emoji(name=emoji_file.replace(".png", ''), image=fd.read())
                 emojis[msg.guild.id][emoji_file.replace(".png", '')] = emoji.id
+    print(f"현재시각={datetime.datetime.now()}, 서버={msg.guild.name} 이모지 등록 완료")
     await reply_message(msg, "아발론을 위한 이모지가 서버에 등록 되었습니다.")
 
 
