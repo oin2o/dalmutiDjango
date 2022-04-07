@@ -315,10 +315,13 @@ async def button_message(msg, http, datas, user, result):
                     str(len(current_game.rounds[current_game.quest_round]["vote"]["reject"])), "명)"]))
         desc.append("")
         desc.append("다음 원정을 준비하세요.")
-        desc.append(''.join([current_game.leader.user.name, "님이 현재 원정대장입니다."]))
-        await direct_message(msg, http, '\n'.join(desc), discord.Colour.dark_blue(), None, "원정대 구성이 부결되었습니다!")
         # 원정대 라운드 구성/투표 초기화 및 원정대장 변경
         next_vote(current_game)
+        desc.append(''.join([current_game.leader.user.name, "님이 현재 원정대장입니다."]))
+        await direct_message(msg, http, '\n'.join(desc), discord.Colour.dark_blue(), None, "원정대 구성이 부결되었습니다!")
+        # 결과 전송 및 다음 리더로 변경
+        await direct_message(msg, http, get_status(msg, current_game), discord.Colour.default(),
+                             None, "현재 원정대 상태!")
         # 원정대장에게 구성 메시지 발송
         await game_message(msg, http, current_game, STATUS["ORGANIZE"])
         # 찬성 반대 투표메시지 삭제하기
