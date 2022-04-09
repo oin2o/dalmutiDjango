@@ -7,7 +7,7 @@ from discord.ext import commands
 
 from const import ROLES, CHIPS, STATUS, EMOJI_PREFIX
 from data import emojis
-from util import reply_message, button_message, button_response, decompress_message
+from util import set_bot, send_message, button_message, button_response, message_delete, get_message, decompress_message
 from service import component_response
 
 
@@ -18,6 +18,13 @@ http = bot.http
 
 # 이모지 참조를 위한 기본 경로
 emoji_path = "./bot/avalon/emojis/"
+
+# 메시지 삭제 기본 시간
+delete_time = 3
+# 메시지 대기 기본 시간
+sleep_time = 30
+# 삭제대상 메시지
+delete_messages = []
 
 
 @bot.event
@@ -40,7 +47,18 @@ async def on_ready():
         emojis[guild.id] = guild_emojis
     print(f"현재시각={datetime.datetime.now()}, 봇={bot.user.name} 이모지 로딩 완료")
     print(f"현재시각={datetime.datetime.now()}, 봇={bot.user.name} 연결 완료")
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="게임"))   # 온라인
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="=아발론"))   # 온라인
+    # util에서 사용할 bot 객체 할당
+    set_bot(bot)
+
+
+@bot.event
+async def on_message(message):
+    if message.content.startswith('='):
+        await bot.process_commands(message)
+        await message_delete(message, delete_time)
+        while delete_messages:
+            await message_delete(delete_messages.pop(), sleep_time)
 
 
 @bot.command(aliases=["?", "명령", "아발론"])
@@ -60,7 +78,7 @@ async def emoticon(msg: discord.Message):
                 emoji = await msg.guild.create_custom_emoji(name=emoji_file.replace(".png", ''), image=fd.read())
                 emojis[msg.guild.id][emoji_file.replace(".png", '')] = emoji.id
     print(f"현재시각={datetime.datetime.now()}, 서버={msg.guild.name} 이모지 등록 완료")
-    await reply_message(msg, "아발론을 위한 이모지가 서버에 등록 되었습니다.")
+    delete_messages.append(await send_message(msg, "아발론을 위한 이모지가 서버에 등록 되었습니다."))
 
 
 @bot.event
@@ -69,12 +87,12 @@ async def on_socket_response(payload):
         datas = payload.get("d", {})
         if datas["type"] == 3:
             if datas.get("message").get("type") == 0:
-                msg = await bot.get_channel(int(datas["channel_id"])).fetch_message(int(datas["message"]["id"]))
+                msg = await get_message(int(datas["channel_id"]), int(datas["message"]["id"]))
             else:
-                msg = await bot.get_channel(int(datas["channel_id"])).fetch_message(
-                    int(datas["message"]["message_reference"]["message_id"]))
-            user = await bot.fetch_user(datas.get("member").get("user")["id"])
-            await button_response(msg, http, datas, user, component_response(datas))
+                msg = await get_message(int(datas["channel_id"]),
+                                        int(datas["message"]["message_reference"]["message_id"]))
+            await button_response(msg, http, datas, await bot.fetch_user(datas.get("member").get("user")["id"]),
+                                  component_response(datas))
 
 
 '''
@@ -85,30 +103,35 @@ async def on_socket_raw_receive(msg):
         datas = msg["d"]
         if datas["type"] == 3:
             if datas.get("message").get("type") == 0:
-                msg = await bot.get_channel(int(datas["channel_id"])).fetch_message(int(datas["message"]["id"]))
+                msg = await get_message(int(datas["channel_id"]), int(datas["message"]["id"]))
             else:
-                msg = await bot.get_channel(int(datas["channel_id"])).fetch_message(
-                    int(datas["message"]["message_reference"]["message_id"]))
-            user = await bot.fetch_user(datas.get("member").get("user")["id"])
-            await button_response(msg, http, datas, user, component_response(datas))
+                msg = await get_message(int(datas["channel_id"]),
+                                        int(datas["message"]["message_reference"]["message_id"]))
+            await button_response(msg, http, datas, await bot.fetch_user(datas.get("member").get("user")["id"]),
+                                  component_response(datas))
 '''
 
 
 @bot.event
-async def on_command_error(msg, error):
+async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        await reply_message(msg, f"{msg.message.content}는 존재하지 않는 명령어입니다.", discord.Colour.dark_red())
-        return
+        await message_delete(
+            await send_message(ctx, f"{ctx.message.content}는 존재하지 않는 명령어입니다.", discord.Colour.dark_red()),
+            sleep_time)
     elif isinstance(error, commands.BotMissingPermissions):
-        await reply_message(msg, "메세지 발송 권한이 없습니다. 설정 > 개인정보 보호 및 보안 > 서버 멤버가 보내는 다이렉트 메세지 허용하기가 켜져있는지 확인해주세요.",
-                            discord.Colour.dark_red())
-        return
+        await message_delete(
+            await send_message(ctx, "메세지 발송 권한이 없습니다. 설정 > 개인정보 보호 및 보안 > 서버 멤버가 보내는 다이렉트 메세지 허용하기가 켜져있는지 확인해주세요.",
+                               discord.Colour.dark_red()),
+            sleep_time)
     elif isinstance(error, commands.CommandInvokeError):
-        await reply_message(msg, "이모지 등록 권한이 없습니다. 서버 설정 > 역할 > 권한 > 이모티콘 및 스티커 관리가 켜져있는지 확인해주세요.",
-                            discord.Colour.dark_red())
-        return
-    await reply_message(msg, "오류가 발생했습니다. 아발론 > 해산 버튼을 클릭하여 원정을 종료하세요.", discord.Colour.dark_red())
-    print(f"inigame - {datetime.datetime.now()} : <Error> {msg.channel.id}, error: {error}")
+        await message_delete(
+            await send_message(ctx, "권한 혹은 명령 오류가 발생했습니다. 관리자에게 문의해 주세요.", discord.Colour.dark_red()),
+            sleep_time)
+    else:
+        await message_delete(
+            await send_message(ctx, "오류가 발생했습니다. 아발론 > 해산 버튼을 클릭하여 원정을 종료하세요.", discord.Colour.dark_red()),
+            sleep_time)
+    print(f"inigame - {datetime.datetime.now()} : <Error> {ctx.channel.id}, error: {error}")
 
 
 bot.run(os.getenv("TOKEN"))

@@ -108,8 +108,16 @@ def get_status(msg, current_game):
     if not current_game.expedition and current_game.quest_round > 0:
         desc.append("\n‣ 원정대 역할")
         member_roles = []
-        for member in current_game.members:
-            member_roles.append(": ".join([''.join(["••• ", member.user.name]), get_emoji(msg, member.role)]))
+        for role_kr in current_game.roles["loyal"]:
+            for member in current_game.members:
+                if member.role == role_kr:
+                    member_roles.append(": ".join([''.join(["••• ", get_emoji(msg, member.role)]), member.user.name]))
+                    break
+        for role_kr in current_game.roles["evil"]:
+            for member in current_game.members:
+                if member.role == role_kr:
+                    member_roles.append(": ".join([''.join(["••• ", get_emoji(msg, member.role)]), member.user.name]))
+                    break
         desc.append('\n'.join(member_roles))
     return '\n'.join(desc)
 

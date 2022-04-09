@@ -1,6 +1,7 @@
 import zlib
 import json
 import datetime
+import asyncio
 
 import discord
 from discord.http import Route
@@ -17,6 +18,18 @@ from strutil import get_explain, get_status, get_role, get_emoji
 file_path = "./bot/avalon/images/"
 # 압축 처리를 위한 zlib 객체
 _zlib = zlib.decompressobj()
+# 봇 객체
+bot_util = None
+# 메시지 삭제 기본 시간
+delete_time = 3
+# 메시지 대기 기본 시간
+sleep_time = 30
+# 메시지 표시 기본 시간
+display_time = 300
+
+def set_bot(bot):
+    global bot_util
+    bot_util = bot
 
 
 async def direct_message(msg, http, description, color=discord.Colour.default(), components=None, title=""):
@@ -27,7 +40,7 @@ async def direct_message(msg, http, description, color=discord.Colour.default(),
         "embed": discord.Embed(title=title, description=description, color=color).to_dict(),
         "components": components,
     }
-    await http.request(r, json=payload)
+    return await http.request(r, json=payload)
 
 
 async def interact_message(msg, http, datas, description, color=discord.Colour.default(), components=None, title="",
@@ -65,10 +78,10 @@ async def reply_message(msg, description, color=discord.Colour.default(), file=N
 
 async def dm_message(user, description, color=discord.Colour.default(), file=None, title=''):
     if file:
-        await user.send(embed=discord.Embed(title=title, description=description, color=color).set_thumbnail(
+        return await user.send(embed=discord.Embed(title=title, description=description, color=color).set_thumbnail(
             url=''.join(["attachment://", file])), file=discord.File(''.join([file_path, file])) if file else None)
     else:
-        await user.send(embed=discord.Embed(title=title, description=description, color=color))
+        return await user.send(embed=discord.Embed(title=title, description=description, color=color))
 
 
 async def send_message(msg, description, color=discord.Colour.default(), file=None, title=''):
@@ -95,16 +108,23 @@ async def button_message(msg, http, datas, user, result):
                                INTERACTION_CALLBACK["ACK"])
         await dm_message(user, '\n'.join([EXPLAIN, "", get_explain(msg)]), discord.Colour.dark_purple())
     elif result == STATUS["STATUS"]:
-        await interact_message(msg, http, datas, get_status(msg, games[msg.channel.id]["game"]),
-                               discord.Colour.default(), None, "", INTERACTION_SCOPE["공개"])
+        # 상호 작용 종료를 위한 단순 ACK처리
+        await interact_message(msg, http, datas, None, discord.Colour.default(), None, "", INTERACTION_SCOPE["개인"],
+                               INTERACTION_CALLBACK["ACK"])
+        # 현재 원정대 상태 출력(sleep_time 후 삭제)
+        await wait_delete_message(
+            await direct_message(msg, http, get_status(msg, games[msg.channel.id]["game"])),
+            sleep_time)
     elif result == STATUS["RECRUIT"]:
         components = [{"type": 1, "components": [BUTTONS[STATUS["APPLY"]], BUTTONS[STATUS["OPTION"]],
                                                  BUTTONS[STATUS["COMMENCE"]], BUTTONS[STATUS["INITIAL"]]]}]
         await interact_message(msg, http, datas, RECRUITS, discord.Colour.default(), components, "원정을 준비하세요!",
                                INTERACTION_SCOPE["개인"], INTERACTION_CALLBACK["ACK"])
-        # 참가 인원에 대한 정보 출력
-        await direct_message(msg, http,
-                             ''.join([user.name, "님 참가(현재 ", str(len(games[msg.channel.id]["game"].members)), "명)"]))
+        # 참가 인원에 대한 정보 출력(sleep_time 후 삭제)
+        await wait_delete_message(
+            await direct_message(msg, http,
+                                 ''.join([user.name, "님 참가(현재 ",
+                                          str(len(games[msg.channel.id]["game"].members)), "명)"])), sleep_time)
         # 모집 시에 아발론 명령어 메시지 삭제(설명 상태 모집 해산은 개인 상호 작용 메시지로 삭제 안함)
         # await msg.delete()
     elif result == STATUS["DISMISSION"]:
@@ -113,9 +133,11 @@ async def button_message(msg, http, datas, user, result):
     elif result == STATUS["APPLY"]:
         await interact_message(msg, http, datas, '\n'.join(["원정대에 참가하였습니다.", get_status(
             msg, games[msg.channel.id]["game"])]))
-        # 참가 인원에 대한 정보 출력
-        await direct_message(msg, http,
-                             ''.join([user.name, "님 참가(현재 ", str(len(games[msg.channel.id]["game"].members)), "명)"]))
+        # 참가 인원에 대한 정보 출력(sleep_time 후 삭제)
+        await wait_delete_message(
+            await direct_message(msg, http, ''.join([user.name, "님 참가(현재 ",
+                                                     str(len(games[msg.channel.id]["game"].members)), "명)"])),
+            sleep_time)
     elif result == STATUS["NO_GAME"] or result == STATUS["NO_RECRUIT"] or result == STATUS["ALREADY_START"] \
             or result == STATUS["APPLY_CANCEL"] or result == STATUS["MAX_MEMBER"] or result == STATUS["MIN_MEMBER"]:
         await interact_message(msg, http, datas,
@@ -126,10 +148,11 @@ async def button_message(msg, http, datas, user, result):
                                else "제한 인원(10명)을 초과하였습니다." if result == STATUS["MAX_MEMBER"]
                                else "최소 인원(5명)이 모자랍니다.", discord.Colour.dark_red())
         if result == STATUS["APPLY_CANCEL"]:
-            # 참가 인원에 대한 정보 출력
-            await direct_message(msg, http,
-                                 ''.join([user.name, "님 참가 취소(현재 ",
-                                          str(len(games[msg.channel.id]["game"].members)), "명)"]))
+            # 참가 인원에 대한 정보 출력(sleep_time 후 삭제)
+            await wait_delete_message(
+                await direct_message(msg, http, ''.join([user.name, "님 참가 취소(현재 ",
+                                                         str(len(games[msg.channel.id]["game"].members)), "명)"])),
+                sleep_time)
     elif result == STATUS["LOCK_GAME"]:
         # 행동 잠금에 대한 정보 출력
         await interact_message(msg, http, datas,
@@ -140,18 +163,25 @@ async def button_message(msg, http, datas, user, result):
                                                  BUTTONS[STATUS["OBERON"]], BUTTONS[STATUS["ANONYMOUS"]]]}]
         await interact_message(msg, http, datas, OPTIONS, discord.Colour.default(), components, "")
     elif result == STATUS["COMMENCE"]:
-        await interact_message(msg, http, datas,
-                               '\n'.join(["역할을 확인하고, 원정을 준비하세요.",
-                                          ''.join([games[msg.channel.id]["game"].leader.user.name, "님이 현재 원정대장입니다."])]),
-                               discord.Colour.dark_blue(), None, "원정이 시작되었습니다!", INTERACTION_SCOPE["공개"])
+        # 상호 작용 종료를 위한 단순 ACK처리
+        await interact_message(msg, http, datas, None, discord.Colour.default(), None, "", INTERACTION_SCOPE["개인"],
+                               INTERACTION_CALLBACK["ACK"])
+        # 시작메시지 출력
+        result_message = await direct_message(msg, http,
+                                              '\n'.join(["역할을 확인하고, 원정을 준비하세요.",
+                                                         ''.join([games[msg.channel.id]["game"].leader.user.name,
+                                                                  "님이 현재 원정대장입니다."])]),
+                                              discord.Colour.dark_blue(), None, "원정이 시작되었습니다!")
         # 개인메시지로 역할 및 직업 정보 보내기
         await game_message(msg, http, games[msg.channel.id]["game"], result)
         # 1라운드 원정대장에게 구성 메시지 발송
         await game_message(msg, http, games[msg.channel.id]["game"], STATUS["ORGANIZE"])
         # 시작시에 참가 옵션 시작 초기화 명령어 메시지 삭제
-        await msg.delete()
+        await message_delete(msg)
         # 시작 처리 완료 되면 Lock 해제
         games[msg.channel.id]["game"].lock_member = None
+        # 시작메시지(sleep_time 후 삭제)
+        await wait_delete_message(result_message, sleep_time)
     elif result == STATUS["INITIAL"]:
         await interact_message(msg, http, datas, "새로운 원정을 준비하세요.", discord.Colour.dark_red(), None, "원정이 초기화되었습니다!")
     elif result == STATUS["NO_PERMISSION"] or result == STATUS["NO_MEMBER"] \
@@ -184,7 +214,7 @@ async def button_message(msg, http, datas, user, result):
                                       "번째 원정대를 제안하였습니다."]))
 
         # 원정대 구성 메시지 삭제하기
-        await msg.delete()
+        await message_delete(msg)
     elif result == STATUS["APPROVE"] or result == STATUS["REJECT"]:
         current_game = games[msg.channel.id]["game"]
         current_round = current_game.rounds[current_game.quest_round]
@@ -200,15 +230,16 @@ async def button_message(msg, http, datas, user, result):
         total_member = len(current_game.members)
         approval_member = len(current_game.rounds[current_game.quest_round]["vote"]["approval"])
         reject_member = len(current_game.rounds[current_game.quest_round]["vote"]["reject"])
-        await direct_message(msg, http,
-                             ''.join([user.name, "님 투표(총 ",
-                                      str(total_member), "명 중 ",
-                                      str(approval_member + reject_member), "명 완료)"]))
+        # 투표 현황에 대한 정보 출력
+        result_message = await direct_message(msg, http,
+                                              ''.join([user.name, "님 투표(총 ", str(total_member), "명 중 ",
+                                                       str(approval_member + reject_member), "명 완료)"]))
         # 투표 후처리
         await button_message(msg, http, datas, user, check_vote(games[msg.channel.id]["game"]))
-
         # 투표 처리 완료 되면 Lock 해제
         games[msg.channel.id]["game"].lock_member = None
+        # 투표 현황에 대한 정보(sleep_time 후 삭제)
+        await wait_delete_message(result_message, sleep_time)
     elif result == STATUS["EXPEDITION_ROUND"]:
         # 라운드의 원정대원들에게 성공/실패 투표 REPLY 전송
         current_game = games[msg.channel.id]["game"]
@@ -252,7 +283,7 @@ async def button_message(msg, http, datas, user, result):
                                       str(current_game.rounds[current_game.quest_round]["deny"] + 1),
                                       "번째 원정대의 결과를 선택해 주세요."]))
         # 찬성 반대 투표메시지 삭제하기
-        await msg.delete()
+        await message_delete(msg)
         # 처리 완료 되면 Lock 해제
         games[msg.channel.id]["game"].lock_member = None
     elif result == STATUS["LOYAL_FAIL"] or result == STATUS["ALREADY_RESULT"]:
@@ -272,14 +303,16 @@ async def button_message(msg, http, datas, user, result):
         total_member = len(current_game.rounds[current_game.quest_round]["members"])
         success_member = len(current_game.rounds[current_game.quest_round]["result"]["success"])
         fail_member = len(current_game.rounds[current_game.quest_round]["result"]["fail"])
-        await direct_message(msg, http,
-                             ''.join([user.name, "님 제출(총 ",
-                                      str(total_member), "명 중 ",
-                                      str(success_member + fail_member), "명 완료)"]))
+        # 원정 현황에 대한 정보 출력
+        result_message = await direct_message(msg, http,
+                                              ''.join([user.name, "님 제출(총 ", str(total_member), "명 중 ",
+                                                       str(success_member + fail_member), "명 완료)"]))
         # 원정 후처리
         await button_message(msg, http, datas, user, check_quest(games[msg.channel.id]["game"]))
         # 처리 완료 되면 Lock 해제
         games[msg.channel.id]["game"].lock_member = None
+        # 원정 현황에 대한 정보(sleep_time 후 삭제)
+        await wait_delete_message(result_message, sleep_time)
     elif result == STATUS["ORGANIZE_ROUND"]:
         # 부결결과 전송 및 다음 리더로 변경
         # 라운드의 원정대원들에게 성공/실패 투표 REPLY 전송
@@ -318,21 +351,27 @@ async def button_message(msg, http, datas, user, result):
         # 원정대 라운드 구성/투표 초기화 및 원정대장 변경
         next_vote(current_game)
         desc.append(''.join([current_game.leader.user.name, "님이 현재 원정대장입니다."]))
-        await direct_message(msg, http, '\n'.join(desc), discord.Colour.dark_blue(), None, "원정대 구성이 부결되었습니다!")
+        # 원정 결과에 대한 정보 출력
+        result_message = await direct_message(msg, http, '\n'.join(desc),
+                                              discord.Colour.dark_blue(), None, "원정대 구성이 부결되었습니다!")
         # 결과 전송 및 다음 리더로 변경
-        await direct_message(msg, http, get_status(msg, current_game), discord.Colour.default(),
-                             None, "현재 원정대 상태!")
+        result_message2 = await direct_message(msg, http, get_status(msg, current_game),
+                                               discord.Colour.default(), None, "현재 원정대 상태!")
         # 원정대장에게 구성 메시지 발송
         await game_message(msg, http, current_game, STATUS["ORGANIZE"])
         # 찬성 반대 투표메시지 삭제하기
-        await msg.delete()
+        await message_delete(msg)
         # 처리 완료 되면 Lock 해제
         games[msg.channel.id]["game"].lock_member = None
+        # 원정 결과에 대한 정보(sleep_time 후 삭제)
+        await wait_delete_message(result_message, sleep_time)
+        # 결과 전송 및 다음 리더로 변경(display_time 후 삭제)
+        await wait_delete_message(result_message2, display_time)
     elif result == STATUS["ORGANIZE_QUEST"] or result == STATUS["VIVIANE"]:
         current_game = games[msg.channel.id]["game"]
         # 결과 전송 및 다음 리더로 변경
-        await direct_message(msg, http, get_status(msg, current_game), discord.Colour.default(),
-                             None, "원정대 원정 결과!")
+        result_message = await direct_message(msg, http, get_status(msg, current_game),
+                                              discord.Colour.default(), None, "원정대 원정 결과!")
         if result == STATUS["VIVIANE"]:
             # 호수의 여신(비비안)을 사용 전달
             await game_message(msg, http, games[msg.channel.id]["game"], STATUS["VIVIANE"])
@@ -340,25 +379,31 @@ async def button_message(msg, http, datas, user, result):
             # 원정대장에게 구성 메시지 발송
             await game_message(msg, http, current_game, STATUS["ORGANIZE"])
         # 라운드 성공/실패 선택 후, 다음 라운드 진행 시 이전 라운드 결과 메시지 삭제
-        await msg.delete()
+        await message_delete(msg)
         # 처리 완료 되면 Lock 해제
         games[msg.channel.id]["game"].lock_member = None
+        # 결과 전송 및 다음 리더로 변경(display_time 후 삭제)
+        await wait_delete_message(result_message, display_time)
     elif result == STATUS["TERMINATE_LOYAL"] or result == STATUS["TERMINATE_EVIL"]:
         # 선의 승리인 경우, 결과 공지 및 암살자에게 선택권 제공
-        # 악의 승리인 경우, 결과 공지 및 종료
-        await direct_message(msg, http, get_status(msg, games[msg.channel.id]["game"]),
-                             discord.Colour.dark_blue() if result == STATUS["TERMINATE_LOYAL"]
-                             else discord.Colour.dark_red(), None, "원정이 성공하였으나, 암살자를 조심하세요!"
-                             if result == STATUS["TERMINATE_LOYAL"] else "악의 하수인들의 활약으로 원정이 실패하였습니다!")
-        # 성공 종료인 경우, 암살자 선택권 출력
         if result == STATUS["TERMINATE_LOYAL"]:
+            result_message = await direct_message(msg, http, get_status(msg, games[msg.channel.id]["game"]),
+                                                  discord.Colour.dark_blue(), None, "원정이 성공하였으나, 암살자를 조심하세요!")
+            # 처리 완료 되면 Lock 해제
+            games[msg.channel.id]["game"].lock_member = None
+            # 성공 종료인 경우, 암살자 선택권 출력
             await game_message(msg, http, games[msg.channel.id]["game"], STATUS["ASSASSIN"])
-        # 찬성 반대 투표메시지 삭제하기
-        await msg.delete()
-        # 처리 완료 되면 Lock 해제
-        games[msg.channel.id]["game"].lock_member = None
-        # 실패 종료인 경우, 게임 초기화
-        if result == STATUS["TERMINATE_EVIL"]:
+            # 찬성 반대 투표메시지 삭제하기
+            await message_delete(msg)
+            # 선의 승리인 경우, 결과 공지 및 암살자에게 선택권 제공(display_time 후 삭제)
+            await wait_delete_message(result_message, display_time)
+        # 악의 승리인 경우, 결과 공지 및 종료
+        else:
+            await direct_message(msg, http, get_status(msg, games[msg.channel.id]["game"]),
+                                 discord.Colour.dark_red(), None, "악의 하수인들의 활약으로 원정이 실패하였습니다!")
+            # 찬성 반대 투표메시지 삭제하기
+            await message_delete(msg)
+            # 실패 종료인 경우, 게임 초기화
             games[msg.channel.id]["game"].clear_game()
     elif result == STATUS["ASSASSIN"] or result == STATUS["ASSASSIN_FAIL"]:
         # 암살 결과 공지 및 종료
@@ -368,7 +413,7 @@ async def button_message(msg, http, datas, user, result):
                                "암살이 성공하여 악의 하수인들이 승리하였습니다!" if result == STATUS["ASSASSIN"]
                                else "암살이 실패하여 아서왕의 수하들이 승리하였습니다!", INTERACTION_SCOPE["공개"])
         # 암살 메시지 삭제하기
-        await msg.delete()
+        await message_delete(msg)
         # 게임 초기화
         games[msg.channel.id]["game"].clear_game()
     elif result == STATUS["VIVIANE_LOYAL"] or result == STATUS["VIVIANE_EVIL"]:
@@ -383,15 +428,16 @@ async def button_message(msg, http, datas, user, result):
                                         "님은 아서왕의 충성스러운 수하입니다." if result_viviane else "님은 악의 하수인입니다."]),
                          discord.Colour.dark_blue() if result_viviane else discord.Colour.dark_red(),
                          ''.join([CARD_PREFIX, "viviane", ".png"]), "호수의 여신(비비안)!")
-        # 호수의 여신 사용 정보 출력
-        await direct_message(msg, http, ''.join([user.name,
-                                                 " > 호수의 여신(비비안) >",
-                                                 datas.get("data", {}).get("custom_id").split('_')[-1]]))
+        # 호수의 여신 사용 정보 출력(sleep_time 후 삭제)
+        result_message = await direct_message(msg, http,
+                                              ''.join([user.name, " > 호수의 여신(비비안) >",
+                                                       datas.get("data", {}).get("custom_id").split('_')[-1]]))
         # 호수의 여신 메시지 삭제하기
-        await msg.delete()
-
+        await message_delete(msg)
         # 원정대장에게 구성 메시지 발송
         await game_message(msg, http, games[msg.channel.id]["game"], STATUS["ORGANIZE"])
+        # 호수의 여신 사용 정보 출력(sleep_time 후 삭제)
+        await wait_delete_message(result_message, sleep_time)
 
 
 async def button_response(msg, http, datas, user, result):
@@ -453,7 +499,7 @@ async def button_response(msg, http, datas, user, result):
         print(f"현재시각={datetime.datetime.now()}, 사용자={user.name} Action=호수의 여신")
         result = viviane(msg, games, datas, user)
 
-    await button_message(msg, http, datas, user, result)
+    return await button_message(msg, http, datas, user, result)
 
 
 async def decompress_message(msg):
@@ -529,3 +575,16 @@ async def game_message(msg, http, current_game, scope):
         # DM에 버튼 포함 이슈로 1차적으로 채널에 표기되도록 구현
         await direct_message(msg, http, "호수의 여신을 사용하여 원정대원 중 1명의 정체(선/악)를 알 수 있습니다.", discord.Colour.dark_blue(),
                              components, ''.join([viviane_name, "님, 호수의 여신을 사용하세요!"]))
+
+
+async def get_message(channel_id, message_id):
+    return await bot_util.get_channel(channel_id).fetch_message(message_id)
+
+
+async def message_delete(message, sleep=0):
+    await asyncio.sleep(sleep)
+    await message.delete()
+
+
+async def wait_delete_message(target_msg, sleep=0):
+    await message_delete(await get_message(int(target_msg["channel_id"]), int(target_msg["id"])), sleep)
