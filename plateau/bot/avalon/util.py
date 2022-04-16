@@ -406,6 +406,11 @@ async def button_message(msg, http, datas, user, result):
             # 실패 종료인 경우, 게임 초기화
             games[msg.channel.id]["game"].clear_game()
     elif result == STATUS["ASSASSIN"] or result == STATUS["ASSASSIN_FAIL"]:
+        # 암살 정보 출력(sleep_time 후 삭제)
+        result_message = await direct_message(msg, http,
+                                              ''.join([user.name, "님이 ",
+                                                       datas.get("data", {}).get("custom_id").split('_')[-1],
+                                                       "님을 암살하였습니다."]))
         # 암살 결과 공지 및 종료
         await interact_message(msg, http, datas, get_status(msg, games[msg.channel.id]["game"]),
                                discord.Colour.dark_red() if result == STATUS["ASSASSIN"]
@@ -414,6 +419,8 @@ async def button_message(msg, http, datas, user, result):
                                else "암살이 실패하여 아서왕의 수하들이 승리하였습니다!", INTERACTION_SCOPE["공개"])
         # 암살 메시지 삭제하기
         await message_delete(msg)
+        # 암살 정보 출력(sleep_time 후 삭제)
+        await wait_delete_message(result_message, sleep_time)
         # 게임 초기화
         games[msg.channel.id]["game"].clear_game()
     elif result == STATUS["VIVIANE_LOYAL"] or result == STATUS["VIVIANE_EVIL"]:
