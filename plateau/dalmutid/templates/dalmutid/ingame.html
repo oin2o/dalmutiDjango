@@ -308,6 +308,18 @@
             'message': 'submitPass'
         }));
     }
+
+    function copyToClipBoard() {
+        var tempElem = document.createElement('textarea');
+        tempElem.value = "http://" + window.location.host + "/dalmutid/telegram/login/" + '{{ gamer.game.gamename }}' + "/" + '{{ gamer.game.gamecode }}';
+        document.body.appendChild(tempElem);
+
+        tempElem.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempElem);
+
+        alert("게임코드가 복사되었습니다!!");
+    }
     </script>
 
 </head>
@@ -417,7 +429,7 @@
             {% if gamer.game.ingameCd == 4 %}
                 by {{ gamer.game.gamecode }}
             {% else %}
-                Round : {{ gamer.game.round }} by <a href="{% url 'dalmutid:telegram' gamer.game.gamename user.username %}">{{ gamer.game.gamecode }}</a>
+                Round : {{ gamer.game.round }} by <a href=# onclick="copyToClipBoard()">{{ gamer.game.gamecode }}</a>
             {% endif %}
             </td>
         </tr>

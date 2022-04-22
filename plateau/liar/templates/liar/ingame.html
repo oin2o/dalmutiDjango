@@ -394,6 +394,21 @@
             'message': 'refresh'
         }));
     }
+
+    function copyToClipBoard() {
+        var tempElem = document.createElement('textarea');
+        tempElem.value = "http://" + window.location.host + "/liar/login/" + '{{ gamer.game.gamecode }}';
+        document.body.appendChild(tempElem);
+
+        tempElem.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempElem);
+
+        swal("게임코드가 복사되었습니다!!", {
+                buttons: false,
+                timer: 2000,
+            });
+    }
     </script>
 </head>
 <body>
@@ -459,7 +474,7 @@
                 </td>
                 <td class="tdh6" style="text-align:right;">
                 {% if gamer.game.ingameCd == 0 %}
-                    by <a href="{% url 'liar:telegram' gamer.game.gamecode gamer.user.username %}">{{ gamer.game.gamecode }}</a>
+                    by <a href=# onclick="copyToClipBoard()">{{ gamer.game.gamecode }}</a>
                 {% else %}
                     Round : {{ gamer.game.round }} by {{ gamer.game.gamecode }}
                 {% endif %}
