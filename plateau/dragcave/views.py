@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from django.shortcuts import render
 from django.views import generic
 
-from .models import User, Egg, Abandon, EggLocation
+from .models import User, Egg, Abandon, EggLocation, TimeData
 
 
 # 기본 링크
@@ -24,6 +24,7 @@ class EggsView(generic.ListView):
         tryCnt = 5
 
         user = User.objects.filter(useYn=True).first()
+        timedate = TimeData.objects.filter(timename="eggtime").first()
 
         if user:
             # 로그인 파라미터 정보
@@ -84,7 +85,7 @@ class EggsView(generic.ListView):
                                         if tryCnt == 0:
                                             break
                             # 하나 처리한 경우, 10초 대기
-                            sleep(10)
+                            sleep(timedate.timevalue)
         context = {
             'user': user
         }
@@ -98,6 +99,7 @@ class AbandonedView(generic.ListView):
     def get(self, request):
 
         user = User.objects.filter(useYn=True).first()
+        timedate = TimeData.objects.filter(timename="abandontime").first()
 
         if user:
             # 로그인 파라미터 정보
@@ -155,7 +157,7 @@ class AbandonedView(generic.ListView):
 
                             print(len(eggs), eggs, "Get Egg : ", egg_url)
                     # 하나 처리한 경우, 1초 대기
-                    sleep(1)
+                    sleep(timedate.timevalue)
 
         context = {
             'user': user

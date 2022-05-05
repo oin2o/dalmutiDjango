@@ -43,3 +43,11 @@ class Abandon(models.Model):
 
     def __str__(self):
         return self.eggcode + ':' + str(self.useYn)
+
+
+class TimeData(models.Model):
+    timename = models.CharField(max_length=100, help_text="시간 종류")
+    timevalue = models.IntegerField(default=0, help_text="시간")
+
+    def __str__(self):
+        return self.timename + ':' + str(self.timevalue)

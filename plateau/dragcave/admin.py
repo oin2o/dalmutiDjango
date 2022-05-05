@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Location, Egg, Abandon, EggLocation
+from .models import User, Location, Egg, Abandon, EggLocation, TimeData
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -23,3 +23,4 @@ admin.site.register(Location, LocationAdmin)
 admin.site.register(Egg, EggAdmin)
 admin.site.register(EggLocation, EggLocationAdmin)
 admin.site.register(Abandon)
+admin.site.register(TimeData)
