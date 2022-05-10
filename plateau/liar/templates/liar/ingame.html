@@ -397,7 +397,7 @@
 
     function copyToClipBoard() {
         var tempElem = document.createElement('textarea');
-        tempElem.value = "http://" + window.location.host + "/liar/login/" + '{{ gamer.game.gamecode }}';
+        tempElem.value = "http://" + window.location.host + "/liar/login/" + '{{ gamer.game.gamecode }}' + "/";
         document.body.appendChild(tempElem);
 
         tempElem.select();
