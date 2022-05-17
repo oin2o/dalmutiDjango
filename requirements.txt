@@ -1,0 +1,8 @@
+Django==3.2.8
+djangorestframework
+channels
+python-telegram-bot
+requests
+beautifulsoup4
+discord==1.7.3
+python-dotenv
